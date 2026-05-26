@@ -1,11 +1,484 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar" dir="rtl">
   <head>
-    <title>TODO supply a title</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>حاسبة الجمل الثلاثية</title>
+    <!-- Bootstrap 5.3.3 RTL CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <style>
+      :root {
+        --bg-body: #fdf9f3;
+        --text-color: #2b2b2b;
+        --glass-bg: rgba(255, 255, 255, 0.85);
+        --glass-border: rgba(150, 130, 110, 0.5);
+        --glass-shadow: 0 6px 20px rgba(100, 90, 80, 0.12);
+      }
+
+      body {
+        background-color: var(--bg-body);
+        color: var(--text-color);
+        font-family: 'Tajawal', 'Segoe UI', Tahoma, sans-serif;
+      }
+
+      .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        box-shadow: var(--glass-shadow);
+        padding: 24px;
+      }
+
+      .btn-glass {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        color: var(--text-color);
+        border-radius: 14px;
+        font-weight: 700;
+        transition: all 0.25s ease;
+      }
+
+      .btn-glass:hover {
+        background: rgba(255, 255, 255, 0.95);
+        border-color: rgba(130, 110, 90, 0.7);
+        box-shadow: 0 4px 12px rgba(100, 90, 80, 0.18);
+      }
+
+      .result-box {
+        font-size: 1.6rem;
+        font-weight: 800;
+        margin-top: 1.2rem;
+        text-align: center;
+        min-height: 2.2rem;
+      }
+
+      .result-error {
+        color: #c35a3b;
+        font-weight: 600;
+        font-size: 1.2rem;
+      }
+
+      .result-success {
+        color: #5a4a42;
+      }
+
+      .history-table {
+        width: 100%;
+        font-size: 0.95rem;
+        table-layout: fixed;
+      }
+
+      .history-table th,
+      .history-table td {
+        padding: 8px 4px;
+        border-bottom: 1px solid rgba(170, 150, 120, 0.2);
+        text-align: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .history-table th {
+        font-weight: 600;
+        color: #5a4a42;
+      }
+
+      .history-row {
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      .history-row:hover {
+        background: rgba(240, 230, 215, 0.4);
+      }
+
+      .btn-delete-item {
+        background: rgba(220, 53, 69, 0.15);
+        color: #c35a3b;
+        border: none;
+        width: 26px;
+        height: 26px;
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        padding: 0;
+        margin-right: 6px;
+      }
+
+      .btn-delete-item:hover {
+        background: rgba(220, 53, 69, 0.3);
+      }
+
+      .btn-clear-all {
+        margin-top: 16px;
+        background: rgba(220, 53, 69, 0.1);
+        color: #c35a3b;
+        border: 1px solid rgba(220, 53, 69, 0.4);
+      }
+
+      .btn-clear-all:hover {
+        background: rgba(220, 53, 69, 0.2);
+      }
+
+      label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      input.form-control {
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid var(--glass-border);
+        color: var(--text-color);
+      }
+
+      input.form-control:focus {
+        border-color: rgba(150, 130, 110, 0.8);
+        box-shadow: 0 0 0 0.2rem rgba(170, 150, 120, 0.25);
+      }
+
+      .copied-flash {
+        position: absolute;
+        background: #4caf50;
+        color: white;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        z-index: 1000;
+        opacity: 0;
+        pointer-events: none;
+      }
+    </style>
   </head>
-  <body>
-    <div>TODO write content</div>
+  <body class="p-3 p-md-4">
+    <div class="container-fluid">
+      <div class="row g-4">
+        <div class="col-md-7">
+          <div class="glass-card h-100">
+            <h3 class="text-center mb-3 fw-bold">حاسبة الجمل الثلاثية</h3>
+
+            <div class="mb-3">
+              <label for="inputText">أدخل النص:</label>
+              <div class="input-group">
+                <input type="text" id="inputText" class="form-control" placeholder="">
+                <button id="calculateBtn" class="btn btn-glass" type="button">احسب</button>
+              </div>
+            </div>
+
+            <div id="result" class="result-box"></div>
+          </div>
+        </div>
+
+        <div class="col-md-5">
+          <div class="glass-card h-100">
+            <h4 class="text-center mb-3 fw-bold">السجل</h4>
+            <div style="max-height: 440px; overflow-y: auto;">
+              <table class="history-table">
+                <thead>
+                  <tr>
+                    <th>النص</th>
+                    <th>الجمل</th>
+                    <th>الأبجد</th>
+                    <th>الأيقغ</th>
+                    <th>الحساب الثلاثي</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="historyList">
+                  <!-- سيتم ملؤه ديناميكيًا -->
+                </tbody>
+              </table>
+            </div>
+            <button id="clearAllBtn" class="btn btn-clear-all w-100 mt-2">🗑️ مسح السجل كله</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- jQuery + Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      // === تعريف الحروف المدعومة ===
+      const SUPPORTED_CHARS = [
+        'ا', 'أ', 'إ', 'آ',
+        'ب',
+        'ج',
+        'د',
+        'ه', 'ة',
+        'و',
+        'ز',
+        'ح',
+        'ط',
+        'ي', 'ى', 'ئ',
+        'ك',
+        'ل',
+        'م',
+        'ن',
+        'س',
+        'ع',
+        'ف',
+        'ص',
+        'ق',
+        'ر',
+        'ش',
+        'ت',
+        'ث',
+        'خ',
+        'ذ',
+        'ض',
+        'ظ',
+        'غ'
+      ];
+
+      // 1. حساب الجمل (كلاسيكي)
+      const jummalValues = {
+        'ا': 1, 'أ': 1, 'إ': 1, 'آ': 1,
+        'ب': 2,
+        'ج': 3,
+        'د': 4,
+        'ه': 5, 'ة': 5,
+        'و': 6,
+        'ز': 7,
+        'ح': 8,
+        'ط': 9,
+        'ي': 10, 'ى': 10, 'ئ': 10,
+        'ك': 20,
+        'ل': 30,
+        'م': 40,
+        'ن': 50,
+        'س': 60,
+        'ع': 70,
+        'ف': 80,
+        'ص': 90,
+        'ق': 100,
+        'ر': 200,
+        'ش': 300,
+        'ت': 400,
+        'ث': 500,
+        'خ': 600,
+        'ذ': 700,
+        'ض': 800,
+        'ظ': 900,
+        'غ': 1000
+      };
+
+      // دالة للحصول على الترتيب الفريد (1-28)
+      function getUniqueIndex(char) {
+        const baseOrder = ['ا', 'ب', 'ج', 'د', 'ه', 'و', 'ز', 'ح', 'ط', 'ي', 'ك', 'ل', 'م', 'ن', 'س', 'ع', 'ف', 'ص', 'ق', 'ر', 'ش', 'ت', 'ث', 'خ', 'ذ', 'ض', 'ظ', 'غ'];
+        const map = {
+          'ا': 'ا', 'أ': 'ا', 'إ': 'ا', 'آ': 'ا',
+          'ه': 'ه', 'ة': 'ه',
+          'ي': 'ي', 'ى': 'ي', 'ئ': 'ي'
+        };
+        const base = map[char] || char;
+        const idx = baseOrder.indexOf(base);
+        return idx === -1 ? 0 : idx + 1;
+      }
+
+      // تنقية النص
+      function cleanArabicText(input) {
+        let cleaned = '';
+        let inWord = false;
+        for (let char of input) {
+          if (SUPPORTED_CHARS.includes(char)) {
+            cleaned += char;
+            inWord = true;
+          } else if (char === ' ' && inWord) {
+            cleaned += ' ';
+            inWord = false;
+          }
+        }
+        return cleaned.trim();
+      }
+
+      // حساب القيم الثلاثة + المجموع
+      function calculateAll(text) {
+        let jummal = 0, abjadi = 0, iqghy = 0;
+
+        for (let char of text) {
+          // الجمل
+          if (jummalValues[char])
+            jummal += jummalValues[char];
+          // الأبجدي
+          const idx = getUniqueIndex(char);
+          if (idx)
+            abjadi += idx;
+
+          // الإيقيغي
+          if (idx)
+            iqghy += ((idx - 1) % 9) + 1;
+        }
+
+        const triple = jummal + abjadi + iqghy;
+        return {jummal, abjadi, iqghy, triple};
+      }
+
+      // === إدارة السجل ===
+      const STORAGE_KEY = 'gematria_history_triple_v2';
+      let history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+      function saveHistory() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+      }
+
+      function addToHistory(cleanText, values) {
+        const exists = history.some(item =>
+          item.text === cleanText &&
+            item.jummal === values.jummal &&
+            item.abjadi === values.abjadi &&
+            item.iqghy === values.iqghy
+        );
+        if (!exists) {
+          history.unshift({text: cleanText, ...values});
+          if (history.length > 50)
+            history = history.slice(0, 50);
+          saveHistory();
+          updateHistoryDisplay();
+        }
+      }
+
+      function removeItem(index) {
+        history.splice(index, 1);
+        saveHistory();
+        updateHistoryDisplay();
+      }
+
+      function clearAllHistory() {
+        if (confirm('هل أنت متأكد من مسح السجل بالكامل؟')) {
+          history = [];
+          saveHistory();
+          updateHistoryDisplay();
+        }
+      }
+
+      function updateHistoryDisplay() {
+        const container = $('#historyList');
+        container.empty();
+        if (history.length === 0) {
+          const row = $('<tr><td colspan="6" class="text-center text-muted py-3">لا توجد سجلات بعد</td></tr>');
+          container.append(row);
+          return;
+        }
+
+        history.forEach((item, index) => {
+          const row = $(`
+            <tr class="history-row">
+              <td title="${item.text}">${item.text}</td>
+              <td>${item.jummal.toLocaleString()}</td>
+              <td>${item.abjadi.toLocaleString()}</td>
+              <td>${item.iqghy.toLocaleString()}</td>
+              <td>${item.triple.toLocaleString()}</td>
+              <td>
+                <button class="btn-delete-item" data-index="${index}">×</button>
+              </td>
+            </tr>
+          `);
+
+          // نقرة على السطر: استرجاع النص
+          row.on('click', function (e) {
+            if (!$(e.target).hasClass('btn-delete-item')) {
+              $('#inputText').val(item.text).focus();
+            }
+          });
+
+          // نقرة مزدوجة على أي خلية رقمية: نسخ القيمة
+          row.on('dblclick', 'td:not(:first-child):not(:last-child)', function () {
+            const value = $(this).text().replace(/[,،]/g, '');
+            if (!isNaN(value)) {
+              copyToClipboard(value);
+              showCopiedFlash($(this));
+            }
+          });
+
+          // زر الحذف
+          row.find('.btn-delete-item').on('click', function (e) {
+            e.stopPropagation();
+            removeItem(index);
+          });
+
+          container.append(row);
+        });
+      }
+
+      // === وظائف مساعدة ===
+      function copyToClipboard(text) {
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(String(text)).catch(() => {
+          });
+        } else {
+          const textarea = document.createElement('textarea');
+          textarea.value = text;
+          document.body.appendChild(textarea);
+          textarea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textarea);
+        }
+      }
+
+      function showCopiedFlash(element) {
+        const flash = $('<div class="copied-flash">تم النسخ!</div>');
+        $('body').append(flash);
+        const pos = element.offset();
+        flash.css({
+          top: pos.top - 30,
+          left: pos.left + element.outerWidth() / 2 - flash.width() / 2,
+          opacity: 1
+        });
+        setTimeout(() => flash.fadeOut(300, () => flash.remove()), 1200);
+      }
+
+      // === حدث الحساب ===
+      $('#calculateBtn').on('click', function () {
+        const rawInput = $('#inputText').val();
+        if (!rawInput || rawInput.trim() === '') {
+          $('#result')
+            .removeClass('result-success')
+            .addClass('result-error')
+            .text('الرجاء إدخال نص');
+          return;
+        }
+
+        const cleanText = cleanArabicText(rawInput);
+        if (cleanText === '') {
+          $('#result')
+            .removeClass('result-success')
+            .addClass('result-error')
+            .text('لا يوجد حروف عربية صالحة للحساب');
+          return;
+        }
+
+        const values = calculateAll(cleanText);
+        // عرض نتيجة الجمل كمرجع
+        const resultText = `الجمل: ${values.jummal.toLocaleString()}`;
+
+        $('#result')
+          .removeClass('result-error')
+          .addClass('result-success')
+          .text(resultText);
+
+        // نسخ قيمة الجمل تلقائيًا
+        copyToClipboard(values.jummal);
+        showCopiedFlash($('#result'));
+
+        addToHistory(cleanText, values);
+        $('#inputText').val('').focus();
+      });
+
+      $('#inputText').on('keypress', function (e) {
+        if (e.which === 13) {
+          $('#calculateBtn').click();
+        }
+      });
+
+      $('#clearAllBtn').on('click', clearAllHistory);
+
+      // تحميل السجل عند البدء
+      updateHistoryDisplay();
+    </script>
   </body>
 </html>
