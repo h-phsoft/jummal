@@ -163,6 +163,9 @@ $(document).ready(function () {
     
     // إظهار الجدول الكامل مع زر الدليل
     renderMagicSquare(result.square, result.keyVal, result.ghalaqVal, result.wufuq, result.khanaatAlDhal3, result.al3Adl, result.alAs, result.alMasaha, result.alDhabeet, result.alGhaya, result.alAsl, result.fraction);
+    
+    // التأكد من إظهار زر الدليل
+    $('#toggleGuideBtn').show();
   });
 
   // ✅ حدث زر إظهار/إخفاء الدليل
