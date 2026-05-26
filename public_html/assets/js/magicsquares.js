@@ -118,7 +118,7 @@ $(document).ready(function () {
                     `);
     });
 
-    $('#result').removeClass('d-none');
+    $('#magicResult').removeClass('d-none');
   }
 
   $('#generateBtn').on('click', function () {
