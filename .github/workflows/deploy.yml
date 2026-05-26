@@ -9,10 +9,10 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: 📥 جلب الكود
+      - name: Get Codes
         uses: actions/checkout@v4
 
-      - name: 📤 النشر إلى cPanel
+      - name: Deploy to cPanel
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
