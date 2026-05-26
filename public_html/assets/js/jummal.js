@@ -230,7 +230,7 @@ function showCopiedFlash(element) {
 $('#calculateBtn').on('click', function () {
   const rawInput = $('#inputText').val();
   if (!rawInput || rawInput.trim() === '') {
-    $('#result')
+    $('#jummalResult')
       .removeClass('result-success')
       .addClass('result-error')
       .text('الرجاء إدخال نص');
@@ -239,7 +239,7 @@ $('#calculateBtn').on('click', function () {
 
   const cleanText = cleanArabicText(rawInput);
   if (cleanText === '') {
-    $('#result')
+    $('#jummalResult')
       .removeClass('result-success')
       .addClass('result-error')
       .text('لا يوجد حروف عربية صالحة للحساب');
@@ -250,14 +250,14 @@ $('#calculateBtn').on('click', function () {
   // عرض نتيجة الجمل كمرجع
   const resultText = `الجمل: ${values.jummal.toLocaleString()}`;
 
-  $('#result')
+  $('#jummalResult')
     .removeClass('result-error')
     .addClass('result-success')
     .text(resultText);
 
   // نسخ قيمة الجمل تلقائيًا
   copyToClipboard(values.jummal);
-  showCopiedFlash($('#result'));
+  showCopiedFlash($('#jummalResult'));
 
   addToHistory(cleanText, values);
   $('#inputText').val('').focus();
