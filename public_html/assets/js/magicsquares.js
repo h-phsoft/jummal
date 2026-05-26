@@ -70,6 +70,14 @@ $(document).ready(function () {
     const $container = $('#magicSquare').empty();
     const allValues = square.flat();
 
+    // تحديث مؤشر الكسر (أخضر إذا لا يوجد كسر، أحمر إذا وجد كسر)
+    const $indicator = $('#fractionIndicator');
+    if (fraction === 0) {
+      $indicator.css('background-color', 'green');
+    } else {
+      $indicator.css('background-color', 'red');
+    }
+
     // تمييز المفتاح والمغلاق حسب القيمة
     const minVal = Math.min(...allValues);
     const maxVal = Math.max(...allValues);
