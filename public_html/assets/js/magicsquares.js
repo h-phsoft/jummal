@@ -139,7 +139,7 @@ $(document).ready(function () {
                     `);
     });
 
-    $('#result').removeClass('d-none');
+    $('#magicResult').removeClass('d-none');
     
     // ✅ إظهار زر الدليل
     $('#toggleGuideBtn').show();
