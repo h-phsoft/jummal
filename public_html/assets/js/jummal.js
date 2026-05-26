@@ -259,8 +259,32 @@ $('#calculateBtn').on('click', function () {
   copyToClipboard(values.jummal);
   showCopiedFlash($('#jummalResult'));
 
-  // وضع النتيجة في حقل targetSum
+  // وضع النتيجة في حقل targetSum وتحديث مؤشر الكسر فقط
   $('#targetSum').val(values.jummal);
+  
+  // حساب الكسر وعرض المؤشر فقط دون إظهار الجدول أو زر الدليل
+  const inputNumber = values.jummal;
+  if (inputNumber >= 12) {
+    const remainder = (inputNumber - 12) % 3;
+    const $indicator = $('#fractionIndicator');
+    if (remainder === 0) {
+      $indicator.css('background-color', 'green');
+    } else {
+      $indicator.css('background-color', 'red');
+    }
+    $indicator.show();
+    
+    // إخفاء الجدول وزر الدليل عند الحساب من زر "احسب"
+    $('#magicResult').addClass('d-none');
+    $('#guideTable').addClass('d-none');
+    $('#toggleGuideBtn').hide();
+  } else {
+    // إذا كان الرقم أقل من 12، نخفي المؤشر أيضًا
+    $('#fractionIndicator').hide();
+    $('#magicResult').addClass('d-none');
+    $('#guideTable').addClass('d-none');
+    $('#toggleGuideBtn').hide();
+  }
 
   addToHistory(cleanText, values);
   $('#inputText').val('').focus();

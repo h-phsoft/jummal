@@ -158,11 +158,8 @@ $(document).ready(function () {
 
     const result = generateMagicSquare(inputNumber);
     
-    // تحديث مؤشر الكسر فقط دون إظهار الجدول
-    updateFractionIndicator(result.fraction);
-    
-    // عدم إظهار الجدول - فقط تحديث المؤشر
-    // renderMagicSquare(...) تم تعطيله حسب الطلب
+    // إظهار الجدول الكامل مع زر الدليل
+    renderMagicSquare(result.square, result.keyVal, result.ghalaqVal, result.wufuq, result.khanaatAlDhal3, result.al3Adl, result.alAs, result.alMasaha, result.alDhabeet, result.alGhaya, result.alAsl, result.fraction);
   });
 
   // ✅ حدث زر إظهار/إخفاء الدليل
@@ -175,7 +172,7 @@ $(document).ready(function () {
       $table.addClass('d-none');
       $(this).text('إظهار الدليل');
     }
-  });
+  }).show(); // إظهار الزر عند التحميل
 
   $('#targetSum').on('keypress', function (e) {
     if (e.which === 13) {
