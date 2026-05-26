@@ -66,6 +66,16 @@ $(document).ready(function () {
     };
   }
 
+  function updateFractionIndicator(fraction) {
+    const $indicator = $('#fractionIndicator');
+    if (fraction === 0) {
+      $indicator.css('background-color', 'green');
+    } else {
+      $indicator.css('background-color', 'red');
+    }
+    $indicator.show();
+  }
+
   function renderMagicSquare(square, keyVal, ghalaqVal, wufuq, khanaatAlDhal3, al3Adl, alAs, alMasaha, alDhabeet, alGhaya, alAsl, fraction) {
     const $container = $('#magicSquare').empty();
     const allValues = square.flat();
@@ -77,6 +87,9 @@ $(document).ready(function () {
     } else {
       $indicator.css('background-color', 'red');
     }
+    
+    // إظهار المؤشر دائمًا بعد الحساب
+    $indicator.show();
 
     // تمييز المفتاح والمغلاق حسب القيمة
     const minVal = Math.min(...allValues);
@@ -144,20 +157,12 @@ $(document).ready(function () {
     }
 
     const result = generateMagicSquare(inputNumber);
-    renderMagicSquare(
-      result.square,
-      result.keyVal,
-      result.ghalaqVal,
-      result.wufuq,
-      result.khanaatAlDhal3,
-      result.al3Adl,
-      result.alAs,
-      result.alMasaha,
-      result.alDhabeet,
-      result.alGhaya,
-      result.alAsl,
-      result.fraction
-      );
+    
+    // تحديث مؤشر الكسر فقط دون إظهار الجدول
+    updateFractionIndicator(result.fraction);
+    
+    // عدم إظهار الجدول - فقط تحديث المؤشر
+    // renderMagicSquare(...) تم تعطيله حسب الطلب
   });
 
   // ✅ حدث زر إظهار/إخفاء الدليل

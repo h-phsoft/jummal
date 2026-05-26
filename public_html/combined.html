@@ -38,11 +38,17 @@
                   </div>
                   <div class="card-body">
                     <div class="mb-3">
-                      <input type="number" id="targetSum" class="form-control text-center" placeholder="أدخل الرقم هنا" required>
+                      <div class="row g-2 align-items-center">
+                        <div class="col-10">
+                          <input type="number" id="targetSum" class="form-control text-center" placeholder="أدخل الرقم هنا" required>
+                        </div>
+                        <div class="col-1">
+                          <span id="fractionIndicator" class="fraction-indicator-circle d-block mx-auto"></span>
+                        </div>
+                      </div>
                     </div>
-                    <div class="d-grid position-relative">
-                      <button id="generateBtn" class="btn btn-success">أنشئ الوفق</button>
-                      <span id="fractionIndicator" class="position-absolute top-0 start-100 translate-middle badge rounded-circle ms-2" style="width: 12px; height: 12px; background-color: gray;"></span>
+                    <div class="mb-3">
+                      <button id="generateBtn" class="btn btn-success w-100">أنشئ الوفق</button>
                     </div>
 
                     <div id="magicResult" class="result-section text-center d-none">
