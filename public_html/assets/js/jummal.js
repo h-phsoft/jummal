@@ -259,6 +259,9 @@ $('#calculateBtn').on('click', function () {
   copyToClipboard(values.jummal);
   showCopiedFlash($('#jummalResult'));
 
+  // وضع النتيجة في حقل targetSum
+  $('#targetSum').val(values.jummal);
+
   addToHistory(cleanText, values);
   $('#inputText').val('').focus();
 });
