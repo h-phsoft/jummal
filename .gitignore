@@ -1,3 +1,26 @@
-(public_html/assets/js/jummal.js, public_html/assets/js/magicsquares.js, public_html/combined.html are all source/config files, no build artifacts, dependencies, or temp files in the changes)
+```
+# Build artifacts
+dist/
+build/
+*.min.css
+*.min.js
+*.css.map
+*.js.map
 
-(empty - output nothing)
+# Logs and temp files
+*.log
+*.tmp
+
+# Environment
+.env
+.env.local
+.env.*
+
+# Editors
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+```
