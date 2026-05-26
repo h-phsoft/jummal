@@ -3,7 +3,7 @@ name: Deploy to cPanel
 on:
   push:
     branches: [ "main" ] # غيّر إلى الفرع الذي تريد النشر التلقائي منه
-
+workflow_dispatch:  # ← أضف هذا السطر بالضبط
 jobs:
   deploy:
     runs-on: ubuntu-latest
