@@ -15,7 +15,7 @@
         --secondary-color: #764ba2;
         --accent-color: #f093fb;
       }
-      
+
       body {
         background: var(--bg-gradient);
         min-height: 100vh;
@@ -25,7 +25,7 @@
         justify-content: center;
         padding: 20px;
       }
-      
+
       .main-container {
         background: var(--card-bg);
         backdrop-filter: blur(20px);
@@ -36,7 +36,7 @@
         width: 100%;
         text-align: center;
       }
-      
+
       .main-title {
         font-size: 2.5rem;
         font-weight: 900;
@@ -44,13 +44,13 @@
         margin-bottom: 10px;
         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
       }
-      
+
       .main-subtitle {
         font-size: 1.1rem;
         color: #6c757d;
         margin-bottom: 40px;
       }
-      
+
       .btn-custom {
         position: relative;
         overflow: hidden;
@@ -66,7 +66,7 @@
         width: 100%;
         margin-bottom: 20px;
       }
-      
+
       .btn-custom::before {
         content: '';
         position: absolute;
@@ -77,56 +77,56 @@
         background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
         transition: left 0.5s ease;
       }
-      
+
       .btn-custom:hover::before {
         left: 100%;
       }
-      
+
       .btn-custom:hover {
         transform: translateY(-5px);
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
       }
-      
+
       .btn-custom:active {
         transform: translateY(-2px);
       }
-      
+
       .btn-jummal {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
       }
-      
+
       .btn-jummal:hover {
         background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
         color: white;
       }
-      
+
       .btn-magic {
         background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         color: white;
       }
-      
+
       .btn-magic:hover {
         background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
         color: white;
       }
-      
+
       .btn-icon {
         font-size: 1.5rem;
         margin-left: 10px;
       }
-      
+
       .divider {
         height: 2px;
         background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
         margin: 30px 0;
       }
-      
+
       @media (max-width: 576px) {
         .main-title {
           font-size: 2rem;
         }
-        
+
         .btn-custom {
           padding: 15px 20px;
           font-size: 1.1rem;
@@ -138,21 +138,26 @@
     <div class="main-container">
       <h1 class="main-title">✨ جمّال ✨</h1>
       <p class="main-subtitle">منصة الحسابات الأبجدية والوفق المثلث</p>
-      
+
       <div class="divider"></div>
-      
+
+      <a href="combined.html" class="btn btn-custom btn-jummal">
+        <span class="btn-icon">🔗</span>
+        المنصة الموحدة - حاسبة الجمل والوفق المثلث
+      </a>
+
       <a href="jummal.html" class="btn btn-custom btn-jummal">
         <span class="btn-icon">🔢</span>
         حاسبة الجمل الثلاثية
       </a>
-      
+
       <a href="magic-squares.html" class="btn btn-custom btn-magic">
         <span class="btn-icon">🔺</span>
         تعمير الوفق المثلث
       </a>
-      
+
       <div class="divider"></div>
-      
+
       <p class="text-muted mb-0">
         <small>جميع الحقوق محفوظة © 2024</small>
       </p>
