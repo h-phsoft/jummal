@@ -68,6 +68,48 @@
               </div>
             </div>
           </div>
+          
+          <!-- قسم البحث في QWords.json -->
+          <div class="row g-4 mt-2">
+            <div class="col-12">
+              <div class="glass-card">
+                <h5 class="mb-3 fw-bold">البحث في الكلمات</h5>
+                
+                <!-- Checkboxes للبحث -->
+                <div class="mb-3">
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="checkJummal" value="jummal" checked>
+                    <label class="form-check-label" for="checkJummal">جمل</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="checkAbjad" value="abjad">
+                    <label class="form-check-label" for="checkAbjad">أبجد</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="checkAyqagh" value="ayqagh">
+                    <label class="form-check-label" for="checkAyqagh">أيقغ</label>
+                  </div>
+                </div>
+                
+                <!-- نتيجة البحث -->
+                <div id="matched-numbers" style="max-height: 30vh; overflow-y: auto;">
+                  <table class="history-table">
+                    <thead>
+                      <tr id="search-results-header">
+                        <th>الكلمة</th>
+                        <th>الجمل</th>
+                        <th>الأبجد</th>
+                        <th>الأيقغ</th>
+                      </tr>
+                    </thead>
+                    <tbody id="searchResultsBody">
+                      <tr><td colspan="4" class="text-center text-muted py-3">أدخل نصاً واحسبه للبحث عن كلمات مطابقة</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="col-md-6">
@@ -104,12 +146,12 @@
         </div>
       </div>
 
-      <!-- jQuery + Bootstrap JS -->
-      <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-      <script src="assets/js/jummal.js"></script>
-      <script src="assets/js/magicsquares.js"></script>
-      <script src="assets/js/search.js"></script>
+    <!-- jQuery + Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/jummal.js"></script>
+    <script src="assets/js/magicsquares.js"></script>
+    <script src="assets/js/combined-search.js"></script>
 
   </body>
 </html>

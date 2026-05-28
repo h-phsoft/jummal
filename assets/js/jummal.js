@@ -287,6 +287,12 @@ $('#calculateBtn').on('click', function () {
   }
 
   addToHistory(cleanText, values);
+  
+  // البحث في QWords.json عن كلمات مطابقة لقيمة الجمل
+  if (typeof searchByJummalValue === 'function') {
+    searchByJummalValue(values.jummal);
+  }
+  
   $('#inputText').val('').focus();
 });
 
