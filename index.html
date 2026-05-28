@@ -81,11 +81,11 @@
         return { jummal, abjad: abjadi, ayqagh: iqghy };
       }
 
-      // معالجة ملف QWords.json
+      // معالجة ملف QWords.json - فرز أبجدي حسب text28
       document.getElementById('processQWordsBtn').addEventListener('click', async function() {
         const btn = this;
         const originalText = btn.innerHTML;
-        btn.innerHTML = '<span class="btn-icon">⏳</span> جاري المعالجة...';
+        btn.innerHTML = '<span class="btn-icon">⏳</span> جاري الفرز...';
         btn.disabled = true;
 
         try {
@@ -93,44 +93,60 @@
           const response = await fetch('assets/js/data/QWords.json');
           const text = await response.text();
           
-          // تحليل البيانات (الملف يبدأ بفاصلة)
-          const lines = text.split('\n').filter(line => line.trim());
-          const results = [];
-          
-          for (const line of lines) {
-            try {
-              // إزالة الفاصلة الأولى إن وجدت
-              const jsonStr = line.replace(/^,/, '');
-              const item = JSON.parse(jsonStr);
-              
-              if (item.text28) {
-                const values = calculateAll(item.text28);
-                item.jummal = values.jummal;
-                item.abjad = values.abjad;
-                item.ayqagh = values.ayqagh;
-                results.push(item);
+          // تحليل البيانات (الملف بصيغة JSON Array)
+          let data;
+          try {
+            data = JSON.parse(text);
+          } catch (e) {
+            // إذا فشل التحليل المباشر، نحاول تحليله سطرًا سطرًا
+            const lines = text.split('\n').filter(line => line.trim());
+            data = [];
+            for (const line of lines) {
+              try {
+                const jsonStr = line.replace(/^,/, '').trim();
+                if (jsonStr.startsWith('{')) {
+                  const item = JSON.parse(jsonStr);
+                  data.push(item);
+                }
+              } catch (parseErr) {
+                console.error('خطأ في parsing السطر:', line, parseErr);
               }
-            } catch (e) {
-              console.error('خطأ في parsing السطر:', line, e);
             }
           }
 
+          // حساب القيم للكلمات التي لم تحسب بعد
+          for (const item of data) {
+            if (item.text28 && (!item.jummal || item.jummal === 0)) {
+              const values = calculateAll(item.text28);
+              item.jummal = values.jummal;
+              item.abjad = values.abjad;
+              item.ayqagh = values.ayqagh;
+            }
+          }
+
+          // فرز أبجدي حسب الحقل text28
+          data.sort((a, b) => {
+            const textA = a.text28 || '';
+            const textB = b.text28 || '';
+            return textA.localeCompare(textB, 'ar');
+          });
+
           // إنشاء ملف JSON للتنزيل
-          const jsonContent = JSON.stringify(results, null, 2);
+          const jsonContent = JSON.stringify(data, null, 2);
           const blob = new Blob([jsonContent], { type: 'application/json' });
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = 'QWords_processed.json';
+          a.download = 'QWords_sorted.json';
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
           URL.revokeObjectURL(url);
 
-          alert(`تمت معالجة ${results.length} كلمة بنجاح!\nتم تنزيل الملف المحدّث.`);
+          alert(`تم فرز ${data.length} كلمة أبجدياً بنجاح!\nتم تنزيل الملف المرتب.`);
         } catch (error) {
           console.error('Error:', error);
-          alert('حدث خطأ أثناء معالجة الملف: ' + error.message);
+          alert('حدث خطأ أثناء فرز الملف: ' + error.message);
         } finally {
           btn.innerHTML = originalText;
           btn.disabled = false;
