@@ -185,7 +185,6 @@ function updateHistoryDisplay() {
       const value = $(this).text().replace(/[,،]/g, '');
       if (!isNaN(value)) {
         copyToClipboard(value);
-        showCopiedFlash($(this));
       }
     });
 
@@ -212,18 +211,6 @@ function copyToClipboard(text) {
     document.execCommand('copy');
     document.body.removeChild(textarea);
   }
-}
-
-function showCopiedFlash(element) {
-  const flash = $('<div class="copied-flash">تم النسخ!</div>');
-  $('body').append(flash);
-  const pos = element.offset();
-  flash.css({
-    top: pos.top - 30,
-    left: pos.left + element.outerWidth() / 2 - flash.width() / 2,
-    opacity: 1
-  });
-  setTimeout(() => flash.fadeOut(300, () => flash.remove()), 1200);
 }
 
 // === حدث الحساب ===
@@ -257,11 +244,10 @@ $('#calculateBtn').on('click', function () {
 
   // نسخ قيمة الجمل تلقائيًا
   copyToClipboard(values.jummal);
-  showCopiedFlash($('#jummalResult'));
 
   // وضع النتيجة في حقل targetSum وتحديث مؤشر الكسر فقط
   $('#targetSum').val(values.jummal);
-  
+
   // حساب الكسر وعرض المؤشر فقط دون إظهار الجدول أو زر الدليل
   const inputNumber = values.jummal;
   if (inputNumber >= 12) {
@@ -273,7 +259,7 @@ $('#calculateBtn').on('click', function () {
       $indicator.css('background-color', 'red');
     }
     $indicator.show();
-    
+
     // إخفاء الجدول وزر الدليل عند الحساب من زر "احسب"
     $('#magicResult').addClass('d-none');
     $('#guideTable').addClass('d-none');
@@ -287,20 +273,20 @@ $('#calculateBtn').on('click', function () {
   }
 
   addToHistory(cleanText, values);
-  
+
   // البحث في QWords.json عن كلمات مطابقة لقيمة الجمل
   // تنفيذ البحث تلقائياً باستخدام الدالة searchByJummalValue من combined-search.js
   const checkJummal = document.getElementById('checkJummal');
   const checkAbjad = document.getElementById('checkAbjad');
   const checkAyqagh = document.getElementById('checkAyqagh');
-  if ((checkJummal && checkJummal.checked) || 
-      (checkAbjad && checkAbjad.checked) || 
-      (checkAyqagh && checkAyqagh.checked)) {
+  if ((checkJummal && checkJummal.checked) ||
+    (checkAbjad && checkAbjad.checked) ||
+    (checkAyqagh && checkAyqagh.checked)) {
     if (typeof searchByJummalValue === 'function') {
       searchByJummalValue(values.jummal);
     }
   }
-  
+
   $('#inputText').val('').focus();
 });
 
