@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بحث في الكلمات</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .search-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        input[type="number"] {
+            padding: 10px;
+            font-size: 16px;
+            width: 70%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-left: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        /* تنسيق الجدول والحاوية */
+        .table-wrapper {
+            width: 95%;
+            max-width: 1200px;
+            /* الارتفاع لا يتجاوز 90vh كما طلبت */
+            max-height: 90vh;
+            overflow-y: auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px; /* لضمان عدم انكماش الجدول كثيراً */
+        }
+
+        thead th {
+            position: sticky;
+            top: 0;
+            background-color: #343a40;
+            color: white;
+            z-index: 10;
+            padding: 12px;
+            text-align: right;
+        }
+
+        tbody td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            text-align: right;
+        }
+
+        tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* كلاسات التلوين */
+        .highlight-jummal {
+            background-color: #ffc107 !important; /* أصفر للجمل */
+            color: #000;
+            font-weight: bold;
+        }
+
+        .highlight-abjad {
+            background-color: #17a2b8 !important; /* أزرق للأبجد */
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .highlight-ayqagh {
+            background-color: #dc3545 !important; /* أحمر للأيقغ */
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="search-container">
+        <h2>بحث حسب القيمة الحسابية</h2>
+        <input type="number" id="searchNumber" placeholder="أدخل الرقم...">
+        <button onclick="performSearch()">بحث</button>
+        <div style="margin-top: 10px;">
+            <a href="index.html" style="text-decoration: none; color: #007bff; font-size: 14px;">العودة للرئيسية</a>
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+        <table id="resultsTable">
+            <thead>
+                <tr>
+                    <th>الكلمة (Text)</th>
+                    <th>حساب الجمل (Jummal)</th>
+                    <th>حساب الأبجد (Abjad)</th>
+                    <th>حساب الأيقغ (Ayqagh)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- النتائج ستظهر هنا -->
+            </tbody>
+        </table>
+        <div id="noResultsMsg" class="no-results" style="display: none;">لا توجد نتائج مطابقة</div>
+    </div>
+
+    <script>
+        // دوال الحساب (نفس المنطق المستخدم في index.html)
+        const jummalValues = {
+            'ا': 1, 'أ': 1, 'إ': 1, 'آ': 1,
+            'ب': 2, 'ج': 3, 'د': 4,
+            'ه': 5, 'ة': 5, 'و': 6, 'ز': 7,
+            'ح': 8, 'ط': 9,
+            'ي': 10, 'ى': 10, 'ئ': 10,
+            'ك': 20, 'ل': 30, 'م': 40, 'ن': 50,
+            'س': 60, 'ع': 70, 'ف': 80, 'ص': 90,
+            'ق': 100, 'ر': 200, 'ش': 300,
+            'ت': 400, 'ث': 500, 'خ': 600,
+            'ذ': 700, 'ض': 800, 'ظ': 900, 'غ': 1000
+        };
+
+        // دالة الحصول على الترتيب الفريد (1-28)
+        function getUniqueIndex(char) {
+            const baseOrder = ['ا', 'ب', 'ج', 'د', 'ه', 'و', 'ز', 'ح', 'ط', 'ي', 'ك', 'ل', 'م', 'ن', 'س', 'ع', 'ف', 'ص', 'ق', 'ر', 'ش', 'ت', 'ث', 'خ', 'ذ', 'ض', 'ظ', 'غ'];
+            const map = {
+                'ا': 'ا', 'أ': 'ا', 'إ': 'ا', 'آ': 'ا',
+                'ه': 'ه', 'ة': 'ه',
+                'ي': 'ي', 'ى': 'ي', 'ئ': 'ي'
+            };
+            const base = map[char] || char;
+            const idx = baseOrder.indexOf(base);
+            return idx === -1 ? 0 : idx + 1;
+        }
+
+        // حساب القيم الثلاثة
+        function calculateAll(text) {
+            let jummal = 0, abjadi = 0, iqghy = 0;
+            for (let char of text) {
+                if (jummalValues[char])
+                    jummal += jummalValues[char];
+                const idx = getUniqueIndex(char);
+                if (idx) {
+                    abjadi += idx;
+                    iqghy += ((idx - 1) % 9) + 1;
+                }
+            }
+            return { jummal, abjad: abjadi, ayqagh: iqghy };
+        }
+
+        async function performSearch() {
+            const targetNum = parseInt(document.getElementById('searchNumber').value);
+            const tbody = document.querySelector('#resultsTable tbody');
+            const noResultsMsg = document.getElementById('noResultsMsg');
+            
+            tbody.innerHTML = '';
+            noResultsMsg.style.display = 'none';
+
+            if (isNaN(targetNum)) {
+                alert('الرجاء إدخال رقم صحيح');
+                return;
+            }
+
+            try {
+                // محاولة جلب الملف
+                // ملاحظة: بسبب سياسات المتصفح (CORS)، قد لا يعمل fetch مع file:// مباشرة
+                // يجب تشغيل الصفحة عبر سيرفر محلي (مثل Live Server في VS Code)
+                let response;
+                try {
+                    response = await fetch('assets/js/data/QWords.json');
+                } catch (e) {
+                    throw new Error("تعذر الوصول للملف. تأكد من وجود المسار assets/js/data/QWords.json وتشغيل الصفحة عبر سيرفر محلي.");
+                }
+
+                if (!response.ok) throw new Error('ملف البيانات غير موجود');
+                
+                const data = await response.json();
+                // نفترض أن البيانات مصفوفة أو كائن يحتوي على مصفوفة
+                const wordsArray = Array.isArray(data) ? data : (data.words || Object.values(data));
+
+                let foundCount = 0;
+
+                wordsArray.forEach(item => {
+                    // نأخذ النص من الحقل text28 كما طلبت سابقاً أو الحقل النصي الأساسي
+                    const text = item.text28 || item.text || item.word || "";
+                    
+                    // حساب القيم ديناميكياً باستخدام دالة calculateAll الموحدة
+                    const values = calculateAll(text);
+                    // نفضل استخدام القيم المحسوبة حديثاً، أو نستخدم المخزنة إذا أردت
+                    const valJummal = values.jummal;
+                    const valAbjad = values.abjad;
+                    const valAyqagh = values.ayqagh;
+
+                    let matchFound = false;
+                    let rowClassJummal = '';
+                    let rowClassAbjad = '';
+                    let rowClassAyqagh = '';
+
+                    if (valJummal === targetNum) {
+                        matchFound = true;
+                        rowClassJummal = 'highlight-jummal';
+                    }
+                    if (valAbjad === targetNum) {
+                        matchFound = true;
+                        rowClassAbjad = 'highlight-abjad';
+                    }
+                    if (valAyqagh === targetNum) {
+                        matchFound = true;
+                        rowClassAyqagh = 'highlight-ayqagh';
+                    }
+
+                    if (matchFound) {
+                        foundCount++;
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${text}</td>
+                            <td class="${rowClassJummal}">${valJummal}</td>
+                            <td class="${rowClassAbjad}">${valAbjad}</td>
+                            <td class="${rowClassAyqagh}">${valAyqagh}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    }
+                });
+
+                if (foundCount === 0) {
+                    noResultsMsg.style.display = 'block';
+                }
+
+            } catch (error) {
+                console.error(error);
+                tbody.innerHTML = `<tr><td colspan="4" style="color:red; text-align:center;">خطأ: ${error.message}</td></tr>`;
+            }
+        }
+    </script>
+</body>
+</html>
