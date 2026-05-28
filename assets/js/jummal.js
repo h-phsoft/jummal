@@ -289,20 +289,15 @@ $('#calculateBtn').on('click', function () {
   addToHistory(cleanText, values);
   
   // البحث في QWords.json عن كلمات مطابقة لقيمة الجمل
-  // تحديث حقل البحث بالقيمة المحسوبة وتنفيذ البحث تلقائياً
-  const searchNumberInput = document.getElementById('searchNumber');
-  if (searchNumberInput) {
-    searchNumberInput.value = values.jummal;
-    // تنفيذ البحث فقط إذا كانت هناك checkboxes محددة
-    const checkJummal = document.getElementById('checkJummal');
-    const checkAbjad = document.getElementById('checkAbjad');
-    const checkAyqagh = document.getElementById('checkAyqagh');
-    if (checkJummal && checkJummal.checked || 
-        checkAbjad && checkAbjad.checked || 
-        checkAyqagh && checkAyqagh.checked) {
-      if (typeof performSearch === 'function') {
-        performSearch();
-      }
+  // تنفيذ البحث تلقائياً باستخدام الدالة searchByJummalValue من combined-search.js
+  const checkJummal = document.getElementById('checkJummal');
+  const checkAbjad = document.getElementById('checkAbjad');
+  const checkAyqagh = document.getElementById('checkAyqagh');
+  if ((checkJummal && checkJummal.checked) || 
+      (checkAbjad && checkAbjad.checked) || 
+      (checkAyqagh && checkAyqagh.checked)) {
+    if (typeof searchByJummalValue === 'function') {
+      searchByJummalValue(values.jummal);
     }
   }
   
