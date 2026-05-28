@@ -101,9 +101,9 @@ async function performSearch() {
         const ayqaghCountEl = document.getElementById('ayqaghCount');
         
         if (totalCountEl) totalCountEl.textContent = ` (${foundCount})`;
-        if (jummalCountEl) jummalCountEl.textContent = searchJummal ? ` (${jummalMatchCount})` : '';
-        if (abjadCountEl) abjadCountEl.textContent = searchAbjad ? ` (${abjadMatchCount})` : '';
-        if (ayqaghCountEl) ayqaghCountEl.textContent = searchAyqagh ? ` (${ayqaghMatchCount})` : '';
+        if (jummalCountEl) jummalCountEl.textContent = searchJummal ? ` (${jummalMatchCount})` : ' (0)';
+        if (abjadCountEl) abjadCountEl.textContent = searchAbjad ? ` (${abjadMatchCount})` : ' (0)';
+        if (ayqaghCountEl) ayqaghCountEl.textContent = searchAyqagh ? ` (${ayqaghMatchCount})` : ' (0)';
 
         if (foundCount === 0 && noResultsMsg) {
             noResultsMsg.style.display = 'block';
