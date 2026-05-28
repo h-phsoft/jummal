@@ -45,6 +45,9 @@ async function performSearch() {
         const wordsArray = Array.isArray(data) ? data : (data.words || Object.values(data));
 
         let foundCount = 0;
+        let jummalMatchCount = 0;
+        let abjadMatchCount = 0;
+        let ayqaghMatchCount = 0;
 
         wordsArray.forEach(item => {
             // نأخذ النص من الحقل text28 كما طلبت سابقاً أو الحقل النصي الأساسي
@@ -64,14 +67,17 @@ async function performSearch() {
             if (searchJummal && valJummal === targetNum) {
                 matchFound = true;
                 rowClassJummal = 'highlight-jummal';
+                jummalMatchCount++;
             }
             if (searchAbjad && valAbjad === targetNum) {
                 matchFound = true;
                 rowClassAbjad = 'highlight-abjad';
+                abjadMatchCount++;
             }
             if (searchAyqagh && valAyqagh === targetNum) {
                 matchFound = true;
                 rowClassAyqagh = 'highlight-ayqagh';
+                ayqaghMatchCount++;
             }
 
             if (matchFound) {
@@ -86,6 +92,12 @@ async function performSearch() {
                 tbody.appendChild(tr);
             }
         });
+
+        // تحديث عدادات العناوين
+        document.getElementById('totalCount').textContent = ` (${foundCount})`;
+        document.getElementById('jummalCount').textContent = searchJummal ? ` (${jummalMatchCount})` : '';
+        document.getElementById('abjadCount').textContent = searchAbjad ? ` (${abjadMatchCount})` : '';
+        document.getElementById('ayqaghCount').textContent = searchAyqagh ? ` (${ayqaghMatchCount})` : '';
 
         if (foundCount === 0) {
             noResultsMsg.style.display = 'block';
