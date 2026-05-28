@@ -331,6 +331,16 @@ input.form-control:focus {
   color: white;
 }
 
+.btn-process-index {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+}
+
+.btn-process-index:hover {
+  background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+  color: white;
+}
+
 .btn-icon {
   font-size: 1.5rem;
   margin-left: 10px;

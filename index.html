@@ -24,11 +24,114 @@
         <span class="btn-icon">🔺</span>
         تعمير الوفق المثلث
       </a>
+      <button id="processQWordsBtn" class="btn btn-custom btn-process-index">
+        <span class="btn-icon">📊</span>
+        معالجة ملف QWords.json
+      </button>
       <div class="divider"></div>
       <p class="text-muted mb-0">
         <small>جميع الحقوق محفوظة © 2026</small>
       </p>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // دالة حساب الجمل
+      const jummalValues = {
+        'ا': 1, 'أ': 1, 'إ': 1, 'آ': 1,
+        'ب': 2, 'ج': 3, 'د': 4,
+        'ه': 5, 'ة': 5, 'و': 6, 'ز': 7,
+        'ح': 8, 'ط': 9,
+        'ي': 10, 'ى': 10, 'ئ': 10,
+        'ك': 20, 'ل': 30, 'م': 40, 'ن': 50,
+        'س': 60, 'ع': 70, 'ف': 80, 'ص': 90,
+        'ق': 100, 'ر': 200, 'ش': 300,
+        'ت': 400, 'ث': 500, 'خ': 600,
+        'ذ': 700, 'ض': 800, 'ظ': 900, 'غ': 1000
+      };
+
+      // دالة الحصول على الترتيب الفريد (1-28)
+      function getUniqueIndex(char) {
+        const baseOrder = ['ا', 'ب', 'ج', 'د', 'ه', 'و', 'ز', 'ح', 'ط', 'ي', 'ك', 'ل', 'م', 'ن', 'س', 'ع', 'ف', 'ص', 'ق', 'ر', 'ش', 'ت', 'ث', 'خ', 'ذ', 'ض', 'ظ', 'غ'];
+        const map = {
+          'ا': 'ا', 'أ': 'ا', 'إ': 'ا', 'آ': 'ا',
+          'ه': 'ه', 'ة': 'ه',
+          'ي': 'ي', 'ى': 'ي', 'ئ': 'ي'
+        };
+        const base = map[char] || char;
+        const idx = baseOrder.indexOf(base);
+        return idx === -1 ? 0 : idx + 1;
+      }
+
+      // حساب القيم الثلاثة
+      function calculateAll(text) {
+        let jummal = 0, abjadi = 0, iqghy = 0;
+        for (let char of text) {
+          if (jummalValues[char])
+            jummal += jummalValues[char];
+          const idx = getUniqueIndex(char);
+          if (idx) {
+            abjadi += idx;
+            iqghy += ((idx - 1) % 9) + 1;
+          }
+        }
+        return { jummal, abjad: abjadi, ayqagh: iqghy };
+      }
+
+      // معالجة ملف QWords.json
+      document.getElementById('processQWordsBtn').addEventListener('click', async function() {
+        const btn = this;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="btn-icon">⏳</span> جاري المعالجة...';
+        btn.disabled = true;
+
+        try {
+          // قراءة الملف
+          const response = await fetch('assets/js/data/QWords.json');
+          const text = await response.text();
+          
+          // تحليل البيانات (الملف يبدأ بفاصلة)
+          const lines = text.split('\n').filter(line => line.trim());
+          const results = [];
+          
+          for (const line of lines) {
+            try {
+              // إزالة الفاصلة الأولى إن وجدت
+              const jsonStr = line.replace(/^,/, '');
+              const item = JSON.parse(jsonStr);
+              
+              if (item.text28) {
+                const values = calculateAll(item.text28);
+                item.jummal = values.jummal;
+                item.abjad = values.abjad;
+                item.ayqagh = values.ayqagh;
+                results.push(item);
+              }
+            } catch (e) {
+              console.error('خطأ في parsing السطر:', line, e);
+            }
+          }
+
+          // إنشاء ملف JSON للتنزيل
+          const jsonContent = JSON.stringify(results, null, 2);
+          const blob = new Blob([jsonContent], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'QWords_processed.json';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+
+          alert(`تمت معالجة ${results.length} كلمة بنجاح!\nتم تنزيل الملف المحدّث.`);
+        } catch (error) {
+          console.error('Error:', error);
+          alert('حدث خطأ أثناء معالجة الملف: ' + error.message);
+        } finally {
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+        }
+      });
+    </script>
   </body>
 </html>
