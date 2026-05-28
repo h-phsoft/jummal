@@ -5,7 +5,8 @@
 
 async function performSearch() {
     const targetNum = parseInt(document.getElementById('searchNumber').value);
-    const tbody = document.querySelector('#resultsTable tbody');
+    // دعم كلا المعرفين للجدول: resultsTable في search.html و searchResultsTable في combined.html
+    const tableEl = document.querySelector('#resultsTable tbody') || document.querySelector('#searchResultsTable tbody');
     const noResultsMsg = document.getElementById('noResultsMsg');
     
     // Get checkbox states
@@ -19,8 +20,8 @@ async function performSearch() {
         return;
     }
     
-    tbody.innerHTML = '';
-    noResultsMsg.style.display = 'none';
+    tableEl.innerHTML = '';
+    if (noResultsMsg) noResultsMsg.style.display = 'none';
 
     if (isNaN(targetNum)) {
         alert('الرجاء إدخال رقم صحيح');
@@ -89,22 +90,29 @@ async function performSearch() {
                     <td class="${rowClassAbjad}">${valAbjad}</td>
                     <td class="${rowClassAyqagh}">${valAyqagh}</td>
                 `;
-                tbody.appendChild(tr);
+                tableEl.appendChild(tr);
             }
         });
 
         // تحديث عدادات العناوين
-        document.getElementById('totalCount').textContent = ` (${foundCount})`;
-        document.getElementById('jummalCount').textContent = searchJummal ? ` (${jummalMatchCount})` : '';
-        document.getElementById('abjadCount').textContent = searchAbjad ? ` (${abjadMatchCount})` : '';
-        document.getElementById('ayqaghCount').textContent = searchAyqagh ? ` (${ayqaghMatchCount})` : '';
+        const totalCountEl = document.getElementById('totalCount');
+        const jummalCountEl = document.getElementById('jummalCount');
+        const abjadCountEl = document.getElementById('abjadCount');
+        const ayqaghCountEl = document.getElementById('ayqaghCount');
+        
+        if (totalCountEl) totalCountEl.textContent = ` (${foundCount})`;
+        if (jummalCountEl) jummalCountEl.textContent = searchJummal ? ` (${jummalMatchCount})` : '';
+        if (abjadCountEl) abjadCountEl.textContent = searchAbjad ? ` (${abjadMatchCount})` : '';
+        if (ayqaghCountEl) ayqaghCountEl.textContent = searchAyqagh ? ` (${ayqaghMatchCount})` : '';
 
-        if (foundCount === 0) {
+        if (foundCount === 0 && noResultsMsg) {
             noResultsMsg.style.display = 'block';
+        } else if (noResultsMsg) {
+            noResultsMsg.style.display = 'none';
         }
 
     } catch (error) {
         console.error(error);
-        tbody.innerHTML = `<tr><td colspan="4" style="color:red; text-align:center;">خطأ: ${error.message}</td></tr>`;
+        tableEl.innerHTML = `<tr><td colspan="4" style="color:red; text-align:center;">خطأ: ${error.message}</td></tr>`;
     }
 }
