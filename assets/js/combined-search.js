@@ -39,6 +39,36 @@ function searchByJummalValue(jummalValue) {
     return false;
   });
 
+  // حساب العدادات
+  let totalCount = 0;
+  let jummalMatchCount = 0;
+  let abjadMatchCount = 0;
+  let ayqaghMatchCount = 0;
+
+  results.forEach(word => {
+    totalCount++;
+    if (checkJummal && word.jummal === jummalValue) {
+      jummalMatchCount++;
+    }
+    if (checkAbjad && word.abjad === jummalValue) {
+      abjadMatchCount++;
+    }
+    if (checkAyqagh && word.ayqagh === jummalValue) {
+      ayqaghMatchCount++;
+    }
+  });
+
+  // تحديث عدادات العناوين
+  const totalCountEl = document.getElementById('totalCount');
+  const jummalCountEl = document.getElementById('jummalCount');
+  const abjadCountEl = document.getElementById('abjadCount');
+  const ayqaghCountEl = document.getElementById('ayqaghCount');
+  
+  if (totalCountEl) totalCountEl.textContent = ` (${totalCount})`;
+  if (jummalCountEl) jummalCountEl.textContent = checkJummal ? ` (${jummalMatchCount})` : ' (0)';
+  if (abjadCountEl) abjadCountEl.textContent = checkAbjad ? ` (${abjadMatchCount})` : ' (0)';
+  if (ayqaghCountEl) ayqaghCountEl.textContent = checkAyqagh ? ` (${ayqaghMatchCount})` : ' (0)';
+
   if (results.length === 0) {
     tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-3">لا توجد كلمات مطابقة</td></tr>';
     return;
