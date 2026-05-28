@@ -74,10 +74,8 @@ function searchByJummalValue(jummalValue) {
     return;
   }
 
-  // عرض النتائج (نحددها بـ 100 نتيجة كحد أقصى لتجنب البطء)
-  const displayResults = results.slice(0, 100);
-
-  displayResults.forEach(word => {
+  // عرض جميع النتائج
+  results.forEach(word => {
     const row = document.createElement('tr');
     row.className = 'history-row';
 
@@ -95,13 +93,6 @@ function searchByJummalValue(jummalValue) {
 
     tbody.appendChild(row);
   });
-
-  // إذا كان هناك أكثر من 100 نتيجة
-  if (results.length > 100) {
-    const infoRow = document.createElement('tr');
-    infoRow.innerHTML = `<td colspan="4" class="text-center text-muted py-2">عرض أول 100 نتيجة من أصل ${results.length}</td>`;
-    tbody.appendChild(infoRow);
-  }
 }
 
 // تعديل حدث الحساب في jummal.js ليشغل البحث
