@@ -54,8 +54,8 @@
         .table-wrapper {
             width: 95%;
             max-width: 1200px;
-            /* الارتفاع لا يتجاوز 90vh كما طلبت */
-            max-height: 90vh;
+            /* الارتفاع لا يتجاوز 72vh كما طلبت */
+            max-height: 72vh;
             overflow-y: auto;
             background: white;
             border-radius: 8px;
@@ -145,48 +145,6 @@
     </div>
 
     <script>
-        // دوال الحساب (نفس المنطق المستخدم في index.html)
-        const jummalValues = {
-            'ا': 1, 'أ': 1, 'إ': 1, 'آ': 1,
-            'ب': 2, 'ج': 3, 'د': 4,
-            'ه': 5, 'ة': 5, 'و': 6, 'ز': 7,
-            'ح': 8, 'ط': 9,
-            'ي': 10, 'ى': 10, 'ئ': 10,
-            'ك': 20, 'ل': 30, 'م': 40, 'ن': 50,
-            'س': 60, 'ع': 70, 'ف': 80, 'ص': 90,
-            'ق': 100, 'ر': 200, 'ش': 300,
-            'ت': 400, 'ث': 500, 'خ': 600,
-            'ذ': 700, 'ض': 800, 'ظ': 900, 'غ': 1000
-        };
-
-        // دالة الحصول على الترتيب الفريد (1-28)
-        function getUniqueIndex(char) {
-            const baseOrder = ['ا', 'ب', 'ج', 'د', 'ه', 'و', 'ز', 'ح', 'ط', 'ي', 'ك', 'ل', 'م', 'ن', 'س', 'ع', 'ف', 'ص', 'ق', 'ر', 'ش', 'ت', 'ث', 'خ', 'ذ', 'ض', 'ظ', 'غ'];
-            const map = {
-                'ا': 'ا', 'أ': 'ا', 'إ': 'ا', 'آ': 'ا',
-                'ه': 'ه', 'ة': 'ه',
-                'ي': 'ي', 'ى': 'ي', 'ئ': 'ي'
-            };
-            const base = map[char] || char;
-            const idx = baseOrder.indexOf(base);
-            return idx === -1 ? 0 : idx + 1;
-        }
-
-        // حساب القيم الثلاثة
-        function calculateAll(text) {
-            let jummal = 0, abjadi = 0, iqghy = 0;
-            for (let char of text) {
-                if (jummalValues[char])
-                    jummal += jummalValues[char];
-                const idx = getUniqueIndex(char);
-                if (idx) {
-                    abjadi += idx;
-                    iqghy += ((idx - 1) % 9) + 1;
-                }
-            }
-            return { jummal, abjad: abjadi, ayqagh: iqghy };
-        }
-
         async function performSearch() {
             const targetNum = parseInt(document.getElementById('searchNumber').value);
             const tbody = document.querySelector('#resultsTable tbody');
@@ -223,12 +181,10 @@
                     // نأخذ النص من الحقل text28 كما طلبت سابقاً أو الحقل النصي الأساسي
                     const text = item.text28 || item.text || item.word || "";
                     
-                    // حساب القيم ديناميكياً باستخدام دالة calculateAll الموحدة
-                    const values = calculateAll(text);
-                    // نفضل استخدام القيم المحسوبة حديثاً، أو نستخدم المخزنة إذا أردت
-                    const valJummal = values.jummal;
-                    const valAbjad = values.abjad;
-                    const valAyqagh = values.ayqagh;
+                    // نستخدم القيم المخزنة مباشرة في الملف دون إعادة حسابها
+                    const valJummal = item.jummal !== undefined ? item.jummal : 0;
+                    const valAbjad = item.abjad !== undefined ? item.abjad : 0;
+                    const valAyqagh = item.ayqagh !== undefined ? item.ayqagh : 0;
 
                     let matchFound = false;
                     let rowClassJummal = '';
