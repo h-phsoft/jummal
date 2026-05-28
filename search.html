@@ -5,51 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>بحث في الكلمات</title>
     <link rel="stylesheet" href="assets/css/style.css">
-</head>
-<body class="search-body">
+  </head>
+  <body class="search-body">
 
     <div class="search-container">
-        <h2>بحث حسب القيمة الحسابية</h2>
-        <input type="number" id="searchNumber" class="search-input" placeholder="أدخل الرقم...">
-        <button onclick="performSearch()" class="search-btn">بحث</button>
-        
-        <div class="checkbox-group">
-            <label class="checkbox-label">
-                <input type="checkbox" id="checkJummal" checked>
-                حساب الجمل
-            </label>
-            <label class="checkbox-label">
-                <input type="checkbox" id="checkAbjad">
-                حساب الأبجد
-            </label>
-            <label class="checkbox-label">
-                <input type="checkbox" id="checkAyqagh">
-                حساب الأيقغ
-            </label>
-        </div>
-        
-        <div style="margin-top: 10px;">
-            <a href="index.html" style="text-decoration: none; color: #007bff; font-size: 14px;">العودة للرئيسية</a>
-        </div>
+      <h2>بحث حسب القيمة الحسابية</h2>
+      <input type="number" id="searchNumber" class="search-input" placeholder="أدخل الرقم...">
+      <button onclick="performSearch()" class="search-btn">بحث</button>
+
+      <div class="checkbox-group">
+        <label class="checkbox-label">
+          <input type="checkbox" id="checkJummal" checked>
+          الجمل
+        </label>
+        <label class="checkbox-label">
+          <input type="checkbox" id="checkAbjad">
+          الأبجد
+        </label>
+        <label class="checkbox-label">
+          <input type="checkbox" id="checkAyqagh">
+          الأيقغ
+        </label>
+      </div>
+
+      <div style="margin-top: 10px;">
+        <a href="index.html" style="text-decoration: none; color: #007bff; font-size: 14px;">العودة للرئيسية</a>
+      </div>
     </div>
 
     <div class="table-wrapper">
-        <table id="resultsTable" class="results-table">
-            <thead>
-                <tr>
-                    <th>الكلمة (Text)</th>
-                    <th>حساب الجمل (Jummal)</th>
-                    <th>حساب الأبجد (Abjad)</th>
-                    <th>حساب الأيقغ (Ayqagh)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- النتائج ستظهر هنا -->
-            </tbody>
-        </table>
-        <div id="noResultsMsg" class="no-results" style="display: none;">لا توجد نتائج مطابقة</div>
+      <table id="resultsTable" class="results-table">
+        <thead>
+          <tr>
+            <th>الكلمة</th>
+            <th> الجمل</th>
+            <th>الأبجد</th>
+            <th>الأيقغ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- النتائج ستظهر هنا -->
+        </tbody>
+      </table>
+      <div id="noResultsMsg" class="no-results" style="display: none;">لا توجد نتائج مطابقة</div>
     </div>
 
     <script src="assets/js/search.js"></script>
-</body>
+  </body>
 </html>
