@@ -302,7 +302,7 @@ $('#clearAllBtn').on('click', clearAllHistory);
 updateHistoryDisplay();
 
 // === تصدير سجل الجمل إلى PDF و Excel ===
-$('#exportHistoryPdfBtn').on('click', function() {
+$('#exportHistoryPdfBtn').on('click', async function() {
   if (history.length === 0) {
     alert('لا توجد سجلات لتصديرها');
     return;
@@ -315,9 +315,21 @@ $('#exportHistoryPdfBtn').on('click', function() {
     format: 'a4'
   });
   
-  // إعداد الخط العربي (استخدام خط افتراضي مع دعم RTL)
+  // تحميل الخط العربي من Google Fonts
+  try {
+    const fontUrl = 'https://fonts.gstatic.com/s/amiri/v27/J7aRNPd8CGxBHqUpSxM.woff2';
+    const response = await fetch(fontUrl);
+    const fontBuffer = await response.arrayBuffer();
+    const fontBase64 = btoa(String.fromCharCode(...new Uint8Array(fontBuffer)));
+    doc.addFileToVFS('Amiri-Regular.ttf', fontBase64);
+    doc.addFont('Amiri-Regular.ttf', 'Amiri', 'normal');
+    doc.setFont('Amiri');
+  } catch (error) {
+    console.error('فشل تحميل الخط العربي:', error);
+  }
+  
   doc.setFontSize(14);
-  doc.text('سجل حساب الجمل', 14, 15);
+  doc.text('سجل حساب الجمل', 280, 15, { align: 'right' });
   
   // تحضير البيانات للجدول
   const tableData = history.map(item => [
@@ -335,7 +347,8 @@ $('#exportHistoryPdfBtn').on('click', function() {
     theme: 'grid',
     styles: { 
       fontSize: 10,
-      halign: 'center'
+      halign: 'center',
+      font: 'Amiri'
     },
     columnStyles: {
       0: { halign: 'right', cellWidth: 60 }
@@ -368,7 +381,7 @@ $('#exportHistoryExcelBtn').on('click', function() {
 });
 
 // === تصدير نتائج البحث إلى PDF و Excel ===
-$('#exportSearchPdfBtn').on('click', function() {
+$('#exportSearchPdfBtn').on('click', async function() {
   const tbody = document.getElementById('searchResultsBody');
   const rows = tbody.querySelectorAll('tr');
   
@@ -384,8 +397,21 @@ $('#exportSearchPdfBtn').on('click', function() {
     format: 'a4'
   });
   
+  // تحميل الخط العربي من Google Fonts
+  try {
+    const fontUrl = 'https://fonts.gstatic.com/s/amiri/v27/J7aRNPd8CGxBHqUpSxM.woff2';
+    const response = await fetch(fontUrl);
+    const fontBuffer = await response.arrayBuffer();
+    const fontBase64 = btoa(String.fromCharCode(...new Uint8Array(fontBuffer)));
+    doc.addFileToVFS('Amiri-Regular.ttf', fontBase64);
+    doc.addFont('Amiri-Regular.ttf', 'Amiri', 'normal');
+    doc.setFont('Amiri');
+  } catch (error) {
+    console.error('فشل تحميل الخط العربي:', error);
+  }
+  
   doc.setFontSize(14);
-  doc.text('نتائج البحث في الكلمات', 14, 15);
+  doc.text('نتائج البحث في الكلمات', 280, 15, { align: 'right' });
   
   // استخراج البيانات من الجدول
   const tableData = [];
@@ -408,7 +434,8 @@ $('#exportSearchPdfBtn').on('click', function() {
     theme: 'grid',
     styles: { 
       fontSize: 10,
-      halign: 'center'
+      halign: 'center',
+      font: 'Amiri'
     },
     columnStyles: {
       0: { halign: 'right', cellWidth: 60 }
@@ -447,3 +474,4 @@ $('#exportSearchExcelBtn').on('click', function() {
   XLSX.utils.book_append_sheet(wb, ws, 'نتائج البحث');
   XLSX.writeFile(wb, 'search-results.xlsx');
 });
+
