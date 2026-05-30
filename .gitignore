@@ -1,1 +1,1 @@
-Nothing needs to be added to .gitignore since the changes only include source files (.js) and an HTML file, which are not build artifacts, dependencies, or temporary files that should be ignored.
+assets/js/jummal.js
