@@ -301,91 +301,6 @@ $('#clearAllBtn').on('click', clearAllHistory);
 // تحميل السجل عند البدء
 updateHistoryDisplay();
 
-// === تصدير سجل الجمل إلى PDF (باستخدام jsPDF وخط Cairo للعربية) ===
-
-// دالة لإعادة تشكيل النص العربي بشكل صحيح للعرض في jsPDF
-function reshapeArabicText(text) {
-  if (typeof ArabicReshaper !== 'undefined' && ArabicReshaper) {
-    try {
-      return ArabicReshaper.reshape(text);
-    } catch (e) {
-      console.warn('فشل إعادة تشكيل النص العربي:', e);
-    }
-  }
-  return text;
-}
-
-$('#exportHistoryPdfBtn').on('click', function () {
-  if (history.length === 0) {
-    alert('لا توجد سجلات لتصديرها');
-    return;
-  }
-  
-  // التحقق من وجود بيانات الخط
-  if (typeof window.cairoRegularBase64 === 'undefined' || !window.cairoRegularBase64) {
-    alert('خطأ: لم يتم تحميل خط Cairo. يرجى التأكد من تحميل ملف cairo-regular-base64.js');
-    return;
-  }
-  
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({
-    orientation: 'landscape',
-    unit: 'mm',
-    format: 'a4'
-  });
-
-  // تحميل خط Cairo من base64 (بدون prefix data:font/ttf;base64,)
-  const cairoRegular = window.cairoRegularBase64;
-  
-  try {
-    doc.addFileToVFS('Cairo-Regular.ttf', cairoRegular);
-    doc.addFont('Cairo-Regular.ttf', 'Cairo', 'normal');
-    doc.setFont('Cairo', 'normal');
-    doc.setR2L(true);
-  } catch (e) {
-    console.error('خطأ في تحميل الخط:', e);
-    alert('حدث خطأ أثناء تحميل الخط. يرجى التحقق من صحة بيانات الخط.');
-    return;
-  }
-
-  // تحضير البيانات للجدول مع إعادة تشكيل النصوص العربية
-  const tableBody = history.map(item => [
-      reshapeArabicText(item.text),
-      item.jummal.toString(),
-      item.abjadi.toString(),
-      item.iqghy.toString(),
-      item.triple.toString()
-    ]);
-
-  doc.autoTable({
-    head: [[reshapeArabicText('النص'), reshapeArabicText('الجمل'), reshapeArabicText('الأبجد'), reshapeArabicText('الأيقغ'), reshapeArabicText('الحساب الثلاثي')]],
-    body: tableBody,
-    theme: 'grid',
-    styles: {
-      font: 'Cairo',
-      fontSize: 10,
-      halign: 'right',
-      cellWidth: 'wrap'
-    },
-    headStyles: {
-      halign: 'center',
-      fillColor: [41, 128, 185]
-    },
-    margin: { top: 20 },
-    rtl: true
-  });
-
-  // إضافة عنوان - حساب العرض يدوياً لتجنب مشكلة تشويه النص العربي
-  doc.setFontSize(16);
-  const historyTitle = reshapeArabicText('سجل الحسابات');
-  const pageWidth = doc.internal.pageSize.getWidth();
-  const titleWidth = doc.getTextWidth(historyTitle);
-  const titleX = (pageWidth - titleWidth) / 2;
-  doc.text(historyTitle, titleX, 15);
-
-  doc.save('jummal-history.pdf');
-});
-
 $('#exportHistoryExcelBtn').on('click', function () {
   if (history.length === 0) {
     alert('لا توجد سجلات لتصديرها');
@@ -405,86 +320,6 @@ $('#exportHistoryExcelBtn').on('click', function () {
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'السجل');
   XLSX.writeFile(wb, 'jummal-history.xlsx');
-});
-
-// === تصدير نتائج البحث إلى PDF (باستخدام jsPDF وخط Cairo للعربية) ===
-$('#exportSearchPdfBtn').on('click', function () {
-  const tbody = document.getElementById('searchResultsBody');
-  const rows = tbody.querySelectorAll('tr');
-
-  if (rows.length === 0 || (rows.length === 1 && rows[0].querySelector('td[colspan]'))) {
-    alert('لا توجد نتائج بحث لتصديرها');
-    return;
-  }
-
-  // التحقق من وجود بيانات الخط
-  if (typeof window.cairoRegularBase64 === 'undefined' || !window.cairoRegularBase64) {
-    alert('خطأ: لم يتم تحميل خط Cairo. يرجى التأكد من تحميل ملف cairo-regular-base64.js');
-    return;
-  }
-
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({
-    orientation: 'landscape',
-    unit: 'mm',
-    format: 'a4'
-  });
-
-  // تحميل خط Cairo من base64 (بدون prefix data:font/ttf;base64,)
-  const cairoRegular = window.cairoRegularBase64;
-  
-  try {
-    doc.addFileToVFS('Cairo-Regular.ttf', cairoRegular);
-    doc.addFont('Cairo-Regular.ttf', 'Cairo', 'normal');
-    doc.setFont('Cairo', 'normal');
-    doc.setR2L(true);
-  } catch (e) {
-    console.error('خطأ في تحميل الخط:', e);
-    alert('حدث خطأ أثناء تحميل الخط. يرجى التحقق من صحة بيانات الخط.');
-    return;
-  }
-
-  // استخراج البيانات من الجدول
-  const tableBody = [];
-  rows.forEach(row => {
-    const cells = row.querySelectorAll('td');
-    if (cells.length >= 4) {
-      tableBody.push([
-        reshapeArabicText(cells[0].textContent.trim()),
-        cells[1].textContent.trim(),
-        cells[2].textContent.trim(),
-        cells[3].textContent.trim()
-      ]);
-    }
-  });
-
-  doc.autoTable({
-    head: [[reshapeArabicText('الكلمة'), reshapeArabicText('الجمل'), reshapeArabicText('الأبجد'), reshapeArabicText('الأيقغ')]],
-    body: tableBody,
-    theme: 'grid',
-    styles: {
-      font: 'Cairo',
-      fontSize: 10,
-      halign: 'right',
-      cellWidth: 'wrap'
-    },
-    headStyles: {
-      halign: 'center',
-      fillColor: [41, 128, 185]
-    },
-    margin: { top: 20 },
-    rtl: true
-  });
-
-  // إضافة عنوان - حساب العرض يدوياً لتجنب مشكلة تشويه النص العربي
-  doc.setFontSize(16);
-  const pageTitle = reshapeArabicText('نتائج البحث في الكلمات');
-  const pageWidth = doc.internal.pageSize.getWidth();
-  const titleWidth = doc.getTextWidth(pageTitle);
-  const titleX = (pageWidth - titleWidth) / 2;
-  doc.text(pageTitle, titleX, 15);
-
-  doc.save('search-results.pdf');
 });
 
 $('#exportSearchExcelBtn').on('click', function () {
@@ -515,4 +350,6 @@ $('#exportSearchExcelBtn').on('click', function () {
   XLSX.utils.book_append_sheet(wb, ws, 'نتائج البحث');
   XLSX.writeFile(wb, 'search-results.xlsx');
 });
+
+
 
