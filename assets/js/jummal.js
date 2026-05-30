@@ -362,11 +362,13 @@ $('#exportHistoryPdfBtn').on('click', function () {
     rtl: true
   });
 
-  // إضافة عنوان
+  // إضافة عنوان - حساب العرض يدوياً لتجنب مشكلة تشويه النص العربي
   doc.setFontSize(16);
   const historyTitle = 'سجل الحسابات';
   const pageWidth = doc.internal.pageSize.getWidth();
-  doc.text(historyTitle, pageWidth / 2, 15, { align: 'center' });
+  const titleWidth = doc.getTextWidth(historyTitle);
+  const titleX = (pageWidth - titleWidth) / 2;
+  doc.text(historyTitle, titleX, 15);
 
   doc.save('jummal-history.pdf');
 });
@@ -461,11 +463,13 @@ $('#exportSearchPdfBtn').on('click', function () {
     rtl: true
   });
 
-  // إضافة عنوان
+  // إضافة عنوان - حساب العرض يدوياً لتجنب مشكلة تشويه النص العربي
   doc.setFontSize(16);
   const pageTitle = 'نتائج البحث في الكلمات';
   const pageWidth = doc.internal.pageSize.getWidth();
-  doc.text(pageTitle, pageWidth / 2, 15, { align: 'center' });
+  const titleWidth = doc.getTextWidth(pageTitle);
+  const titleX = (pageWidth - titleWidth) / 2;
+  doc.text(pageTitle, titleX, 15);
 
   doc.save('search-results.pdf');
 });
