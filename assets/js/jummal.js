@@ -302,40 +302,40 @@ $('#clearAllBtn').on('click', clearAllHistory);
 updateHistoryDisplay();
 
 // === تصدير سجل الجمل إلى PDF (باستخدام pdfmake) و Excel ===
-$('#exportHistoryPdfBtn').on('click', function() {
+$('#exportHistoryPdfBtn').on('click', function () {
   if (history.length === 0) {
     alert('لا توجد سجلات لتصديرها');
     return;
   }
-  
+
   // التحقق من تحميل المكتبة
   if (typeof pdfMake === 'undefined') {
     alert('جاري تحميل مكتبة PDF، يرجى المحاولة مرة أخرى');
     return;
   }
-  
+
   // تعريف الخط العربي
   pdfMake.fonts = {
     Cairo: {
-      normal: 'https://cdn.jsdelivr.net/gh/googlefonts/cairo-font@master/fonts/Cairo-Regular.ttf',
-      bold: 'https://cdn.jsdelivr.net/gh/googlefonts/cairo-font@master/fonts/Cairo-Bold.ttf',
-      italics: 'https://cdn.jsdelivr.net/gh/googlefonts/cairo-font@master/fonts/Cairo-Italic.ttf',
-      bolditalics: 'https://cdn.jsdelivr.net/gh/googlefonts/cairo-font@master/fonts/Cairo-BoldItalic.ttf'
+      normal: '../assets/css/fonts/Cairo-Regular.ttf',
+      bold: '../assets/css/fonts/Cairo-Bold.ttf',
+      italics: '../assets/css/fonts/Cairo-Italic.ttf',
+      bolditalics: '../assets/css/fonts/Cairo-BoldItalic.ttf'
     }
   };
-  
+
   // تحضير البيانات للجدول
   const tableBody = history.map(item => [
-    item.text,
-    item.jummal.toString(),
-    item.abjadi.toString(),
-    item.iqghy.toString(),
-    item.triple.toString()
-  ]);
-  
+      item.text,
+      item.jummal.toString(),
+      item.abjadi.toString(),
+      item.iqghy.toString(),
+      item.triple.toString()
+    ]);
+
   const docDefinition = {
     content: [
-      { text: 'سجل الحسابات', style: 'header' },
+      {text: 'سجل الحسابات', style: 'header'},
       {
         table: {
           headerRows: 1,
@@ -362,25 +362,25 @@ $('#exportHistoryPdfBtn').on('click', function() {
       alignment: 'right'
     }
   };
-  
+
   pdfMake.createPdf(docDefinition).download('jummal-history.pdf');
 });
 
-$('#exportHistoryExcelBtn').on('click', function() {
+$('#exportHistoryExcelBtn').on('click', function () {
   if (history.length === 0) {
     alert('لا توجد سجلات لتصديرها');
     return;
   }
-  
+
   // تحضير البيانات
   const data = history.map(item => ({
-    'النص': item.text,
-    'الجمل': item.jummal,
-    'الأبجد': item.abjadi,
-    'الأيقغ': item.iqghy,
-    'الحساب الثلاثي': item.triple
-  }));
-  
+      'النص': item.text,
+      'الجمل': item.jummal,
+      'الأبجد': item.abjadi,
+      'الأيقغ': item.iqghy,
+      'الحساب الثلاثي': item.triple
+    }));
+
   const ws = XLSX.utils.json_to_sheet(data);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'السجل');
@@ -388,31 +388,31 @@ $('#exportHistoryExcelBtn').on('click', function() {
 });
 
 // === تصدير نتائج البحث إلى PDF (باستخدام pdfmake) و Excel ===
-$('#exportSearchPdfBtn').on('click', function() {
+$('#exportSearchPdfBtn').on('click', function () {
   const tbody = document.getElementById('searchResultsBody');
   const rows = tbody.querySelectorAll('tr');
-  
+
   if (rows.length === 0 || (rows.length === 1 && rows[0].querySelector('td[colspan]'))) {
     alert('لا توجد نتائج بحث لتصديرها');
     return;
   }
-  
+
   // التحقق من تحميل المكتبة
   if (typeof pdfMake === 'undefined') {
     alert('جاري تحميل مكتبة PDF، يرجى المحاولة مرة أخرى');
     return;
   }
-  
+
   // تعريف الخط العربي
   pdfMake.fonts = {
     Cairo: {
-      normal: 'https://cdn.jsdelivr.net/gh/googlefonts/cairo-font@master/fonts/Cairo-Regular.ttf',
-      bold: 'https://cdn.jsdelivr.net/gh/googlefonts/cairo-font@master/fonts/Cairo-Bold.ttf',
-      italics: 'https://cdn.jsdelivr.net/gh/googlefonts/cairo-font@master/fonts/Cairo-Italic.ttf',
-      bolditalics: 'https://cdn.jsdelivr.net/gh/googlefonts/cairo-font@master/fonts/Cairo-BoldItalic.ttf'
+      normal: '../assets/css/fonts/Cairo-Regular.ttf',
+      bold: '../assets/css/fonts/Cairo-Bold.ttf',
+      italics: '../assets/css/fonts/Cairo-Italic.ttf',
+      bolditalics: '../assets/css/fonts/Cairo-BoldItalic.ttf'
     }
   };
-  
+
   // استخراج البيانات من الجدول
   const tableBody = [];
   rows.forEach(row => {
@@ -426,10 +426,10 @@ $('#exportSearchPdfBtn').on('click', function() {
       ]);
     }
   });
-  
+
   const docDefinition = {
     content: [
-      { text: 'نتائج البحث في الكلمات', style: 'header' },
+      {text: 'نتائج البحث في الكلمات', style: 'header'},
       {
         table: {
           headerRows: 1,
@@ -456,19 +456,19 @@ $('#exportSearchPdfBtn').on('click', function() {
       alignment: 'right'
     }
   };
-  
+
   pdfMake.createPdf(docDefinition).download('search-results.pdf');
 });
 
-$('#exportSearchExcelBtn').on('click', function() {
+$('#exportSearchExcelBtn').on('click', function () {
   const tbody = document.getElementById('searchResultsBody');
   const rows = tbody.querySelectorAll('tr');
-  
+
   if (rows.length === 0 || (rows.length === 1 && rows[0].querySelector('td[colspan]'))) {
     alert('لا توجد نتائج بحث لتصديرها');
     return;
   }
-  
+
   // استخراج البيانات من الجدول
   const data = [];
   rows.forEach(row => {
@@ -482,7 +482,7 @@ $('#exportSearchExcelBtn').on('click', function() {
       });
     }
   });
-  
+
   const ws = XLSX.utils.json_to_sheet(data);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'نتائج البحث');
