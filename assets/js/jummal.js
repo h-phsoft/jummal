@@ -316,7 +316,12 @@ $('#exportHistoryPdfBtn').on('click', function () {
   
   // تعريف الخط العربي من الملف المحلي
   pdfMake.fonts = {
-    Cairo: cairoFonts
+    Cairo: {
+      normal: window.cairoFonts.normal,
+      bold: window.cairoFonts.bold,
+      italics: window.cairoFonts.italics,
+      bolditalics: window.cairoFonts.bolditalics
+    }
   };
 
   // تحضير البيانات للجدول
@@ -400,7 +405,12 @@ $('#exportSearchPdfBtn').on('click', function () {
   
   // تعريف الخط العربي من الملف المحلي
   pdfMake.fonts = {
-    Cairo: cairoFonts
+    Cairo: {
+      normal: window.cairoFonts.normal,
+      bold: window.cairoFonts.bold,
+      italics: window.cairoFonts.italics,
+      bolditalics: window.cairoFonts.bolditalics
+    }
   };
 
   // استخراج البيانات من الجدول
