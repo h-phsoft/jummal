@@ -1,1 +1,9 @@
-assets/js/jummal.js
+```
+# Font files and build artifacts
+*.ttf
+*.js
+
+# Build directories
+build/
+dist/
+```

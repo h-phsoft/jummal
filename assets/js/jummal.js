@@ -313,15 +313,10 @@ $('#exportHistoryPdfBtn').on('click', function () {
     alert('جاري تحميل مكتبة PDF، يرجى المحاولة مرة أخرى');
     return;
   }
-
-  // تعريف الخط العربي
+  
+  // تعريف الخط العربي من الملف المحلي
   pdfMake.fonts = {
-    Cairo: {
-      normal: '../assets/css/fonts/Cairo-Regular.ttf',
-      bold: '../assets/css/fonts/Cairo-Bold.ttf',
-      italics: '../assets/css/fonts/Cairo-Italic.ttf',
-      bolditalics: '../assets/css/fonts/Cairo-BoldItalic.ttf'
-    }
+    Cairo: cairoFonts
   };
 
   // تحضير البيانات للجدول
@@ -402,15 +397,10 @@ $('#exportSearchPdfBtn').on('click', function () {
     alert('جاري تحميل مكتبة PDF، يرجى المحاولة مرة أخرى');
     return;
   }
-
-  // تعريف الخط العربي
+  
+  // تعريف الخط العربي من الملف المحلي
   pdfMake.fonts = {
-    Cairo: {
-      normal: '../assets/css/fonts/Cairo-Regular.ttf',
-      bold: '../assets/css/fonts/Cairo-Bold.ttf',
-      italics: '../assets/css/fonts/Cairo-Italic.ttf',
-      bolditalics: '../assets/css/fonts/Cairo-BoldItalic.ttf'
-    }
+    Cairo: cairoFonts
   };
 
   // استخراج البيانات من الجدول
