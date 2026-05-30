@@ -308,8 +308,14 @@ $('#exportHistoryPdfBtn').on('click', function() {
     return;
   }
   
+  // التحقق من تحميل المكتبة
+  if (typeof pdfMake === 'undefined') {
+    alert('جاري تحميل مكتبة PDF، يرجى المحاولة مرة أخرى');
+    return;
+  }
+  
   // تعريف الخط العربي
-  pdfmake.fonts = {
+  pdfMake.fonts = {
     Cairo: {
       normal: 'https://cdn.jsdelivr.net/gh/googlefonts/cairo-font@master/fonts/Cairo-Regular.ttf',
       bold: 'https://cdn.jsdelivr.net/gh/googlefonts/cairo-font@master/fonts/Cairo-Bold.ttf',
@@ -391,8 +397,14 @@ $('#exportSearchPdfBtn').on('click', function() {
     return;
   }
   
+  // التحقق من تحميل المكتبة
+  if (typeof pdfMake === 'undefined') {
+    alert('جاري تحميل مكتبة PDF، يرجى المحاولة مرة أخرى');
+    return;
+  }
+  
   // تعريف الخط العربي
-  pdfmake.fonts = {
+  pdfMake.fonts = {
     Cairo: {
       normal: 'https://cdn.jsdelivr.net/gh/googlefonts/cairo-font@master/fonts/Cairo-Regular.ttf',
       bold: 'https://cdn.jsdelivr.net/gh/googlefonts/cairo-font@master/fonts/Cairo-Bold.ttf',
