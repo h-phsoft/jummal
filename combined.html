@@ -77,9 +77,15 @@
           <div class="row">
             <div class="col-12">
               <div class="glass-card h-100">
-                <h4 class="text-center mb-3 fw-bold">السجل</h4>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h4 class="text-center mb-0 fw-bold">السجل</h4>
+                  <div>
+                    <button id="exportHistoryPdfBtn" class="btn btn-sm btn-outline-danger me-2">📄 PDF</button>
+                    <button id="exportHistoryExcelBtn" class="btn btn-sm btn-outline-success">📊 Excel</button>
+                  </div>
+                </div>
                 <div style="max-height: 25vh; overflow-y: auto;">
-                  <table class="history-table">
+                  <table class="history-table" id="historyTable">
                     <thead>
                       <tr>
                         <th>النص</th>
@@ -102,7 +108,13 @@
           <div class="row g-4 mt-2">
             <div class="col-12">
               <div class="glass-card">
-                <h5 class="mb-3 fw-bold">البحث في الكلمات</h5>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h5 class="mb-0 fw-bold">البحث في الكلمات</h5>
+                  <div>
+                    <button id="exportSearchPdfBtn" class="btn btn-sm btn-outline-danger me-2">📄 PDF</button>
+                    <button id="exportSearchExcelBtn" class="btn btn-sm btn-outline-success">📊 Excel</button>
+                  </div>
+                </div>
 
                 <!-- Checkboxes للبحث -->
                 <div class="mb-3">
@@ -122,7 +134,7 @@
 
                 <!-- نتيجة البحث -->
                 <div id="matched-numbers" style="max-height: 30vh; overflow-y: auto;">
-                  <table class="history-table">
+                  <table class="history-table" id="searchResultsTable">
                     <thead>
                       <tr id="search-results-header">
                         <th>الكلمة <span id="totalCount"></span></th>
@@ -146,6 +158,11 @@
     <!-- jQuery + Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jsPDF for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <!-- SheetJS for Excel export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="assets/js/jummal.js"></script>
     <script src="assets/js/magicsquares.js"></script>
     <script src="assets/js/combined-search.js"></script>
