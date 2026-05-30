@@ -301,65 +301,31 @@ $('#clearAllBtn').on('click', clearAllHistory);
 // تحميل السجل عند البدء
 updateHistoryDisplay();
 
-// === تصدير سجل الجمل إلى PDF و Excel ===
-$('#exportHistoryPdfBtn').on('click', async function() {
+// === تصدير سجل الجمل إلى PDF (باستخدام html2canvas) و Excel ===
+$('#exportHistoryPdfBtn').on('click', function() {
   if (history.length === 0) {
     alert('لا توجد سجلات لتصديرها');
     return;
   }
   
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({
-    orientation: 'landscape',
-    unit: 'mm',
-    format: 'a4'
+  const tableElement = document.getElementById('historyTable');
+  
+  // إنشاء كانفاس من الجدول
+  html2canvas(tableElement, {
+    scale: 2,
+    backgroundColor: '#ffffff',
+    logging: false,
+    useCORS: true
+  }).then(canvas => {
+    // تحويل الكانفاس إلى صورة
+    const imgData = canvas.toDataURL('image/png');
+    
+    // إنشاء رابط تحميل
+    const link = document.createElement('a');
+    link.href = imgData;
+    link.download = 'jummal-history.png';
+    link.click();
   });
-  
-  // استخدام خط Amiri العربي من CDN يدعم CORS
-  try {
-    const fontUrl = 'https://cdn.jsdelivr.net/npm/@fontsource/amiri@5.0.0/files/amiri-arabic-400-normal.woff2';
-    const response = await fetch(fontUrl);
-    if (!response.ok) throw new Error('فشل تحميل الخط');
-    const fontBuffer = await response.arrayBuffer();
-    const fontBase64 = btoa(String.fromCharCode(...new Uint8Array(fontBuffer)));
-    doc.addFileToVFS('Amiri-Regular.ttf', fontBase64);
-    doc.addFont('Amiri-Regular.ttf', 'Amiri', 'normal');
-    doc.setFont('Amiri');
-  } catch (error) {
-    console.error('فشل تحميل الخط العربي:', error);
-    // استخدام الخط الافتراضي مع تحذير
-    alert('تحذير: قد لا تظهر الأحرف العربية بشكل صحيح. تأكد من اتصالك بالإنترنت.');
-  }
-  
-  doc.setFontSize(14);
-  doc.text('سجل حساب الجمل', 280, 15, { align: 'right' });
-  
-  // تحضير البيانات للجدول
-  const tableData = history.map(item => [
-    item.text,
-    item.jummal.toLocaleString(),
-    item.abjadi.toLocaleString(),
-    item.iqghy.toLocaleString(),
-    item.triple.toLocaleString()
-  ]);
-  
-  doc.autoTable({
-    startY: 20,
-    head: [['النص', 'الجمل', 'الأبجد', 'الأيقغ', 'الحساب الثلاثي']],
-    body: tableData,
-    theme: 'grid',
-    styles: { 
-      fontSize: 10,
-      halign: 'center',
-      font: 'Amiri'
-    },
-    columnStyles: {
-      0: { halign: 'right', cellWidth: 60 }
-    },
-    direction: 'rtl'
-  });
-  
-  doc.save('jummal-history.pdf');
 });
 
 $('#exportHistoryExcelBtn').on('click', function() {
@@ -383,8 +349,8 @@ $('#exportHistoryExcelBtn').on('click', function() {
   XLSX.writeFile(wb, 'jummal-history.xlsx');
 });
 
-// === تصدير نتائج البحث إلى PDF و Excel ===
-$('#exportSearchPdfBtn').on('click', async function() {
+// === تصدير نتائج البحث إلى PDF (باستخدام html2canvas) و Excel ===
+$('#exportSearchPdfBtn').on('click', function() {
   const tbody = document.getElementById('searchResultsBody');
   const rows = tbody.querySelectorAll('tr');
   
@@ -393,63 +359,24 @@ $('#exportSearchPdfBtn').on('click', async function() {
     return;
   }
   
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({
-    orientation: 'landscape',
-    unit: 'mm',
-    format: 'a4'
+  const tableElement = document.getElementById('searchResultsTable');
+  
+  // إنشاء كانفاس من الجدول
+  html2canvas(tableElement, {
+    scale: 2,
+    backgroundColor: '#ffffff',
+    logging: false,
+    useCORS: true
+  }).then(canvas => {
+    // تحويل الكانفاس إلى صورة
+    const imgData = canvas.toDataURL('image/png');
+    
+    // إنشاء رابط تحميل
+    const link = document.createElement('a');
+    link.href = imgData;
+    link.download = 'search-results.png';
+    link.click();
   });
-  
-  // استخدام خط Amiri العربي من CDN يدعم CORS
-  try {
-    const fontUrl = 'https://cdn.jsdelivr.net/npm/@fontsource/amiri@5.0.0/files/amiri-arabic-400-normal.woff2';
-    const response = await fetch(fontUrl);
-    if (!response.ok) throw new Error('فشل تحميل الخط');
-    const fontBuffer = await response.arrayBuffer();
-    const fontBase64 = btoa(String.fromCharCode(...new Uint8Array(fontBuffer)));
-    doc.addFileToVFS('Amiri-Regular.ttf', fontBase64);
-    doc.addFont('Amiri-Regular.ttf', 'Amiri', 'normal');
-    doc.setFont('Amiri');
-  } catch (error) {
-    console.error('فشل تحميل الخط العربي:', error);
-    // استخدام الخط الافتراضي مع تحذير
-    alert('تحذير: قد لا تظهر الأحرف العربية بشكل صحيح. تأكد من اتصالك بالإنترنت.');
-  }
-  
-  doc.setFontSize(14);
-  doc.text('نتائج البحث في الكلمات', 280, 15, { align: 'right' });
-  
-  // استخراج البيانات من الجدول
-  const tableData = [];
-  rows.forEach(row => {
-    const cells = row.querySelectorAll('td');
-    if (cells.length >= 4) {
-      tableData.push([
-        cells[0].textContent.trim(),
-        cells[1].textContent.trim(),
-        cells[2].textContent.trim(),
-        cells[3].textContent.trim()
-      ]);
-    }
-  });
-  
-  doc.autoTable({
-    startY: 20,
-    head: [['الكلمة', 'الجمل', 'الأبجد', 'الأيقغ']],
-    body: tableData,
-    theme: 'grid',
-    styles: { 
-      fontSize: 10,
-      halign: 'center',
-      font: 'Amiri'
-    },
-    columnStyles: {
-      0: { halign: 'right', cellWidth: 60 }
-    },
-    direction: 'rtl'
-  });
-  
-  doc.save('search-results.pdf');
 });
 
 $('#exportSearchExcelBtn').on('click', function() {
