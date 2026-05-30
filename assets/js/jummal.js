@@ -301,7 +301,7 @@ $('#clearAllBtn').on('click', clearAllHistory);
 // تحميل السجل عند البدء
 updateHistoryDisplay();
 
-// === تصدير سجل الجمل إلى PDF (باستخدام jsPDF) و Excel ===
+// === تصدير سجل الجمل إلى PDF (باستخدام jsPDF وخط Cairo للعربية) ===
 $('#exportHistoryPdfBtn').on('click', function () {
   if (history.length === 0) {
     alert('لا توجد سجلات لتصديرها');
@@ -314,6 +314,13 @@ $('#exportHistoryPdfBtn').on('click', function () {
     unit: 'mm',
     format: 'a4'
   });
+
+  // تحميل خط Cairo من base64
+  const cairoRegular = 'data:font/ttf;base64,' + window.cairoRegularBase64;
+  
+  doc.addFileToVFS('Cairo-Regular.ttf', cairoRegular);
+  doc.addFont('Cairo-Regular.ttf', 'Cairo', 'normal');
+  doc.setFont('Cairo');
 
   // تحضير البيانات للجدول
   const tableBody = history.map(item => [
@@ -329,7 +336,7 @@ $('#exportHistoryPdfBtn').on('click', function () {
     body: tableBody,
     theme: 'grid',
     styles: {
-      font: 'arial',
+      font: 'Cairo',
       fontSize: 10,
       halign: 'right',
       rtl: true
@@ -369,7 +376,7 @@ $('#exportHistoryExcelBtn').on('click', function () {
   XLSX.writeFile(wb, 'jummal-history.xlsx');
 });
 
-// === تصدير نتائج البحث إلى PDF (باستخدام jsPDF) و Excel ===
+// === تصدير نتائج البحث إلى PDF (باستخدام jsPDF وخط Cairo للعربية) ===
 $('#exportSearchPdfBtn').on('click', function () {
   const tbody = document.getElementById('searchResultsBody');
   const rows = tbody.querySelectorAll('tr');
@@ -385,6 +392,13 @@ $('#exportSearchPdfBtn').on('click', function () {
     unit: 'mm',
     format: 'a4'
   });
+
+  // تحميل خط Cairo من base64
+  const cairoRegular = 'data:font/ttf;base64,' + window.cairoRegularBase64;
+  
+  doc.addFileToVFS('Cairo-Regular.ttf', cairoRegular);
+  doc.addFont('Cairo-Regular.ttf', 'Cairo', 'normal');
+  doc.setFont('Cairo');
 
   // استخراج البيانات من الجدول
   const tableBody = [];
@@ -405,7 +419,7 @@ $('#exportSearchPdfBtn').on('click', function () {
     body: tableBody,
     theme: 'grid',
     styles: {
-      font: 'arial',
+      font: 'Cairo',
       fontSize: 10,
       halign: 'right',
       rtl: true
