@@ -87,7 +87,7 @@ $(document).ready(function () {
     } else {
       $indicator.css('background-color', 'red');
     }
-    
+
     // إظهار المؤشر دائمًا بعد الحساب
     $indicator.show();
 
@@ -140,7 +140,7 @@ $(document).ready(function () {
     });
 
     $('#magicResult').removeClass('d-none');
-    
+
     // ✅ إظهار زر الدليل
     $('#toggleGuideBtn').show();
   }
@@ -160,10 +160,10 @@ $(document).ready(function () {
     }
 
     const result = generateMagicSquare(inputNumber);
-    
+
     // إظهار الجدول الكامل مع زر الدليل
     renderMagicSquare(result.square, result.keyVal, result.ghalaqVal, result.wufuq, result.khanaatAlDhal3, result.al3Adl, result.alAs, result.alMasaha, result.alDhabeet, result.alGhaya, result.alAsl, result.fraction);
-    
+
     // التأكد من إظهار زر الدليل
     $('#toggleGuideBtn').show();
   });
