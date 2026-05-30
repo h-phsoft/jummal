@@ -300,3 +300,150 @@ $('#clearAllBtn').on('click', clearAllHistory);
 
 // تحميل السجل عند البدء
 updateHistoryDisplay();
+
+// === تصدير سجل الجمل إلى PDF و Excel ===
+$('#exportHistoryPdfBtn').on('click', function() {
+  if (history.length === 0) {
+    alert('لا توجد سجلات لتصديرها');
+    return;
+  }
+  
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({
+    orientation: 'landscape',
+    unit: 'mm',
+    format: 'a4'
+  });
+  
+  // إعداد الخط العربي (استخدام خط افتراضي مع دعم RTL)
+  doc.setFontSize(14);
+  doc.text('سجل حساب الجمل', 14, 15);
+  
+  // تحضير البيانات للجدول
+  const tableData = history.map(item => [
+    item.text,
+    item.jummal.toLocaleString(),
+    item.abjadi.toLocaleString(),
+    item.iqghy.toLocaleString(),
+    item.triple.toLocaleString()
+  ]);
+  
+  doc.autoTable({
+    startY: 20,
+    head: [['النص', 'الجمل', 'الأبجد', 'الأيقغ', 'الحساب الثلاثي']],
+    body: tableData,
+    theme: 'grid',
+    styles: { 
+      fontSize: 10,
+      halign: 'center'
+    },
+    columnStyles: {
+      0: { halign: 'right', cellWidth: 60 }
+    },
+    direction: 'rtl'
+  });
+  
+  doc.save('jummal-history.pdf');
+});
+
+$('#exportHistoryExcelBtn').on('click', function() {
+  if (history.length === 0) {
+    alert('لا توجد سجلات لتصديرها');
+    return;
+  }
+  
+  // تحضير البيانات
+  const data = history.map(item => ({
+    'النص': item.text,
+    'الجمل': item.jummal,
+    'الأبجد': item.abjadi,
+    'الأيقغ': item.iqghy,
+    'الحساب الثلاثي': item.triple
+  }));
+  
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'السجل');
+  XLSX.writeFile(wb, 'jummal-history.xlsx');
+});
+
+// === تصدير نتائج البحث إلى PDF و Excel ===
+$('#exportSearchPdfBtn').on('click', function() {
+  const tbody = document.getElementById('searchResultsBody');
+  const rows = tbody.querySelectorAll('tr');
+  
+  if (rows.length === 0 || (rows.length === 1 && rows[0].querySelector('td[colspan]'))) {
+    alert('لا توجد نتائج بحث لتصديرها');
+    return;
+  }
+  
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({
+    orientation: 'landscape',
+    unit: 'mm',
+    format: 'a4'
+  });
+  
+  doc.setFontSize(14);
+  doc.text('نتائج البحث في الكلمات', 14, 15);
+  
+  // استخراج البيانات من الجدول
+  const tableData = [];
+  rows.forEach(row => {
+    const cells = row.querySelectorAll('td');
+    if (cells.length >= 4) {
+      tableData.push([
+        cells[0].textContent.trim(),
+        cells[1].textContent.trim(),
+        cells[2].textContent.trim(),
+        cells[3].textContent.trim()
+      ]);
+    }
+  });
+  
+  doc.autoTable({
+    startY: 20,
+    head: [['الكلمة', 'الجمل', 'الأبجد', 'الأيقغ']],
+    body: tableData,
+    theme: 'grid',
+    styles: { 
+      fontSize: 10,
+      halign: 'center'
+    },
+    columnStyles: {
+      0: { halign: 'right', cellWidth: 60 }
+    },
+    direction: 'rtl'
+  });
+  
+  doc.save('search-results.pdf');
+});
+
+$('#exportSearchExcelBtn').on('click', function() {
+  const tbody = document.getElementById('searchResultsBody');
+  const rows = tbody.querySelectorAll('tr');
+  
+  if (rows.length === 0 || (rows.length === 1 && rows[0].querySelector('td[colspan]'))) {
+    alert('لا توجد نتائج بحث لتصديرها');
+    return;
+  }
+  
+  // استخراج البيانات من الجدول
+  const data = [];
+  rows.forEach(row => {
+    const cells = row.querySelectorAll('td');
+    if (cells.length >= 4) {
+      data.push({
+        'الكلمة': cells[0].textContent.trim(),
+        'الجمل': cells[1].textContent.trim(),
+        'الأبجد': cells[2].textContent.trim(),
+        'الأيقغ': cells[3].textContent.trim()
+      });
+    }
+  });
+  
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'نتائج البحث');
+  XLSX.writeFile(wb, 'search-results.xlsx');
+});
