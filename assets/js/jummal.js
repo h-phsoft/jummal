@@ -327,7 +327,8 @@ $('#exportHistoryPdfBtn').on('click', function () {
   try {
     doc.addFileToVFS('Cairo-Regular.ttf', cairoRegular);
     doc.addFont('Cairo-Regular.ttf', 'Cairo', 'normal');
-    doc.setFont('Cairo');
+    doc.setFont('Cairo', 'normal');
+    doc.setR2L(true);
   } catch (e) {
     console.error('خطأ في تحميل الخط:', e);
     alert('حدث خطأ أثناء تحميل الخط. يرجى التحقق من صحة بيانات الخط.');
@@ -351,22 +352,21 @@ $('#exportHistoryPdfBtn').on('click', function () {
       font: 'Cairo',
       fontSize: 10,
       halign: 'right',
-      rtl: true
+      cellWidth: 'wrap'
     },
     headStyles: {
       halign: 'center',
       fillColor: [41, 128, 185]
     },
-    margin: { top: 20 }
+    margin: { top: 20 },
+    rtl: true
   });
 
   // إضافة عنوان
   doc.setFontSize(16);
   const historyTitle = 'سجل الحسابات';
   const pageWidth = doc.internal.pageSize.getWidth();
-  const textWidth = doc.getTextWidth(historyTitle);
-  const xPosition = (pageWidth - textWidth) / 2;
-  doc.text(historyTitle, xPosition, 15, { align: 'left' });
+  doc.text(historyTitle, pageWidth / 2, 15, { align: 'center' });
 
   doc.save('jummal-history.pdf');
 });
@@ -421,7 +421,8 @@ $('#exportSearchPdfBtn').on('click', function () {
   try {
     doc.addFileToVFS('Cairo-Regular.ttf', cairoRegular);
     doc.addFont('Cairo-Regular.ttf', 'Cairo', 'normal');
-    doc.setFont('Cairo');
+    doc.setFont('Cairo', 'normal');
+    doc.setR2L(true);
   } catch (e) {
     console.error('خطأ في تحميل الخط:', e);
     alert('حدث خطأ أثناء تحميل الخط. يرجى التحقق من صحة بيانات الخط.');
@@ -450,22 +451,21 @@ $('#exportSearchPdfBtn').on('click', function () {
       font: 'Cairo',
       fontSize: 10,
       halign: 'right',
-      rtl: true
+      cellWidth: 'wrap'
     },
     headStyles: {
       halign: 'center',
       fillColor: [41, 128, 185]
     },
-    margin: { top: 20 }
+    margin: { top: 20 },
+    rtl: true
   });
 
   // إضافة عنوان
   doc.setFontSize(16);
   const pageTitle = 'نتائج البحث في الكلمات';
   const pageWidth = doc.internal.pageSize.getWidth();
-  const textWidth = doc.getTextWidth(pageTitle);
-  const xPosition = (pageWidth - textWidth) / 2;
-  doc.text(pageTitle, xPosition, 15, { align: 'left' });
+  doc.text(pageTitle, pageWidth / 2, 15, { align: 'center' });
 
   doc.save('search-results.pdf');
 });
