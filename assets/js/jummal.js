@@ -315,8 +315,8 @@ $('#exportHistoryPdfBtn').on('click', function () {
     format: 'a4'
   });
 
-  // تحميل خط Cairo من base64
-  const cairoRegular = 'data:font/ttf;base64,' + window.cairoRegularBase64;
+  // تحميل خط Cairo من base64 (بدون prefix data:font/ttf;base64,)
+  const cairoRegular = window.cairoRegularBase64;
   
   doc.addFileToVFS('Cairo-Regular.ttf', cairoRegular);
   doc.addFont('Cairo-Regular.ttf', 'Cairo', 'normal');
@@ -393,8 +393,8 @@ $('#exportSearchPdfBtn').on('click', function () {
     format: 'a4'
   });
 
-  // تحميل خط Cairo من base64
-  const cairoRegular = 'data:font/ttf;base64,' + window.cairoRegularBase64;
+  // تحميل خط Cairo من base64 (بدون prefix data:font/ttf;base64,)
+  const cairoRegular = window.cairoRegularBase64;
   
   doc.addFileToVFS('Cairo-Regular.ttf', cairoRegular);
   doc.addFont('Cairo-Regular.ttf', 'Cairo', 'normal');
