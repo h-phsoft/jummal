@@ -301,31 +301,63 @@ $('#clearAllBtn').on('click', clearAllHistory);
 // تحميل السجل عند البدء
 updateHistoryDisplay();
 
-// === تصدير سجل الجمل إلى PDF (باستخدام html2canvas) و Excel ===
+// === تصدير سجل الجمل إلى PDF (باستخدام pdfmake) و Excel ===
 $('#exportHistoryPdfBtn').on('click', function() {
   if (history.length === 0) {
     alert('لا توجد سجلات لتصديرها');
     return;
   }
   
-  const tableElement = document.getElementById('historyTable');
+  // تعريف الخط العربي
+  pdfmake.fonts = {
+    Cairo: {
+      normal: 'https://cdn.jsdelivr.net/gh/googlefonts/cairo-font@master/fonts/Cairo-Regular.ttf',
+      bold: 'https://cdn.jsdelivr.net/gh/googlefonts/cairo-font@master/fonts/Cairo-Bold.ttf',
+      italics: 'https://cdn.jsdelivr.net/gh/googlefonts/cairo-font@master/fonts/Cairo-Italic.ttf',
+      bolditalics: 'https://cdn.jsdelivr.net/gh/googlefonts/cairo-font@master/fonts/Cairo-BoldItalic.ttf'
+    }
+  };
   
-  // إنشاء كانفاس من الجدول
-  html2canvas(tableElement, {
-    scale: 2,
-    backgroundColor: '#ffffff',
-    logging: false,
-    useCORS: true
-  }).then(canvas => {
-    // تحويل الكانفاس إلى صورة
-    const imgData = canvas.toDataURL('image/png');
-    
-    // إنشاء رابط تحميل
-    const link = document.createElement('a');
-    link.href = imgData;
-    link.download = 'jummal-history.png';
-    link.click();
-  });
+  // تحضير البيانات للجدول
+  const tableBody = history.map(item => [
+    item.text,
+    item.jummal.toString(),
+    item.abjadi.toString(),
+    item.iqghy.toString(),
+    item.triple.toString()
+  ]);
+  
+  const docDefinition = {
+    content: [
+      { text: 'سجل الحسابات', style: 'header' },
+      {
+        table: {
+          headerRows: 1,
+          widths: ['*', 'auto', 'auto', 'auto', 'auto'],
+          body: [
+            ['النص', 'الجمل', 'الأبجد', 'الأيقغ', 'الحساب الثلاثي'],
+            ...tableBody
+          ]
+        },
+        layout: 'lightHorizontalLines'
+      }
+    ],
+    styles: {
+      header: {
+        fontSize: 18,
+        bold: true,
+        alignment: 'center',
+        margin: [0, 0, 0, 10],
+        font: 'Cairo'
+      }
+    },
+    defaultStyle: {
+      font: 'Cairo',
+      alignment: 'right'
+    }
+  };
+  
+  pdfMake.createPdf(docDefinition).download('jummal-history.pdf');
 });
 
 $('#exportHistoryExcelBtn').on('click', function() {
@@ -349,7 +381,7 @@ $('#exportHistoryExcelBtn').on('click', function() {
   XLSX.writeFile(wb, 'jummal-history.xlsx');
 });
 
-// === تصدير نتائج البحث إلى PDF (باستخدام html2canvas) و Excel ===
+// === تصدير نتائج البحث إلى PDF (باستخدام pdfmake) و Excel ===
 $('#exportSearchPdfBtn').on('click', function() {
   const tbody = document.getElementById('searchResultsBody');
   const rows = tbody.querySelectorAll('tr');
@@ -359,24 +391,61 @@ $('#exportSearchPdfBtn').on('click', function() {
     return;
   }
   
-  const tableElement = document.getElementById('searchResultsTable');
+  // تعريف الخط العربي
+  pdfmake.fonts = {
+    Cairo: {
+      normal: 'https://cdn.jsdelivr.net/gh/googlefonts/cairo-font@master/fonts/Cairo-Regular.ttf',
+      bold: 'https://cdn.jsdelivr.net/gh/googlefonts/cairo-font@master/fonts/Cairo-Bold.ttf',
+      italics: 'https://cdn.jsdelivr.net/gh/googlefonts/cairo-font@master/fonts/Cairo-Italic.ttf',
+      bolditalics: 'https://cdn.jsdelivr.net/gh/googlefonts/cairo-font@master/fonts/Cairo-BoldItalic.ttf'
+    }
+  };
   
-  // إنشاء كانفاس من الجدول
-  html2canvas(tableElement, {
-    scale: 2,
-    backgroundColor: '#ffffff',
-    logging: false,
-    useCORS: true
-  }).then(canvas => {
-    // تحويل الكانفاس إلى صورة
-    const imgData = canvas.toDataURL('image/png');
-    
-    // إنشاء رابط تحميل
-    const link = document.createElement('a');
-    link.href = imgData;
-    link.download = 'search-results.png';
-    link.click();
+  // استخراج البيانات من الجدول
+  const tableBody = [];
+  rows.forEach(row => {
+    const cells = row.querySelectorAll('td');
+    if (cells.length >= 4) {
+      tableBody.push([
+        cells[0].textContent.trim(),
+        cells[1].textContent.trim(),
+        cells[2].textContent.trim(),
+        cells[3].textContent.trim()
+      ]);
+    }
   });
+  
+  const docDefinition = {
+    content: [
+      { text: 'نتائج البحث في الكلمات', style: 'header' },
+      {
+        table: {
+          headerRows: 1,
+          widths: ['*', 'auto', 'auto', 'auto'],
+          body: [
+            ['الكلمة', 'الجمل', 'الأبجد', 'الأيقغ'],
+            ...tableBody
+          ]
+        },
+        layout: 'lightHorizontalLines'
+      }
+    ],
+    styles: {
+      header: {
+        fontSize: 18,
+        bold: true,
+        alignment: 'center',
+        margin: [0, 0, 0, 10],
+        font: 'Cairo'
+      }
+    },
+    defaultStyle: {
+      font: 'Cairo',
+      alignment: 'right'
+    }
+  };
+  
+  pdfMake.createPdf(docDefinition).download('search-results.pdf');
 });
 
 $('#exportSearchExcelBtn').on('click', function() {
