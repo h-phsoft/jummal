@@ -315,9 +315,9 @@ $('#exportHistoryPdfBtn').on('click', async function() {
     format: 'a4'
   });
   
-  // استخدام خط Amiri من CDN يدعم CORS
+  // استخدام خط Amiri العربي من CDN يدعم CORS
   try {
-    const fontUrl = 'https://cdn.jsdelivr.net/npm/@fontsource/amiri@5.0.0/files/amiri-latin-400-normal.woff2';
+    const fontUrl = 'https://cdn.jsdelivr.net/npm/@fontsource/amiri@5.0.0/files/amiri-arabic-400-normal.woff2';
     const response = await fetch(fontUrl);
     if (!response.ok) throw new Error('فشل تحميل الخط');
     const fontBuffer = await response.arrayBuffer();
@@ -400,9 +400,9 @@ $('#exportSearchPdfBtn').on('click', async function() {
     format: 'a4'
   });
   
-  // استخدام خط Amiri من CDN يدعم CORS
+  // استخدام خط Amiri العربي من CDN يدعم CORS
   try {
-    const fontUrl = 'https://cdn.jsdelivr.net/npm/@fontsource/amiri@5.0.0/files/amiri-latin-400-normal.woff2';
+    const fontUrl = 'https://cdn.jsdelivr.net/npm/@fontsource/amiri@5.0.0/files/amiri-arabic-400-normal.woff2';
     const response = await fetch(fontUrl);
     if (!response.ok) throw new Error('فشل تحميل الخط');
     const fontBuffer = await response.arrayBuffer();
