@@ -1,1 +1,1 @@
-assets/js/jummal.js
+Nothing should be ignored since the changes only include HTML files (source code), which are not build artifacts, dependencies, or temporary files.
