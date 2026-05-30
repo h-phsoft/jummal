@@ -302,6 +302,19 @@ $('#clearAllBtn').on('click', clearAllHistory);
 updateHistoryDisplay();
 
 // === تصدير سجل الجمل إلى PDF (باستخدام jsPDF وخط Cairo للعربية) ===
+
+// دالة لإعادة تشكيل النص العربي بشكل صحيح للعرض في jsPDF
+function reshapeArabicText(text) {
+  if (typeof ArabicReshaper !== 'undefined' && ArabicReshaper) {
+    try {
+      return ArabicReshaper.reshape(text);
+    } catch (e) {
+      console.warn('فشل إعادة تشكيل النص العربي:', e);
+    }
+  }
+  return text;
+}
+
 $('#exportHistoryPdfBtn').on('click', function () {
   if (history.length === 0) {
     alert('لا توجد سجلات لتصديرها');
@@ -335,9 +348,9 @@ $('#exportHistoryPdfBtn').on('click', function () {
     return;
   }
 
-  // تحضير البيانات للجدول
+  // تحضير البيانات للجدول مع إعادة تشكيل النصوص العربية
   const tableBody = history.map(item => [
-      item.text,
+      reshapeArabicText(item.text),
       item.jummal.toString(),
       item.abjadi.toString(),
       item.iqghy.toString(),
@@ -345,7 +358,7 @@ $('#exportHistoryPdfBtn').on('click', function () {
     ]);
 
   doc.autoTable({
-    head: [['النص', 'الجمل', 'الأبجد', 'الأيقغ', 'الحساب الثلاثي']],
+    head: [[reshapeArabicText('النص'), reshapeArabicText('الجمل'), reshapeArabicText('الأبجد'), reshapeArabicText('الأيقغ'), reshapeArabicText('الحساب الثلاثي')]],
     body: tableBody,
     theme: 'grid',
     styles: {
@@ -364,7 +377,7 @@ $('#exportHistoryPdfBtn').on('click', function () {
 
   // إضافة عنوان - حساب العرض يدوياً لتجنب مشكلة تشويه النص العربي
   doc.setFontSize(16);
-  const historyTitle = 'سجل الحسابات';
+  const historyTitle = reshapeArabicText('سجل الحسابات');
   const pageWidth = doc.internal.pageSize.getWidth();
   const titleWidth = doc.getTextWidth(historyTitle);
   const titleX = (pageWidth - titleWidth) / 2;
@@ -437,7 +450,7 @@ $('#exportSearchPdfBtn').on('click', function () {
     const cells = row.querySelectorAll('td');
     if (cells.length >= 4) {
       tableBody.push([
-        cells[0].textContent.trim(),
+        reshapeArabicText(cells[0].textContent.trim()),
         cells[1].textContent.trim(),
         cells[2].textContent.trim(),
         cells[3].textContent.trim()
@@ -446,7 +459,7 @@ $('#exportSearchPdfBtn').on('click', function () {
   });
 
   doc.autoTable({
-    head: [['الكلمة', 'الجمل', 'الأبجد', 'الأيقغ']],
+    head: [[reshapeArabicText('الكلمة'), reshapeArabicText('الجمل'), reshapeArabicText('الأبجد'), reshapeArabicText('الأيقغ')]],
     body: tableBody,
     theme: 'grid',
     styles: {
@@ -465,7 +478,7 @@ $('#exportSearchPdfBtn').on('click', function () {
 
   // إضافة عنوان - حساب العرض يدوياً لتجنب مشكلة تشويه النص العربي
   doc.setFontSize(16);
-  const pageTitle = 'نتائج البحث في الكلمات';
+  const pageTitle = reshapeArabicText('نتائج البحث في الكلمات');
   const pageWidth = doc.internal.pageSize.getWidth();
   const titleWidth = doc.getTextWidth(pageTitle);
   const titleX = (pageWidth - titleWidth) / 2;
