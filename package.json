@@ -11,5 +11,8 @@
   "description": "",
   "dependencies": {
     "arabic-reshaper": "^1.1.0"
+  },
+  "devDependencies": {
+    "browserify": "^17.0.1"
   }
 }
