@@ -301,28 +301,19 @@ $('#clearAllBtn').on('click', clearAllHistory);
 // تحميل السجل عند البدء
 updateHistoryDisplay();
 
-// === تصدير سجل الجمل إلى PDF (باستخدام pdfmake) و Excel ===
+// === تصدير سجل الجمل إلى PDF (باستخدام jsPDF) و Excel ===
 $('#exportHistoryPdfBtn').on('click', function () {
   if (history.length === 0) {
     alert('لا توجد سجلات لتصديرها');
     return;
   }
-
-  // التحقق من تحميل المكتبة
-  if (typeof pdfMake === 'undefined') {
-    alert('جاري تحميل مكتبة PDF، يرجى المحاولة مرة أخرى');
-    return;
-  }
   
-  // تعريف الخط العربي من الملف المحلي
-  pdfMake.fonts = {
-    Cairo: {
-      normal: window.cairoFonts.normal,
-      bold: window.cairoFonts.bold,
-      italics: window.cairoFonts.italics,
-      bolditalics: window.cairoFonts.bolditalics
-    }
-  };
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({
+    orientation: 'landscape',
+    unit: 'mm',
+    format: 'a4'
+  });
 
   // تحضير البيانات للجدول
   const tableBody = history.map(item => [
@@ -333,37 +324,28 @@ $('#exportHistoryPdfBtn').on('click', function () {
       item.triple.toString()
     ]);
 
-  const docDefinition = {
-    content: [
-      {text: 'سجل الحسابات', style: 'header'},
-      {
-        table: {
-          headerRows: 1,
-          widths: ['*', 'auto', 'auto', 'auto', 'auto'],
-          body: [
-            ['النص', 'الجمل', 'الأبجد', 'الأيقغ', 'الحساب الثلاثي'],
-            ...tableBody
-          ]
-        },
-        layout: 'lightHorizontalLines'
-      }
-    ],
+  doc.autoTable({
+    head: [['النص', 'الجمل', 'الأبجد', 'الأيقغ', 'الحساب الثلاثي']],
+    body: tableBody,
+    theme: 'grid',
     styles: {
-      header: {
-        fontSize: 18,
-        bold: true,
-        alignment: 'center',
-        margin: [0, 0, 0, 10],
-        font: 'Cairo'
-      }
+      font: 'arial',
+      fontSize: 10,
+      halign: 'right',
+      rtl: true
     },
-    defaultStyle: {
-      font: 'Cairo',
-      alignment: 'right'
-    }
-  };
+    headStyles: {
+      halign: 'center',
+      fillColor: [41, 128, 185]
+    },
+    margin: { top: 20 }
+  });
 
-  pdfMake.createPdf(docDefinition).download('jummal-history.pdf');
+  // إضافة عنوان
+  doc.setFontSize(16);
+  doc.text('سجل الحسابات', doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
+
+  doc.save('jummal-history.pdf');
 });
 
 $('#exportHistoryExcelBtn').on('click', function () {
@@ -387,7 +369,7 @@ $('#exportHistoryExcelBtn').on('click', function () {
   XLSX.writeFile(wb, 'jummal-history.xlsx');
 });
 
-// === تصدير نتائج البحث إلى PDF (باستخدام pdfmake) و Excel ===
+// === تصدير نتائج البحث إلى PDF (باستخدام jsPDF) و Excel ===
 $('#exportSearchPdfBtn').on('click', function () {
   const tbody = document.getElementById('searchResultsBody');
   const rows = tbody.querySelectorAll('tr');
@@ -397,21 +379,12 @@ $('#exportSearchPdfBtn').on('click', function () {
     return;
   }
 
-  // التحقق من تحميل المكتبة
-  if (typeof pdfMake === 'undefined') {
-    alert('جاري تحميل مكتبة PDF، يرجى المحاولة مرة أخرى');
-    return;
-  }
-  
-  // تعريف الخط العربي من الملف المحلي
-  pdfMake.fonts = {
-    Cairo: {
-      normal: window.cairoFonts.normal,
-      bold: window.cairoFonts.bold,
-      italics: window.cairoFonts.italics,
-      bolditalics: window.cairoFonts.bolditalics
-    }
-  };
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({
+    orientation: 'landscape',
+    unit: 'mm',
+    format: 'a4'
+  });
 
   // استخراج البيانات من الجدول
   const tableBody = [];
@@ -427,37 +400,28 @@ $('#exportSearchPdfBtn').on('click', function () {
     }
   });
 
-  const docDefinition = {
-    content: [
-      {text: 'نتائج البحث في الكلمات', style: 'header'},
-      {
-        table: {
-          headerRows: 1,
-          widths: ['*', 'auto', 'auto', 'auto'],
-          body: [
-            ['الكلمة', 'الجمل', 'الأبجد', 'الأيقغ'],
-            ...tableBody
-          ]
-        },
-        layout: 'lightHorizontalLines'
-      }
-    ],
+  doc.autoTable({
+    head: [['الكلمة', 'الجمل', 'الأبجد', 'الأيقغ']],
+    body: tableBody,
+    theme: 'grid',
     styles: {
-      header: {
-        fontSize: 18,
-        bold: true,
-        alignment: 'center',
-        margin: [0, 0, 0, 10],
-        font: 'Cairo'
-      }
+      font: 'arial',
+      fontSize: 10,
+      halign: 'right',
+      rtl: true
     },
-    defaultStyle: {
-      font: 'Cairo',
-      alignment: 'right'
-    }
-  };
+    headStyles: {
+      halign: 'center',
+      fillColor: [41, 128, 185]
+    },
+    margin: { top: 20 }
+  });
 
-  pdfMake.createPdf(docDefinition).download('search-results.pdf');
+  // إضافة عنوان
+  doc.setFontSize(16);
+  doc.text('نتائج البحث في الكلمات', doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
+
+  doc.save('search-results.pdf');
 });
 
 $('#exportSearchExcelBtn').on('click', function () {
