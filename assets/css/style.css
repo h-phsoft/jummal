@@ -2,42 +2,6 @@
    Main Stylesheet - Combined Styles
    Includes: jummal.css + magicsquares.css
    ======================================== */
-@font-face {
-  font-family: 'Cairo';
-  font-style: normal;
-  font-weight: 300;
-  src: local('Cairo'), local('Cairo-Black'), url(fonts/Cairo/Cairo-Black.ttf);
-}
-@font-face {
-  font-family: 'Cairo';
-  font-style: normal;
-  font-weight: 400;
-  src: local('Cairo'), local('Cairo-SemiBold'), url(fonts/Cairo/Cairo-SemiBold.ttf);
-}
-@font-face {
-  font-family: 'Cairo';
-  font-style: normal;
-  font-weight: 500;
-  src: local('Cairo'), local('Cairo-Bold'), url(fonts/Cairo/Cairo-Bold.ttf);
-}
-@font-face {
-  font-family: 'Cairo';
-  font-style: normal;
-  font-weight: 200;
-  src: local('Cairo'), local('Cairo-Light'), url(fonts/Cairo/Cairo-Light.ttf);
-}
-@font-face {
-  font-family: 'Cairo';
-  font-style: normal;
-  font-weight: 100;
-  src: local('Cairo'), local('Cairo-ExtraLight'), url(fonts/Cairo/Cairo-ExtraLight.ttf);
-}
-@font-face {
-  font-family: 'Cairo';
-  font-style: normal;
-  font-weight: 300;
-  src: local('Cairo'), local('Cairo-Regular'), url(fonts/Cairo/Cairo-Regular.ttf);
-}
 
 /* ========== Global Variables ========== */
 :root {
