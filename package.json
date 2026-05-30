@@ -10,9 +10,12 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "arabic-reshaper": "^1.1.0"
+    "@fontsource/cairo": "^5.2.7",
+    "arabic-reshaper": "^1.1.0",
+    "fontkit": "^2.0.4"
   },
   "devDependencies": {
+    "base64-arraybuffer": "^1.0.2",
     "browserify": "^17.0.1"
   }
 }
