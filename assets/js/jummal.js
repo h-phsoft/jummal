@@ -314,14 +314,9 @@ $('#exportHistoryPdfBtn').on('click', function() {
     return;
   }
   
-  // تعريف الخط العربي
+  // تعريف الخط العربي من الملف المحلي
   pdfMake.fonts = {
-    Cairo: {
-      normal: 'https://cdn.jsdelivr.net/gh/googlefonts/cairo-font@master/fonts/Cairo-Regular.ttf',
-      bold: 'https://cdn.jsdelivr.net/gh/googlefonts/cairo-font@master/fonts/Cairo-Bold.ttf',
-      italics: 'https://cdn.jsdelivr.net/gh/googlefonts/cairo-font@master/fonts/Cairo-Italic.ttf',
-      bolditalics: 'https://cdn.jsdelivr.net/gh/googlefonts/cairo-font@master/fonts/Cairo-BoldItalic.ttf'
-    }
+    Cairo: cairoFonts
   };
   
   // تحضير البيانات للجدول
@@ -403,14 +398,9 @@ $('#exportSearchPdfBtn').on('click', function() {
     return;
   }
   
-  // تعريف الخط العربي
+  // تعريف الخط العربي من الملف المحلي
   pdfMake.fonts = {
-    Cairo: {
-      normal: 'https://cdn.jsdelivr.net/gh/googlefonts/cairo-font@master/fonts/Cairo-Regular.ttf',
-      bold: 'https://cdn.jsdelivr.net/gh/googlefonts/cairo-font@master/fonts/Cairo-Bold.ttf',
-      italics: 'https://cdn.jsdelivr.net/gh/googlefonts/cairo-font@master/fonts/Cairo-Italic.ttf',
-      bolditalics: 'https://cdn.jsdelivr.net/gh/googlefonts/cairo-font@master/fonts/Cairo-BoldItalic.ttf'
-    }
+    Cairo: cairoFonts
   };
   
   // استخراج البيانات من الجدول
