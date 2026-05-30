@@ -308,6 +308,12 @@ $('#exportHistoryPdfBtn').on('click', function () {
     return;
   }
   
+  // التحقق من وجود بيانات الخط
+  if (typeof window.cairoRegularBase64 === 'undefined' || !window.cairoRegularBase64) {
+    alert('خطأ: لم يتم تحميل خط Cairo. يرجى التأكد من تحميل ملف cairo-regular-base64.js');
+    return;
+  }
+  
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({
     orientation: 'landscape',
@@ -318,9 +324,15 @@ $('#exportHistoryPdfBtn').on('click', function () {
   // تحميل خط Cairo من base64 (بدون prefix data:font/ttf;base64,)
   const cairoRegular = window.cairoRegularBase64;
   
-  doc.addFileToVFS('Cairo-Regular.ttf', cairoRegular);
-  doc.addFont('Cairo-Regular.ttf', 'Cairo', 'normal');
-  doc.setFont('Cairo');
+  try {
+    doc.addFileToVFS('Cairo-Regular.ttf', cairoRegular);
+    doc.addFont('Cairo-Regular.ttf', 'Cairo', 'normal');
+    doc.setFont('Cairo');
+  } catch (e) {
+    console.error('خطأ في تحميل الخط:', e);
+    alert('حدث خطأ أثناء تحميل الخط. يرجى التحقق من صحة بيانات الخط.');
+    return;
+  }
 
   // تحضير البيانات للجدول
   const tableBody = history.map(item => [
@@ -386,6 +398,12 @@ $('#exportSearchPdfBtn').on('click', function () {
     return;
   }
 
+  // التحقق من وجود بيانات الخط
+  if (typeof window.cairoRegularBase64 === 'undefined' || !window.cairoRegularBase64) {
+    alert('خطأ: لم يتم تحميل خط Cairo. يرجى التأكد من تحميل ملف cairo-regular-base64.js');
+    return;
+  }
+
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({
     orientation: 'landscape',
@@ -396,9 +414,15 @@ $('#exportSearchPdfBtn').on('click', function () {
   // تحميل خط Cairo من base64 (بدون prefix data:font/ttf;base64,)
   const cairoRegular = window.cairoRegularBase64;
   
-  doc.addFileToVFS('Cairo-Regular.ttf', cairoRegular);
-  doc.addFont('Cairo-Regular.ttf', 'Cairo', 'normal');
-  doc.setFont('Cairo');
+  try {
+    doc.addFileToVFS('Cairo-Regular.ttf', cairoRegular);
+    doc.addFont('Cairo-Regular.ttf', 'Cairo', 'normal');
+    doc.setFont('Cairo');
+  } catch (e) {
+    console.error('خطأ في تحميل الخط:', e);
+    alert('حدث خطأ أثناء تحميل الخط. يرجى التحقق من صحة بيانات الخط.');
+    return;
+  }
 
   // استخراج البيانات من الجدول
   const tableBody = [];
