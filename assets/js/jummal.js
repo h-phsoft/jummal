@@ -315,10 +315,11 @@ $('#exportHistoryPdfBtn').on('click', async function() {
     format: 'a4'
   });
   
-  // تحميل الخط العربي من Google Fonts
+  // استخدام خط Amiri من CDN يدعم CORS
   try {
-    const fontUrl = 'https://fonts.gstatic.com/s/amiri/v27/J7aRNPd8CGxBHqUpSxM.woff2';
+    const fontUrl = 'https://cdn.jsdelivr.net/npm/@fontsource/amiri@5.0.0/files/amiri-latin-400-normal.woff2';
     const response = await fetch(fontUrl);
+    if (!response.ok) throw new Error('فشل تحميل الخط');
     const fontBuffer = await response.arrayBuffer();
     const fontBase64 = btoa(String.fromCharCode(...new Uint8Array(fontBuffer)));
     doc.addFileToVFS('Amiri-Regular.ttf', fontBase64);
@@ -326,6 +327,8 @@ $('#exportHistoryPdfBtn').on('click', async function() {
     doc.setFont('Amiri');
   } catch (error) {
     console.error('فشل تحميل الخط العربي:', error);
+    // استخدام الخط الافتراضي مع تحذير
+    alert('تحذير: قد لا تظهر الأحرف العربية بشكل صحيح. تأكد من اتصالك بالإنترنت.');
   }
   
   doc.setFontSize(14);
@@ -397,10 +400,11 @@ $('#exportSearchPdfBtn').on('click', async function() {
     format: 'a4'
   });
   
-  // تحميل الخط العربي من Google Fonts
+  // استخدام خط Amiri من CDN يدعم CORS
   try {
-    const fontUrl = 'https://fonts.gstatic.com/s/amiri/v27/J7aRNPd8CGxBHqUpSxM.woff2';
+    const fontUrl = 'https://cdn.jsdelivr.net/npm/@fontsource/amiri@5.0.0/files/amiri-latin-400-normal.woff2';
     const response = await fetch(fontUrl);
+    if (!response.ok) throw new Error('فشل تحميل الخط');
     const fontBuffer = await response.arrayBuffer();
     const fontBase64 = btoa(String.fromCharCode(...new Uint8Array(fontBuffer)));
     doc.addFileToVFS('Amiri-Regular.ttf', fontBase64);
@@ -408,6 +412,8 @@ $('#exportSearchPdfBtn').on('click', async function() {
     doc.setFont('Amiri');
   } catch (error) {
     console.error('فشل تحميل الخط العربي:', error);
+    // استخدام الخط الافتراضي مع تحذير
+    alert('تحذير: قد لا تظهر الأحرف العربية بشكل صحيح. تأكد من اتصالك بالإنترنت.');
   }
   
   doc.setFontSize(14);
