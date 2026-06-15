@@ -46,7 +46,7 @@ function cleanArabicText(input) {
   return cleaned.trim();
 }
 
-// حساب القيم للجداول المحددة باستخدام tablesData
+// حساب القيم للجداول المحددة باستخدام CHARS_INDEX و tablesData
 function calculateForTables(text) {
   const results = [];
 
@@ -54,7 +54,10 @@ function calculateForTables(text) {
   if ($('#checkJummal').is(':checked')) {
     let value = 0;
     for (let char of text) {
-      if (tablesData.jummal.values[char]) value += tablesData.jummal.values[char];
+      const idx = CHARS_INDEX[char];
+      if (idx !== undefined) {
+        value += tablesData.jummal.values[idx];
+      }
     }
     results.push({ name: tablesData.jummal.name, value });
   }
@@ -63,7 +66,10 @@ function calculateForTables(text) {
   if ($('#checkAbjad').is(':checked')) {
     let value = 0;
     for (let char of text) {
-      if (tablesData.abjad.values[char]) value += tablesData.abjad.values[char];
+      const idx = CHARS_INDEX[char];
+      if (idx !== undefined) {
+        value += tablesData.abjad.values[idx];
+      }
     }
     results.push({ name: tablesData.abjad.name, value });
   }
@@ -72,48 +78,12 @@ function calculateForTables(text) {
   if ($('#checkAyqagh').is(':checked')) {
     let value = 0;
     for (let char of text) {
-      if (tablesData.ayqagh.values[char]) value += tablesData.ayqagh.values[char];
+      const idx = CHARS_INDEX[char];
+      if (idx !== undefined) {
+        value += tablesData.ayqagh.values[idx];
+      }
     }
     results.push({ name: tablesData.ayqagh.name, value });
-  }
-
-  // جدول مخصص 1 - قيم مختلفة
-  if ($('#checkCustom1').is(':checked')) {
-    const custom1Values = {};
-    for (let char in tablesData.jummal.values) {
-      custom1Values[char] = tablesData.jummal.values[char] + 4; // قيم مختلفة
-    }
-    let value = 0;
-    for (let char of text) {
-      if (custom1Values[char]) value += custom1Values[char];
-    }
-    results.push({ name: 'جدول مخصص 1', value });
-  }
-
-  // جدول مخصص 2 - قيم مضاعفة
-  if ($('#checkCustom2').is(':checked')) {
-    const custom2Values = {};
-    for (let char in tablesData.jummal.values) {
-      custom2Values[char] = tablesData.jummal.values[char] * 2;
-    }
-    let value = 0;
-    for (let char of text) {
-      if (custom2Values[char]) value += custom2Values[char];
-    }
-    results.push({ name: 'جدول مخصص 2', value });
-  }
-
-  // جدول مخصص 3 - قيم ثلاثية
-  if ($('#checkCustom3').is(':checked')) {
-    const custom3Values = {};
-    for (let char in tablesData.jummal.values) {
-      custom3Values[char] = tablesData.jummal.values[char] * 3;
-    }
-    let value = 0;
-    for (let char of text) {
-      if (custom3Values[char]) value += custom3Values[char];
-    }
-    results.push({ name: 'جدول مخصص 3', value });
   }
 
   return results;
