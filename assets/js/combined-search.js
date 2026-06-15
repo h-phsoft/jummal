@@ -1,9 +1,18 @@
 // === البحث في QWords.json بناءً على حساب الجمل ===
+// Uses embedded QWORDS_DATA for offline/flash memory usage
 
 let qwordsData = [];
 
-// تحميل ملف QWords.json عند بدء الصفحة
+// تحميل ملف QWords.json عند بدء الصفحة - أو استخدام البيانات المدمجة
 async function loadQWords() {
+  // Check if embedded data is available first (for offline/flash memory usage)
+  if (typeof QWORDS_DATA !== 'undefined' && Array.isArray(QWORDS_DATA)) {
+    qwordsData = QWORDS_DATA;
+    console.log('Using embedded QWORDS_DATA:', qwordsData.length, 'كلمة');
+    return;
+  }
+  
+  // Fallback to fetch method if embedded data is not available
   try {
     const response = await fetch('assets/js/data/QWords.json');
     qwordsData = await response.json();

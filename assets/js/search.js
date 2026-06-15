@@ -1,6 +1,7 @@
 /**
  * Search functionality for QWords.json
  * Searches by jummal, abjad, or ayqagh values based on checkbox selection
+ * Uses embedded QWORDS_DATA for offline/flash memory usage
  */
 
 async function performSearch() {
@@ -8,12 +9,12 @@ async function performSearch() {
   // دعم كلا المعرفين للجدول: resultsTable في search.html و searchResultsTable في combined.html
   const tableEl = document.querySelector('#resultsTable tbody') || document.querySelector('#searchResultsTable tbody');
   const noResultsMsg = document.getElementById('noResultsMsg');
-
+  
   // Get checkbox states
   const searchJummal = document.getElementById('checkJummal').checked;
   const searchAbjad = document.getElementById('checkAbjad').checked;
   const searchAyqagh = document.getElementById('checkAyqagh').checked;
-
+  
   // Validate at least one checkbox is selected
   if (!searchJummal && !searchAbjad && !searchAyqagh) {
     alert('الرجاء اختيار نوع حساب واحد على الأقل للبحث فيه');
@@ -30,22 +31,29 @@ async function performSearch() {
   }
 
   try {
-    // محاولة جلب الملف
-    // ملاحظة: بسبب سياسات المتصفح (CORS)، قد لا يعمل fetch مع file:// مباشرة
-    // يجب تشغيل الصفحة عبر سيرفر محلي (مثل Live Server في VS Code)
-    let response;
-    try {
-      response = await fetch('assets/js/data/QWords.json');
-    } catch (e) {
-      throw new Error("تعذر الوصول للملف. تأكد من وجود المسار assets/js/data/QWords.json وتشغيل الصفحة عبر سيرفر محلي.");
+    // Use embedded QWORDS_DATA if available (for offline/flash memory usage)
+    let wordsArray;
+    
+    if (typeof QWORDS_DATA !== 'undefined' && Array.isArray(QWORDS_DATA)) {
+      // Use the embedded data directly - no fetch needed!
+      wordsArray = QWORDS_DATA;
+      console.log('Using embedded QWORDS_DATA:', wordsArray.length, 'words');
+    } else {
+      // Fallback to fetch method if embedded data is not available
+      let response;
+      try {
+        response = await fetch('assets/js/data/QWords.json');
+      } catch (e) {
+        throw new Error("تعذر الوصول للملف. تأكد من وجود المسار assets/js/data/QWords.json وتشغيل الصفحة عبر سيرفر محلي.");
+      }
+
+      if (!response.ok)
+        throw new Error('ملف البيانات غير موجود');
+
+      const data = await response.json();
+      // نفترض أن البيانات مصفوفة أو كائن يحتوي على مصفوفة
+      wordsArray = Array.isArray(data) ? data : (data.words || Object.values(data));
     }
-
-    if (!response.ok)
-      throw new Error('ملف البيانات غير موجود');
-
-    const data = await response.json();
-    // نفترض أن البيانات مصفوفة أو كائن يحتوي على مصفوفة
-    const wordsArray = Array.isArray(data) ? data : (data.words || Object.values(data));
 
     let foundCount = 0;
     let jummalMatchCount = 0;
