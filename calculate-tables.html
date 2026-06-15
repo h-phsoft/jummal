@@ -34,19 +34,14 @@
                     <h5 class="fw-bold mb-2">اختر الجداول:</h5>
                     <div class="tables-list-container">
                       <table class="tables-list-table">
-                        <tbody>
+                        <thead>
                           <tr>
-                            <td><input type="checkbox" id="checkJummal" checked></td>
-                            <td>الجمل</td>
+                            <th>تحديد</th>
+                            <th>اسم الجدول</th>
                           </tr>
-                          <tr>
-                            <td><input type="checkbox" id="checkAbjad" checked></td>
-                            <td>الأبجد</td>
-                          </tr>
-                          <tr>
-                            <td><input type="checkbox" id="checkAyqagh" checked></td>
-                            <td>الأيقغ</td>
-                          </tr>
+                        </thead>
+                        <tbody id="tablesCheckboxes">
+                          <!-- سيتم ملئه ديناميكيًا من tablesData -->
                         </tbody>
                       </table>
                     </div>
