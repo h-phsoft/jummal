@@ -71,6 +71,10 @@ input.form-control:focus {
   min-height: 2.2rem;
 }
 
+.result-box table {
+  margin-top: 0 !important;
+}
+
 .result-error {
   color: #c35a3b;
   font-weight: 600;
@@ -628,6 +632,13 @@ input.form-control:focus {
 
 .result-table tbody tr:hover {
   background: rgba(240, 230, 215, 0.5);
+}
+
+.result-table tfoot td {
+  padding: 12px 8px;
+  border: 1px solid rgba(150, 130, 110, 0.4);
+  text-align: center;
+  font-size: 1.2rem;
 }
 
 .total-sum-box {

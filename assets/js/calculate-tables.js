@@ -313,7 +313,7 @@ $('#calculateBtn').on('click', function () {
     return;
   }
 
-  // عرض النتائج كجدول
+  // عرض النتائج كجدول مع المجموع في التذييل
   let resultHTML = `
     <table class=\"result-table\">
       <thead>
@@ -336,8 +336,15 @@ $('#calculateBtn').on('click', function () {
     `;
   });
   
+  // إضافة صف المجموع في تذييل الجدول
   resultHTML += `
       </tbody>
+      <tfoot>
+        <tr style="font-weight: bold; background: rgba(150, 130, 110, 0.2);">
+          <td>المجموع الكلي</td>
+          <td>${totalSum.toLocaleString()}</td>
+        </tr>
+      </tfoot>
     </table>
   `;
 
@@ -346,14 +353,8 @@ $('#calculateBtn').on('click', function () {
     .addClass('result-success')
     .html(resultHTML);
 
-  // عرض المجموع الكلي
-  if (totalSum > 0) {
-    $('#totalSum')
-      .html(`<strong>المجموع الكلي: ${totalSum.toLocaleString()}</strong>`)
-      .show();
-  } else {
-    $('#totalSum').hide();
-  }
+  // إخفاء حاوية المجموع القديم (لم يعد مستخدماً)
+  $('#totalSumContainer').hide();
 
   // إضافة كل نتيجة إلى السجل
   results.forEach(r => {
