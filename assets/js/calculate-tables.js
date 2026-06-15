@@ -30,51 +30,6 @@ const SUPPORTED_CHARS = [
   'غ'
 ];
 
-// 1. حساب الجمل (كلاسيكي)
-const jummalValues = {
-  'ا': 1, 'أ': 1, 'إ': 1, 'آ': 1,
-  'ب': 2,
-  'ج': 3,
-  'د': 4,
-  'ه': 5, 'ة': 5,
-  'و': 6,
-  'ز': 7,
-  'ح': 8,
-  'ط': 9,
-  'ي': 10, 'ى': 10, 'ئ': 10,
-  'ك': 20,
-  'ل': 30,
-  'م': 40,
-  'ن': 50,
-  'س': 60,
-  'ع': 70,
-  'ف': 80,
-  'ص': 90,
-  'ق': 100,
-  'ر': 200,
-  'ش': 300,
-  'ت': 400,
-  'ث': 500,
-  'خ': 600,
-  'ذ': 700,
-  'ض': 800,
-  'ظ': 900,
-  'غ': 1000
-};
-
-// دالة للحصول على الترتيب الفريد (1-28)
-function getUniqueIndex(char) {
-  const baseOrder = ['ا', 'ب', 'ج', 'د', 'ه', 'و', 'ز', 'ح', 'ط', 'ي', 'ك', 'ل', 'م', 'ن', 'س', 'ع', 'ف', 'ص', 'ق', 'ر', 'ش', 'ت', 'ث', 'خ', 'ذ', 'ض', 'ظ', 'غ'];
-  const map = {
-    'ا': 'ا', 'أ': 'ا', 'إ': 'ا', 'آ': 'ا',
-    'ه': 'ه', 'ة': 'ه',
-    'ي': 'ي', 'ى': 'ي', 'ئ': 'ي'
-  };
-  const base = map[char] || char;
-  const idx = baseOrder.indexOf(base);
-  return idx === -1 ? 0 : idx + 1;
-}
-
 // تنقية النص
 function cleanArabicText(input) {
   let cleaned = '';
@@ -91,7 +46,7 @@ function cleanArabicText(input) {
   return cleaned.trim();
 }
 
-// حساب القيم للجداول المحددة
+// حساب القيم للجداول المحددة باستخدام tablesData
 function calculateForTables(text) {
   const results = [];
 
@@ -99,63 +54,35 @@ function calculateForTables(text) {
   if ($('#checkJummal').is(':checked')) {
     let value = 0;
     for (let char of text) {
-      if (jummalValues[char]) value += jummalValues[char];
+      if (tablesData.jummal.values[char]) value += tablesData.jummal.values[char];
     }
-    results.push({ name: 'الجمل', value });
+    results.push({ name: tablesData.jummal.name, value });
   }
 
   // حساب الأبجد
   if ($('#checkAbjad').is(':checked')) {
     let value = 0;
     for (let char of text) {
-      const idx = getUniqueIndex(char);
-      if (idx) value += idx;
+      if (tablesData.abjad.values[char]) value += tablesData.abjad.values[char];
     }
-    results.push({ name: 'الأبجد', value });
+    results.push({ name: tablesData.abjad.name, value });
   }
 
   // حساب الأيقغ
   if ($('#checkAyqagh').is(':checked')) {
     let value = 0;
     for (let char of text) {
-      const idx = getUniqueIndex(char);
-      if (idx) value += ((idx - 1) % 9) + 1;
+      if (tablesData.ayqagh.values[char]) value += tablesData.ayqagh.values[char];
     }
-    results.push({ name: 'الأيقغ', value });
+    results.push({ name: tablesData.ayqagh.name, value });
   }
 
   // جدول مخصص 1 - قيم مختلفة
   if ($('#checkCustom1').is(':checked')) {
-    const custom1Values = {
-      'ا': 5, 'أ': 5, 'إ': 5, 'آ': 5,
-      'ب': 10,
-      'ج': 15,
-      'د': 20,
-      'ه': 25, 'ة': 25,
-      'و': 30,
-      'ز': 35,
-      'ح': 40,
-      'ط': 45,
-      'ي': 50, 'ى': 50, 'ئ': 50,
-      'ك': 55,
-      'ل': 60,
-      'م': 65,
-      'ن': 70,
-      'س': 75,
-      'ع': 80,
-      'ف': 85,
-      'ص': 90,
-      'ق': 95,
-      'ر': 100,
-      'ش': 105,
-      'ت': 110,
-      'ث': 115,
-      'خ': 120,
-      'ذ': 125,
-      'ض': 130,
-      'ظ': 135,
-      'غ': 140
-    };
+    const custom1Values = {};
+    for (let char in tablesData.jummal.values) {
+      custom1Values[char] = tablesData.jummal.values[char] + 4; // قيم مختلفة
+    }
     let value = 0;
     for (let char of text) {
       if (custom1Values[char]) value += custom1Values[char];
@@ -166,8 +93,8 @@ function calculateForTables(text) {
   // جدول مخصص 2 - قيم مضاعفة
   if ($('#checkCustom2').is(':checked')) {
     const custom2Values = {};
-    for (let char in jummalValues) {
-      custom2Values[char] = jummalValues[char] * 2;
+    for (let char in tablesData.jummal.values) {
+      custom2Values[char] = tablesData.jummal.values[char] * 2;
     }
     let value = 0;
     for (let char of text) {
@@ -179,8 +106,8 @@ function calculateForTables(text) {
   // جدول مخصص 3 - قيم ثلاثية
   if ($('#checkCustom3').is(':checked')) {
     const custom3Values = {};
-    for (let char in jummalValues) {
-      custom3Values[char] = jummalValues[char] * 3;
+    for (let char in tablesData.jummal.values) {
+      custom3Values[char] = tablesData.jummal.values[char] * 3;
     }
     let value = 0;
     for (let char of text) {
