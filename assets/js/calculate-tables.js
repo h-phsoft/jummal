@@ -46,49 +46,6 @@ function cleanArabicText(input) {
   return cleaned.trim();
 }
 
-// حساب القيم للجداول المحددة باستخدام CHARS_INDEX و tablesData
-function calculateForTables(text) {
-  const results = [];
-
-  // حساب الجمل
-  if ($('#checkJummal').is(':checked')) {
-    let value = 0;
-    for (let char of text) {
-      const idx = CHARS_INDEX[char];
-      if (idx !== undefined) {
-        value += tablesData.jummal.values[idx];
-      }
-    }
-    results.push({ name: tablesData.jummal.name, value });
-  }
-
-  // حساب الأبجد
-  if ($('#checkAbjad').is(':checked')) {
-    let value = 0;
-    for (let char of text) {
-      const idx = CHARS_INDEX[char];
-      if (idx !== undefined) {
-        value += tablesData.abjad.values[idx];
-      }
-    }
-    results.push({ name: tablesData.abjad.name, value });
-  }
-
-  // حساب الأيقغ
-  if ($('#checkAyqagh').is(':checked')) {
-    let value = 0;
-    for (let char of text) {
-      const idx = CHARS_INDEX[char];
-      if (idx !== undefined) {
-        value += tablesData.ayqagh.values[idx];
-      }
-    }
-    results.push({ name: tablesData.ayqagh.name, value });
-  }
-
-  return results;
-}
-
 // === إدارة السجل ===
 const STORAGE_KEY = 'calculate_tables_history';
 let history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
@@ -180,6 +137,25 @@ function copyToClipboard(text) {
   }
 }
 
+// === توليد خانات الاختيار للجداول ديناميكياً ===
+function renderTableCheckboxes() {
+  const container = $('#tablesCheckboxes');
+  container.empty();
+  
+  tablesData.forEach((table, index) => {
+    const checkboxId = `checkTable${index}`;
+    const row = $(`
+      <tr>
+        <td class="text-center">
+          <input type="checkbox" id="${checkboxId}" class="table-checkbox" value="${index}">
+        </td>
+        <td>${table.name}</td>
+      </tr>
+    `);
+    container.append(row);
+  });
+}
+
 // === حدث الحساب ===
 $('#calculateBtn').on('click', function () {
   const rawInput = $('#inputText').val();
@@ -200,9 +176,14 @@ $('#calculateBtn').on('click', function () {
     return;
   }
 
-  const results = calculateForTables(cleanText);
-  
-  if (results.length === 0) {
+  // جمع الجداول المحددة
+  const selectedTables = [];
+  $('.table-checkbox:checked').each(function() {
+    const tableIndex = parseInt($(this).val());
+    selectedTables.push(tablesData[tableIndex]);
+  });
+
+  if (selectedTables.length === 0) {
     $('#result')
       .removeClass('result-success')
       .addClass('result-error')
@@ -210,9 +191,22 @@ $('#calculateBtn').on('click', function () {
     return;
   }
 
+  // حساب القيم لكل جدول محدد باستخدام CHARS_INDEX و tablesData
+  const results = [];
+  selectedTables.forEach(table => {
+    let value = 0;
+    for (let char of cleanText) {
+      const idx = CHARS_INDEX[char];
+      if (idx !== undefined) {
+        value += table.values[idx];
+      }
+    }
+    results.push({ name: table.name, value });
+  });
+  
   // عرض النتائج كجدول مع المجموع في التذييل
   let resultHTML = `
-    <table class=\"result-table\">
+    <table class="result-table">
       <thead>
         <tr>
           <th>الجدول</th>
@@ -269,5 +263,6 @@ $('#inputText').on('keypress', function (e) {
 
 $('#clearAllBtn').on('click', clearAllHistory);
 
-// تحميل السجل عند البدء
+// تحميل السجل عند البدء وتوليد خانات الاختيار
 updateHistoryDisplay();
+renderTableCheckboxes();
