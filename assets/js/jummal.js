@@ -1,3 +1,5 @@
+/* global XLSX */
+
 // === تعريف الحروف المدعومة ===
 const SUPPORTED_CHARS = [
   'ا', 'أ', 'إ', 'آ',
