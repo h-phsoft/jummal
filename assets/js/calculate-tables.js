@@ -313,24 +313,47 @@ $('#calculateBtn').on('click', function () {
     return;
   }
 
-  // عرض النتائج
-  let resultHTML = '<div class="row g-2">';
+  // عرض النتائج كجدول
+  let resultHTML = `
+    <table class=\"result-table\">
+      <thead>
+        <tr>
+          <th>الجدول</th>
+          <th>القيمة</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+  
+  let totalSum = 0;
   results.forEach(r => {
+    totalSum += r.value;
     resultHTML += `
-      <div class="col-6 col-md-4">
-        <div class="p-2 border rounded text-center">
-          <small class="d-block text-muted">${r.name}</small>
-          <strong class="fs-5">${r.value.toLocaleString()}</strong>
-        </div>
-      </div>
+      <tr>
+        <td>${r.name}</td>
+        <td>${r.value.toLocaleString()}</td>
+      </tr>
     `;
   });
-  resultHTML += '</div>';
+  
+  resultHTML += `
+      </tbody>
+    </table>
+  `;
 
   $('#result')
     .removeClass('result-error')
     .addClass('result-success')
     .html(resultHTML);
+
+  // عرض المجموع الكلي
+  if (totalSum > 0) {
+    $('#totalSum')
+      .html(`<strong>المجموع الكلي: ${totalSum.toLocaleString()}</strong>`)
+      .show();
+  } else {
+    $('#totalSum').hide();
+  }
 
   // إضافة كل نتيجة إلى السجل
   results.forEach(r => {
