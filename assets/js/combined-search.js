@@ -1,27 +1,4 @@
-// === البحث في QWords.json بناءً على حساب الجمل ===
-// Uses embedded QWORDS_DATA for offline/flash memory usage
-
-let qwordsData = [];
-
-// تحميل ملف QWords.json عند بدء الصفحة - أو استخدام البيانات المدمجة
-async function loadQWords() {
-  // Check if embedded data is available first (for offline/flash memory usage)
-  if (typeof QWORDS_DATA !== 'undefined' && Array.isArray(QWORDS_DATA)) {
-    qwordsData = QWORDS_DATA;
-    console.log('Using embedded QWORDS_DATA:', qwordsData.length, 'كلمة');
-    return;
-  }
-  
-  // Fallback to fetch method if embedded data is not available
-  try {
-    const response = await fetch('assets/js/data/QWords.json');
-    qwordsData = await response.json();
-    console.log('تم تحميل QWords.json:', qwordsData.length, 'كلمة');
-  } catch (error) {
-    console.error('خطأ في تحميل QWords.json:', error);
-    qwordsData = [];
-  }
-}
+/* global qWordsData */
 
 // دالة البحث عن الكلمات المطابقة لقيمة الجمل المدخلة
 function searchByJummalValue(jummalValue) {
@@ -32,13 +9,13 @@ function searchByJummalValue(jummalValue) {
   const tbody = document.getElementById('searchResultsBody');
   tbody.innerHTML = '';
 
-  if (!qwordsData.length) {
+  if (!qWordsData.length) {
     tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-3">جاري تحميل البيانات...</td></tr>';
     return;
   }
 
   // تصفية الكلمات التي تطابق القيمة في أي من الحقول المحددة
-  const results = qwordsData.filter(word => {
+  const results = qWordsData.filter(word => {
     if (checkJummal && word.jummal === jummalValue)
       return true;
     if (checkAbjad && word.abjad === jummalValue)
@@ -72,11 +49,15 @@ function searchByJummalValue(jummalValue) {
   const jummalCountEl = document.getElementById('jummalCount');
   const abjadCountEl = document.getElementById('abjadCount');
   const ayqaghCountEl = document.getElementById('ayqaghCount');
-  
-  if (totalCountEl) totalCountEl.textContent = ` (${totalCount})`;
-  if (jummalCountEl) jummalCountEl.textContent = checkJummal ? ` (${jummalMatchCount})` : ' (0)';
-  if (abjadCountEl) abjadCountEl.textContent = checkAbjad ? ` (${abjadMatchCount})` : ' (0)';
-  if (ayqaghCountEl) ayqaghCountEl.textContent = checkAyqagh ? ` (${ayqaghMatchCount})` : ' (0)';
+
+  if (totalCountEl)
+    totalCountEl.textContent = ` (${totalCount})`;
+  if (jummalCountEl)
+    jummalCountEl.textContent = checkJummal ? ` (${jummalMatchCount})` : ' (0)';
+  if (abjadCountEl)
+    abjadCountEl.textContent = checkAbjad ? ` (${abjadMatchCount})` : ' (0)';
+  if (ayqaghCountEl)
+    ayqaghCountEl.textContent = checkAyqagh ? ` (${ayqaghMatchCount})` : ' (0)';
 
   if (results.length === 0) {
     tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-3">لا توجد كلمات مطابقة</td></tr>';
@@ -106,9 +87,6 @@ function searchByJummalValue(jummalValue) {
 
 // تعديل حدث الحساب في jummal.js ليشغل البحث
 function initCombinedSearch() {
-  // تحميل البيانات عند بدء الصفحة
-  loadQWords();
-
   // الاستماع لتغييرات checkboxes
   document.getElementById('checkJummal').addEventListener('change', () => {
     const inputText = document.getElementById('inputText').value;
