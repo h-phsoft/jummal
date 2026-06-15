@@ -28,55 +28,55 @@
                   </div>
                 </div>
 
-                <div class="mb-3">
-                  <h5 class="fw-bold mb-2">اختر الجداول:</h5>
-                  <div class="tables-list-container">
-                    <table class="tables-list-table">
-                      <thead>
-                        <tr>
-                          <th>تحديد</th>
-                          <th>اسم الجدول</th>
-                          <th>القيم</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td><input type="checkbox" id="checkJummal" checked></td>
-                          <td>الجمل</td>
-                          <td class="table-values-preview">ا=1, ب=2, ج=3, د=4, ه=5, و=6, ز=7, ح=8, ط=9, ي=10, ك=20, ل=30, م=40, ن=50, س=60, ع=70, ف=80, ص=90, ق=100, ر=200, ش=300, ت=400, ث=500, خ=600, ذ=700, ض=800, ظ=900, غ=1000</td>
-                        </tr>
-                        <tr>
-                          <td><input type="checkbox" id="checkAbjad" checked></td>
-                          <td>الأبجد</td>
-                          <td class="table-values-preview">ا=1, ب=2, ج=3, د=4, ه=5, و=6, ز=7, ح=8, ط=9, ي=10, ك=11, ل=12, م=13, ن=14, س=15, ع=16, ف=17, ص=18, ق=19, ر=20, ش=21, ت=22, ث=23, خ=24, ذ=25, ض=26, ظ=27, غ=28</td>
-                        </tr>
-                        <tr>
-                          <td><input type="checkbox" id="checkAyqagh" checked></td>
-                          <td>الأيقغ</td>
-                          <td class="table-values-preview">ا=1, ب=2, ج=3, د=4, ه=5, و=6, ز=7, ح=8, ط=9, ي=1, ك=2, ل=3, م=4, ن=5, س=6, ع=7, ف=8, ص=9, ق=1, ر=2, ش=3, ت=4, ث=5, خ=6, ذ=7, ض=8, ظ=9, غ=1</td>
-                        </tr>
-                        <tr>
-                          <td><input type="checkbox" id="checkCustom1"></td>
-                          <td>جدول مخصص 1</td>
-                          <td class="table-values-preview">ا=5, ب=10, ج=15, د=20, ه=25, و=30, ز=35, ح=40, ط=45, ي=50, ك=55, ل=60, م=65, ن=70, س=75, ع=80, ف=85, ص=90, ق=95, ر=100, ش=105, ت=110, ث=115, خ=120, ذ=125, ض=130, ظ=135, غ=140</td>
-                        </tr>
-                        <tr>
-                          <td><input type="checkbox" id="checkCustom2"></td>
-                          <td>جدول مخصص 2</td>
-                          <td class="table-values-preview">ا=2, ب=4, ج=6, د=8, ه=10, و=12, ز=14, ح=16, ط=18, ي=20, ك=40, ل=60, م=80, ن=100, س=120, ع=140, ف=160, ص=180, ق=200, ر=400, ش=600, ت=800, ث=1000, خ=1200, ذ=1400, ض=1600, ظ=1800, غ=2000</td>
-                        </tr>
-                        <tr>
-                          <td><input type="checkbox" id="checkCustom3"></td>
-                          <td>جدول مخصص 3</td>
-                          <td class="table-values-preview">ا=3, ب=6, ج=9, د=12, ه=15, و=18, ز=21, ح=24, ط=27, ي=30, ك=60, ل=90, م=120, ن=150, س=180, ع=210, ف=240, ص=270, ق=300, ر=600, ش=900, ت=1200, ث=1500, خ=1800, ذ=2100, ض=2400, ظ=2700, غ=3000</td>
-                        </tr>
-                      </tbody>
-                    </table>
+                <div class="d-flex gap-4">
+                  <!-- Result Table on Left -->
+                  <div style="flex: 1;">
+                    <h5 class="fw-bold mb-2">النتائج:</h5>
+                    <div id="result" class="result-box"></div>
+                    <div id="totalSumContainer" style="display: none;"></div>
+                  </div>
+
+                  <!-- Tables Selection on Right -->
+                  <div style="flex: 1;">
+                    <h5 class="fw-bold mb-2">اختر الجداول:</h5>
+                    <div class="tables-list-container">
+                      <table class="tables-list-table">
+                        <thead>
+                          <tr>
+                            <th>تحديد</th>
+                            <th>اسم الجدول</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td><input type="checkbox" id="checkJummal" checked></td>
+                            <td>الجمل</td>
+                          </tr>
+                          <tr>
+                            <td><input type="checkbox" id="checkAbjad" checked></td>
+                            <td>الأبجد</td>
+                          </tr>
+                          <tr>
+                            <td><input type="checkbox" id="checkAyqagh" checked></td>
+                            <td>الأيقغ</td>
+                          </tr>
+                          <tr>
+                            <td><input type="checkbox" id="checkCustom1"></td>
+                            <td>جدول مخصص 1</td>
+                          </tr>
+                          <tr>
+                            <td><input type="checkbox" id="checkCustom2"></td>
+                            <td>جدول مخصص 2</td>
+                          </tr>
+                          <tr>
+                            <td><input type="checkbox" id="checkCustom3"></td>
+                            <td>جدول مخصص 3</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
-
-                <div id="result" class="result-box"></div>
-                <div id="totalSum" class="total-sum-box mt-3" style="display: none;"></div>
               </div>
             </div>
           </div>
