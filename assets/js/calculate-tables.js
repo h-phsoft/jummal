@@ -1,4 +1,64 @@
 // === تعريف الحروف المدعومة ===
+const BAST_CHARS = {
+  "ا": "الف",
+  "ب": "با",
+  "ج": "جيم",
+  "د": "دال",
+  "ه": "ها",
+  "و": "واو",
+  "ز": "زاي",
+  "ح": "حا",
+  "ط": "طا",
+  "ي": "يا",
+  "ك": "كاف",
+  "ل": "لام",
+  "م": "ميم",
+  "ن": "نون",
+  "س": "سين",
+  "ع": "عين",
+  "ف": "فا",
+  "ص": "صاد",
+  "ق": "قاف",
+  "ر": "را",
+  "ش": "شين",
+  "ت": "تا",
+  "ث": "ثا",
+  "خ": "خا",
+  "ذ": "ذال",
+  "ض": "ضاد",
+  "ظ": "ظا",
+  "غ": "غين"
+};
+const BAST_ARRAY = [
+  "الف",
+  "با",
+  "جيم",
+  "دال",
+  "ها",
+  "واو",
+  "زاي",
+  "حا",
+  "طا",
+  "يا",
+  "كاف",
+  "لام",
+  "ميم",
+  "نون",
+  "سين",
+  "عين",
+  "فا",
+  "صاد",
+  "قاف",
+  "را",
+  "شين",
+  "تا",
+  "ثا",
+  "خا",
+  "ذال",
+  "ضاد",
+  "ظا",
+  "غين"
+];
 const SUPPORTED_CHARS = [
   'ا', 'أ', 'إ', 'آ',
   'ب',
@@ -55,7 +115,7 @@ function saveHistory() {
 }
 
 function addToHistory(cleanText, tableName, value) {
-  history.unshift({ text: cleanText, tableName, value });
+  history.unshift({text: cleanText, tableName, value});
   if (history.length > 50)
     history = history.slice(0, 50);
   saveHistory();
@@ -141,7 +201,7 @@ function copyToClipboard(text) {
 function renderTableCheckboxes() {
   const container = $('#tablesCheckboxes');
   container.empty();
-  
+
   tablesData.forEach((table, index) => {
     const checkboxId = `checkTable${index}`;
     const row = $(`
@@ -178,7 +238,7 @@ $('#calculateBtn').on('click', function () {
 
   // جمع الجداول المحددة
   const selectedTables = [];
-  $('.table-checkbox:checked').each(function() {
+  $('.table-checkbox:checked').each(function () {
     const tableIndex = parseInt($(this).val());
     selectedTables.push(tablesData[tableIndex]);
   });
@@ -201,9 +261,9 @@ $('#calculateBtn').on('click', function () {
         value += table.values[idx];
       }
     }
-    results.push({ name: table.name, value });
+    results.push({name: table.name, value});
   });
-  
+
   // عرض النتائج كجدول مع المجموع في التذييل
   let resultHTML = `
     <table class="result-table">
@@ -215,7 +275,7 @@ $('#calculateBtn').on('click', function () {
       </thead>
       <tbody>
   `;
-  
+
   let totalSum = 0;
   results.forEach(r => {
     totalSum += r.value;
@@ -226,7 +286,7 @@ $('#calculateBtn').on('click', function () {
       </tr>
     `;
   });
-  
+
   // إضافة صف المجموع في تذييل الجدول
   resultHTML += `
       </tbody>
