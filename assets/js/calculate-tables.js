@@ -114,8 +114,8 @@ function saveHistory() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
 }
 
-function addToHistory(cleanText, tableName, value) {
-  history.unshift({text: cleanText, tableName, value});
+function addToHistory(cleanText, tableName) {
+  history.unshift({text: cleanText, tableName});
   if (history.length > 50)
     history = history.slice(0, 50);
   saveHistory();
@@ -140,7 +140,7 @@ function updateHistoryDisplay() {
   const container = $('#historyList');
   container.empty();
   if (history.length === 0) {
-    const row = $('<tr><td colspan="4" class="text-center text-muted py-3">لا توجد سجلات بعد</td></tr>');
+    const row = $('<tr><td colspan="2" class="text-center text-muted py-3">لا توجد سجلات بعد</td></tr>');
     container.append(row);
     return;
   }
@@ -150,10 +150,6 @@ function updateHistoryDisplay() {
             <tr class="history-row">
               <td title="${item.text}">${item.text}</td>
               <td>${item.tableName}</td>
-              <td>${item.value.toLocaleString()}</td>
-              <td>
-                <button class="btn-delete-item" data-index="${index}">×</button>
-              </td>
             </tr>
           `);
 
@@ -162,20 +158,6 @@ function updateHistoryDisplay() {
       if (!$(e.target).hasClass('btn-delete-item')) {
         $('#inputText').val(item.text).focus();
       }
-    });
-
-    // نقرة مزدوجة على خلية القيمة: نسخ القيمة
-    row.on('dblclick', 'td:nth-child(3)', function () {
-      const value = $(this).text().replace(/[,،]/g, '');
-      if (!isNaN(value)) {
-        copyToClipboard(value);
-      }
-    });
-
-    // زر الحذف
-    row.find('.btn-delete-item').on('click', function (e) {
-      e.stopPropagation();
-      removeItem(index);
     });
 
     container.append(row);
@@ -309,7 +291,7 @@ $('#calculateBtn').on('click', function () {
 
   // إضافة كل نتيجة إلى السجل
   results.forEach(r => {
-    addToHistory(cleanText, r.name, r.value);
+    addToHistory(cleanText, r.name);
   });
 
   $('#inputText').val('').focus();
