@@ -259,6 +259,9 @@ $(document).ready(function() {
     $('#sidebarOverlay').removeClass('show');
   });
   
+  // Search table filter event
+  $('#searchTable').on('input', filterTables);
+  
   // تحميل السجل عند البدء وتوليد خانات الاختيار
   updateHistoryDisplay();
   renderTableCheckboxes();
@@ -294,9 +297,6 @@ $('#calculateBtn').on('click', function () {
 
   // تقسيم النص إلى كلمات
   const words = cleanText.split(/\s+/).filter(w => w.length > 0);
-  
-  // تحديث عنوان الـ accordion بالعبارة المحسوبة
-  $('#accordionTitle').text(`النتائج: ${cleanText}`);
   
   // حساب القيم لكل جدول محدد باستخدام CHARS_INDEX و tablesData
   const results = [];
