@@ -114,7 +114,7 @@ function saveHistory() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
 }
 
-function addToHistory(cleanText, tableName) {
+function addToHistory(cleanText) {
   // Check if this text already exists in history to avoid duplicates
   const exists = history.some(item => item.text === cleanText);
   if (!exists) {
@@ -144,7 +144,7 @@ function updateHistoryDisplay() {
   const container = $('#historyList');
   container.empty();
   if (history.length === 0) {
-    const row = $('<tr><td colspan="1" class="text-center text-muted py-3">لا توجد سجلات بعد</td></tr>');
+    const row = $('<tr><td colspan="3" class="text-center text-muted py-3">لا توجد سجلات بعد</td></tr>');
     container.append(row);
     return;
   }
@@ -152,20 +152,26 @@ function updateHistoryDisplay() {
   history.forEach((item, index) => {
     const row = $(`
             <tr class="history-row">
+              <td>${index + 1}</td>
               <td title="${item.text}">${item.text}</td>
+              <td>
+                <button class="btn btn-sm btn-outline-primary" onclick="restoreHistory(${index})">استرجاع</button>
+                <button class="btn btn-sm btn-outline-danger btn-delete-item" onclick="removeItem(${index})">حذف</button>
+              </td>
             </tr>
           `);
-
-    // نقرة على السطر: استرجاع النص
-    row.on('click', function (e) {
-      if (!$(e.target).hasClass('btn-delete-item')) {
-        $('#inputText').val(item.text).focus();
-      }
-    });
 
     container.append(row);
   });
 }
+
+function restoreHistory(index) {
+  $('#inputText').val(history[index].text).focus();
+}
+
+// جعل الدوال متاحة عالمياً
+window.removeItem = removeItem;
+window.restoreHistory = restoreHistory;
 
 // === وظائف مساعدة ===
 function copyToClipboard(text) {
@@ -201,23 +207,30 @@ function renderTableCheckboxes() {
   });
 }
 
+// === تصفية الجداول عند البحث ===
+function filterTables() {
+  const searchText = $('#searchTable').val().toLowerCase();
+  $('#tablesCheckboxes tr').each(function() {
+    const tableName = $(this).find('td:eq(1)').text().toLowerCase();
+    if (tableName.includes(searchText)) {
+      $(this).show();
+    } else {
+      $(this).hide();
+    }
+  });
+}
+
 // === حدث الحساب ===
 $('#calculateBtn').on('click', function () {
   const rawInput = $('#inputText').val();
   if (!rawInput || rawInput.trim() === '') {
-    $('#result')
-      .removeClass('result-success')
-      .addClass('result-error')
-      .text('الرجاء إدخال نص');
+    alert('الرجاء إدخال نص');
     return;
   }
 
   const cleanText = cleanArabicText(rawInput);
   if (cleanText === '') {
-    $('#result')
-      .removeClass('result-success')
-      .addClass('result-error')
-      .text('لا يوجد حروف عربية صالحة للحساب');
+    alert('لا يوجد حروف عربية صالحة للحساب');
     return;
   }
 
@@ -229,71 +242,71 @@ $('#calculateBtn').on('click', function () {
   });
 
   if (selectedTables.length === 0) {
-    $('#result')
-      .removeClass('result-success')
-      .addClass('result-error')
-      .text('الرجاء اختيار جدول واحد على الأقل');
+    alert('الرجاء اختيار جدول واحد على الأقل');
     return;
   }
 
+  // تقسيم النص إلى كلمات
+  const words = cleanText.split(/\s+/).filter(w => w.length > 0);
+  
   // حساب القيم لكل جدول محدد باستخدام CHARS_INDEX و tablesData
   const results = [];
   selectedTables.forEach(table => {
-    let value = 0;
-    for (let char of cleanText) {
-      const idx = CHARS_INDEX[char];
-      if (idx !== undefined) {
-        value += table.values[idx];
+    let totalValue = 0;
+    const wordValues = [];
+    
+    words.forEach(word => {
+      let wordValue = 0;
+      for (let char of word) {
+        const idx = CHARS_INDEX[char];
+        if (idx !== undefined) {
+          wordValue += table.values[idx];
+        }
       }
-    }
-    results.push({name: table.name, value});
+      wordValues.push(wordValue);
+      totalValue += wordValue;
+    });
+    
+    results.push({
+      name: table.name,
+      title: table.title || table.name,
+      totalValue: totalValue,
+      wordValues: wordValues
+    });
   });
 
-  // عرض النتائج كجدول مع المجموع في التذييل
-  let resultHTML = `
-    <table class="result-table">
-      <thead>
-        <tr>
-          <th>الجدول</th>
-          <th>القيمة</th>
-        </tr>
-      </thead>
-      <tbody>
-  `;
-
-  let totalSum = 0;
+  // عرض النتائج في الجدول الجديد
+  const headerRow = $('#resultHeaderRow');
+  const wordsHeaderRow = $('#wordsHeaderRow');
+  const tbody = $('#resultTableBody');
+  
+  // مسح المحتوى القديم
+  wordsHeaderRow.empty();
+  tbody.empty();
+  
+  // إضافة أعمدة الكلمات في الصف الثاني من الرأس
+  words.forEach((word, index) => {
+    wordsHeaderRow.append(`<th class="word-header">كلمة ${index + 1}<br><small>"${word}"</small></th>`);
+  });
+  
+  // إضافة صفوف النتائج
   results.forEach(r => {
-    totalSum += r.value;
-    resultHTML += `
-      <tr>
-        <td>${r.name}</td>
-        <td>${r.value.toLocaleString()}</td>
-      </tr>
-    `;
+    let rowHTML = `<tr><td><strong>${r.name}</strong></td><td>${r.title}<br><span class="text-primary fw-bold">${r.totalValue.toLocaleString()}</span></td>`;
+    
+    r.wordValues.forEach(val => {
+      rowHTML += `<td class="result-word-col">${val.toLocaleString()}</td>`;
+    });
+    
+    rowHTML += `</tr>`;
+    tbody.append(rowHTML);
   });
-
-  // إضافة صف المجموع في تذييل الجدول
-  resultHTML += `
-      </tbody>
-      <tfoot>
-        <tr style="font-weight: bold; background: rgba(150, 130, 110, 0.2);">
-          <td>المجموع الكلي</td>
-          <td>${totalSum.toLocaleString()}</td>
-        </tr>
-      </tfoot>
-    </table>
-  `;
-
-  $('#result')
-    .removeClass('result-error')
-    .addClass('result-success')
-    .html(resultHTML);
-
-  // إخفاء حاوية المجموع القديم (لم يعد مستخدماً)
-  $('#totalSumContainer').hide();
+  
+  // إظهار جدول النتائج وإخفاء رسالة "لا توجد نتائج"
+  $('#resultTable').show();
+  $('#noResultMsg').hide();
 
   // إضافة النص إلى السجل (مرة واحدة فقط)
-  addToHistory(cleanText, '');
+  addToHistory(cleanText);
 
   $('#inputText').val('').focus();
 });
