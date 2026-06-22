@@ -24,20 +24,8 @@
       <div class="row g-4 mt-1">
         <div class="col-md-5">
           <div class="glass-card h-100">
-            <h4 class="text-center mb-3 fw-bold">السجل</h4>
-            <div style="max-height: 440px; overflow-y: auto;">
-              <table class="history-table">
-                <thead>
-                  <tr>
-                    <th>النص</th>
-                  </tr>
-                </thead>
-                <tbody id="historyList">
-                  <!-- سيتم ملئه ديناميكيًا -->
-                </tbody>
-              </table>
-            </div>
-            <button id="clearAllBtn" class="btn btn-clear-all w-100 mt-2">🗑️ مسح السجل كله</button>
+            <h4 class="text-center mb-3 fw-bold">النتائج:</h4>
+            <div id="result" class="result-box"></div>
           </div>
         </div>
 
@@ -71,10 +59,22 @@
                     </div>
                   </div>
 
-                  <!-- Result Table on Left -->
+                  <!-- History Table on Left -->
                   <div style="flex: 1;">
-                    <h5 class="fw-bold mb-2">النتائج:</h5>
-                    <div id="result" class="result-box"></div>
+                    <h4 class="text-center mb-3 fw-bold">السجل</h4>
+                    <div style="max-height: 440px; overflow-y: auto;">
+                      <table class="history-table">
+                        <thead>
+                          <tr>
+                            <th>النص</th>
+                          </tr>
+                        </thead>
+                        <tbody id="historyList">
+                          <!-- سيتم ملئه ديناميكيًا -->
+                        </tbody>
+                      </table>
+                    </div>
+                    <button id="clearAllBtn" class="btn btn-clear-all w-100 mt-2">🗑️ مسح السجل كله</button>
                   </div>
                 </div>
               </div>
