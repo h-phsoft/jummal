@@ -144,7 +144,7 @@ function updateHistoryDisplay() {
   const container = $('#historyList');
   container.empty();
   if (history.length === 0) {
-    const row = $('<tr><td colspan="1" class="text-center text-muted py-3">لا توجد سجلات بعد</td></tr>');
+    const row = $('<tr><td colspan="2" class="text-center text-muted py-3">لا توجد سجلات بعد</td></tr>');
     container.append(row);
     return;
   }
@@ -153,6 +153,9 @@ function updateHistoryDisplay() {
     const row = $(`
             <tr class="history-row">
               <td title="${item.text}">${item.text}</td>
+              <td>
+                <button class="btn-delete-item" data-index="${index}">×</button>
+              </td>
             </tr>
           `);
 
@@ -161,6 +164,12 @@ function updateHistoryDisplay() {
       if (!$(e.target).hasClass('btn-delete-item')) {
         $('#inputText').val(item.text).focus();
       }
+    });
+
+    // زر الحذف
+    row.find('.btn-delete-item').on('click', function (e) {
+      e.stopPropagation();
+      removeItem(index);
     });
 
     container.append(row);
@@ -189,10 +198,12 @@ function renderTableCheckboxes() {
 
   tablesData.forEach((table, index) => {
     const checkboxId = `checkTable${index}`;
+    // جعل الجدول الأول (الجمل) مختارًا دائمًا كحالة افتراضية
+    const isChecked = index === 0 ? 'checked' : '';
     const row = $(`
       <tr>
         <td class="text-center">
-          <input type="checkbox" id="${checkboxId}" class="table-checkbox" value="${index}">
+          <input type="checkbox" id="${checkboxId}" class="table-checkbox" value="${index}" ${isChecked}>
         </td>
         <td>${table.name}</td>
       </tr>
