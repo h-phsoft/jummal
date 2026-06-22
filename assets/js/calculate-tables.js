@@ -144,7 +144,7 @@ function updateHistoryDisplay() {
   const container = $('#historyList');
   container.empty();
   if (history.length === 0) {
-    const row = $('<tr><td colspan="3" class="text-center text-muted py-3">لا توجد سجلات بعد</td></tr>');
+    const row = $('<tr><td colspan="2" class="text-center text-muted py-3">لا توجد سجلات بعد</td></tr>');
     container.append(row);
     return;
   }
@@ -153,25 +153,20 @@ function updateHistoryDisplay() {
     const row = $(`
             <tr class="history-row">
               <td>${index + 1}</td>
-              <td title="${item.text}">${item.text}</td>
-              <td>
-                <button class="btn btn-sm btn-outline-primary" onclick="restoreHistory(${index})">استرجاع</button>
-                <button class="btn btn-sm btn-outline-danger btn-delete-item" onclick="removeItem(${index})">حذف</button>
-              </td>
+              <td title="${item.text}" class="history-text-cell">${item.text}</td>
             </tr>
           `);
 
     container.append(row);
   });
+  
+  // Add double-click event to restore history (using delegated event handler)
+  $(document).off('dblclick', '.history-text-cell');
+  $(document).on('dblclick', '.history-text-cell', function() {
+    const text = $(this).attr('title');
+    $('#inputText').val(text).focus();
+  });
 }
-
-function restoreHistory(index) {
-  $('#inputText').val(history[index].text).focus();
-}
-
-// جعل الدوال متاحة عالمياً
-window.removeItem = removeItem;
-window.restoreHistory = restoreHistory;
 
 // === وظائف مساعدة ===
 function copyToClipboard(text) {
@@ -204,6 +199,19 @@ function renderTableCheckboxes() {
       </tr>
     `);
     container.append(row);
+  });
+  
+  // Select all checkbox functionality
+  $('#selectAllTables').on('change', function() {
+    const isChecked = $(this).is(':checked');
+    $('.table-checkbox').prop('checked', isChecked);
+  });
+  
+  // Update select all checkbox state when individual checkboxes change
+  $(document).on('change', '.table-checkbox', function() {
+    const totalCheckboxes = $('.table-checkbox').length;
+    const checkedCheckboxes = $('.table-checkbox:checked').length;
+    $('#selectAllTables').prop('checked', totalCheckboxes === checkedCheckboxes && totalCheckboxes > 0);
   });
 }
 
@@ -250,7 +258,13 @@ $(document).ready(function() {
     $('#leftSidebar').removeClass('show');
     $('#sidebarOverlay').removeClass('show');
   });
+  
+  // تحميل السجل عند البدء وتوليد خانات الاختيار
+  updateHistoryDisplay();
+  renderTableCheckboxes();
 });
+
+$('#clearAllBtn').on('click', clearAllHistory);
 
 // === حدث الحساب ===
 $('#calculateBtn').on('click', function () {
@@ -342,7 +356,8 @@ $('#calculateBtn').on('click', function () {
   // إضافة النص إلى السجل (مرة واحدة فقط)
   addToHistory(cleanText);
 
-  $('#inputText').val('').focus();
+  // لا نحذف النص من مربع الإدخال - نبقيه كما هو
+  $('#inputText').focus();
 });
 
 $('#inputText').on('keypress', function (e) {
@@ -350,9 +365,3 @@ $('#inputText').on('keypress', function (e) {
     $('#calculateBtn').click();
   }
 });
-
-$('#clearAllBtn').on('click', clearAllHistory);
-
-// تحميل السجل عند البدء وتوليد خانات الاختيار
-updateHistoryDisplay();
-renderTableCheckboxes();
