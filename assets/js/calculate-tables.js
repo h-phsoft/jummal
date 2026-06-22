@@ -220,6 +220,38 @@ function filterTables() {
   });
 }
 
+// === Sidebar Toggle Functions ===
+$(document).ready(function() {
+  // Right Sidebar (Tables)
+  $('#rightSidebarToggle').on('click', function() {
+    $('#rightSidebar').addClass('show');
+    $('#sidebarOverlay').addClass('show');
+  });
+  
+  $('#closeRightSidebar').on('click', function() {
+    $('#rightSidebar').removeClass('show');
+    $('#sidebarOverlay').removeClass('show');
+  });
+  
+  // Left Sidebar (History)
+  $('#leftSidebarToggle').on('click', function() {
+    $('#leftSidebar').addClass('show');
+    $('#sidebarOverlay').addClass('show');
+  });
+  
+  $('#closeLeftSidebar').on('click', function() {
+    $('#leftSidebar').removeClass('show');
+    $('#sidebarOverlay').removeClass('show');
+  });
+  
+  // Close sidebars when clicking overlay
+  $('#sidebarOverlay').on('click', function() {
+    $('#rightSidebar').removeClass('show');
+    $('#leftSidebar').removeClass('show');
+    $('#sidebarOverlay').removeClass('show');
+  });
+});
+
 // === حدث الحساب ===
 $('#calculateBtn').on('click', function () {
   const rawInput = $('#inputText').val();
