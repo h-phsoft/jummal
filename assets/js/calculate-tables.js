@@ -144,7 +144,7 @@ function updateHistoryDisplay() {
   const container = $('#historyList');
   container.empty();
   if (history.length === 0) {
-    const row = $('<tr><td colspan="2" class="text-center text-muted py-3">لا توجد سجلات بعد</td></tr>');
+    const row = $('<tr><td colspan="3" class="text-center text-muted py-3">لا توجد سجلات بعد</td></tr>');
     container.append(row);
     return;
   }
@@ -154,6 +154,11 @@ function updateHistoryDisplay() {
             <tr class="history-row">
               <td>${index + 1}</td>
               <td title="${item.text}" class="history-text-cell">${item.text}</td>
+              <td style="width: 50px; text-align: center;">
+                <button class="btn btn-sm btn-outline-danger delete-history-btn" data-index="${index}" title="حذف">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
             </tr>
           `);
 
@@ -165,6 +170,14 @@ function updateHistoryDisplay() {
   $(document).on('dblclick', '.history-text-cell', function() {
     const text = $(this).attr('title');
     $('#inputText').val(text).focus();
+  });
+  
+  // Add click event for delete button
+  $(document).off('click', '.delete-history-btn');
+  $(document).on('click', '.delete-history-btn', function(e) {
+    e.stopPropagation();
+    const index = $(this).data('index');
+    removeItem(index);
   });
 }
 
@@ -213,6 +226,12 @@ function renderTableCheckboxes() {
     const checkedCheckboxes = $('.table-checkbox:checked').length;
     $('#selectAllTables').prop('checked', totalCheckboxes === checkedCheckboxes && totalCheckboxes > 0);
   });
+  
+  // Select the first table (الجمل) by default
+  if ($('.table-checkbox').length > 0) {
+    $('.table-checkbox').first().prop('checked', true);
+    $('#selectAllTables').prop('checked', false);
+  }
 }
 
 // === تصفية الجداول عند البحث ===
