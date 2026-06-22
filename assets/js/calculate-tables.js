@@ -114,8 +114,12 @@ function saveHistory() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
 }
 
-function addToHistory(cleanText, tableName) {
-  history.unshift({text: cleanText, tableName});
+function addToHistory(cleanText) {
+  // منع التكرار إذا كان النص موجود بالفعل في أول السجل
+  if (history.length > 0 && history[0].text === cleanText) {
+    return;
+  }
+  history.unshift({text: cleanText});
   if (history.length > 50)
     history = history.slice(0, 50);
   saveHistory();
@@ -140,7 +144,7 @@ function updateHistoryDisplay() {
   const container = $('#historyList');
   container.empty();
   if (history.length === 0) {
-    const row = $('<tr><td colspan="2" class="text-center text-muted py-3">لا توجد سجلات بعد</td></tr>');
+    const row = $('<tr><td colspan="1" class="text-center text-muted py-3">لا توجد سجلات بعد</td></tr>');
     container.append(row);
     return;
   }
@@ -149,7 +153,6 @@ function updateHistoryDisplay() {
     const row = $(`
             <tr class="history-row">
               <td title="${item.text}">${item.text}</td>
-              <td>${item.tableName}</td>
             </tr>
           `);
 
@@ -289,10 +292,8 @@ $('#calculateBtn').on('click', function () {
   // إخفاء حاوية المجموع القديم (لم يعد مستخدماً)
   $('#totalSumContainer').hide();
 
-  // إضافة كل نتيجة إلى السجل
-  results.forEach(r => {
-    addToHistory(cleanText, r.name);
-  });
+  // إضافة كل نتيجة إلى السجل (النص فقط بدون تكرار)
+  addToHistory(cleanText);
 
   $('#inputText').val('').focus();
 });
