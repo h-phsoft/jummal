@@ -9,187 +9,225 @@
     <link href="assets/vendors/bootstrap/ph-bootstrap-colors.css" rel="stylesheet">
     <link href="assets/css/style.css" rel="stylesheet">
     <style>
-        .result-word-col { min-width: 80px; text-align: center; vertical-align: middle; font-weight: bold; color: #0d6efd; }
-        #calculationDisplay { font-size: 1.2rem; font-weight: bold; color: #198754; margin: 10px 0; min-height: 1.5em; }
-        .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border-radius: 15px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        
-        /* Sidebar Styles */
-        .sidebar {
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            width: 300px;
-            background: #fff;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease-in-out;
-            z-index: 1060;
-            overflow-y: auto;
-            padding: 20px;
-        }
-        .sidebar-right {
-            right: 0;
-            transform: translateX(100%);
-        }
-        .sidebar-left {
-            left: 0;
-            transform: translateX(-100%);
-        }
-        .sidebar.show {
-            transform: translateX(0);
-        }
-        .sidebar-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 1035;
-            display: none;
-        }
-        .sidebar-overlay.show {
-            display: block;
-        }
-        .sidebar-toggle-btn {
-            position: fixed;
-            top: 20px;
-            z-index: 1050;
-            background: #0d6efd;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            padding: 8px 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .sidebar-toggle-btn:hover {
-            background: #0b5ed7;
-        }
-        #rightSidebarToggle {
-            right: 20px;
-        }
-        #leftSidebarToggle {
-            left: 20px;
-        }
-        .table-selector-container { max-height: 400px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 5px; padding: 10px; background: #fff; }
-        .tables-list-table { width: 100%; }
-        .tables-list-table th, .tables-list-table td { padding: 8px; text-align: right; }
-        .history-table w-100 { width: 100%; }
-        .history-table th, .history-table td { padding: 8px; text-align: right; border-bottom: 1px solid #dee2e6; }
+      .result-word-col {
+        min-width: 80px;
+        text-align: center;
+        vertical-align: middle;
+        font-weight: bold;
+        color: #0d6efd;
+      }
+      #calculationDisplay {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #198754;
+        margin: 10px 0;
+        min-height: 1.5em;
+      }
+      .glass-card {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      }
+
+      /* Sidebar Styles */
+      .sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        width: 600px;
+        background: #fff;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease-in-out;
+        z-index: 1060;
+        overflow-y: auto;
+        padding: 20px;
+      }
+      .sidebar-right {
+        right: 0;
+        transform: translateX(100%);
+      }
+      .sidebar-left {
+        left: 0;
+        transform: translateX(-100%);
+      }
+      .sidebar.show {
+        transform: translateX(0);
+      }
+      .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 1035;
+        display: none;
+      }
+      .sidebar-overlay.show {
+        display: block;
+      }
+      .sidebar-toggle-btn {
+        position: fixed;
+        top: 20px;
+        z-index: 1050;
+        background: #0d6efd;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 8px 12px;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+      .sidebar-toggle-btn:hover {
+        background: #0b5ed7;
+      }
+      #rightSidebarToggle {
+        right: 20px;
+      }
+      #leftSidebarToggle {
+        left: 20px;
+      }
+      .table-selector-container {
+        max-height: 90vh;
+        overflow-y: auto;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        padding: 10px;
+        background: #fff;
+      }
+      .tables-list-table {
+        width: 100%;
+      }
+      .tables-list-table th, .tables-list-table td {
+        padding: 8px;
+        text-align: right;
+      }
+      .history-table w-100 {
+        width: 100%;
+      }
+      .history-table th, .history-table td {
+        padding: 8px;
+        text-align: right;
+        border-bottom: 1px solid #dee2e6;
+      }
     </style>
   </head>
   <body class="p-3 p-md-4">
     <!-- Overlay -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
-    
-    <!-- Right Sidebar Toggle Button -->
-    <button class="sidebar-toggle-btn" id="rightSidebarToggle">
-        <i class="bi bi-list-task"></i> الجداول
-    </button>
-    
-    <!-- Left Sidebar Toggle Button -->
-    <button class="sidebar-toggle-btn" id="leftSidebarToggle">
-        <i class="bi bi-clock-history"></i> السجل
-    </button>
-    
+
     <!-- Right Sidebar (Tables) -->
     <div class="sidebar sidebar-right" id="rightSidebar">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="fw-bold mb-0">اختر الجداول</h5>
-            <button class="btn btn-sm btn-outline-secondary" id="closeRightSidebar">
-                <i class="bi bi-x-lg"></i>
-            </button>
-        </div>
-        <div class="mb-3">
-            <input type="text" id="searchTable" class="form-control form-control-sm" placeholder="بحث عن جدول...">
-        </div>
-        <div class="table-selector-container">
-            <table class="tables-list-table">
-                <thead>
-                    <tr>
-                        <th style="width: 50px;">
-                            <input type="checkbox" id="selectAllTables" class="form-check-input">
-                        </th>
-                        <th>اسم الجدول</th>
-                    </tr>
-                </thead>
-                <tbody id="tablesCheckboxes">
-                    <!-- سيتم ملئه ديناميكيًا من tablesData -->
-                </tbody>
-            </table>
-        </div>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0">اختر الجداول</h5>
+        <button class="btn btn-sm btn-outline-secondary" id="closeRightSidebar">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="mb-3">
+        <input type="text" id="searchTable" class="form-control form-control-sm" placeholder="بحث عن جدول...">
+      </div>
+      <div class="table-selector-container">
+        <table class="tables-list-table">
+          <thead>
+            <tr>
+              <th style="width: 50px;">
+                <input type="checkbox" id="selectAllTables" class="form-check-input">
+              </th>
+              <th>اسم الجدول</th>
+            </tr>
+          </thead>
+          <tbody id="tablesCheckboxes">
+            <!-- سيتم ملئه ديناميكيًا من tablesData -->
+          </tbody>
+        </table>
+      </div>
     </div>
-    
+
     <!-- Left Sidebar (History) -->
     <div class="sidebar sidebar-left" id="leftSidebar">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="fw-bold mb-0">السجل</h5>
-            <button class="btn btn-sm btn-outline-secondary" id="closeLeftSidebar">
-                <i class="bi bi-x-lg"></i>
-            </button>
-        </div>
-        <div style="max-height: calc(100vh - 150px); overflow-y: auto;">
-            <table class="history-table w-100">
-                <thead>
-                    <tr>
-                        <th style="width: 10%">#</th>
-                        <th>النص المحسوب</th>
-                    </tr>
-                </thead>
-                <tbody id="historyList">
-                    <!-- سيتم ملئه ديناميكيًا -->
-                </tbody>
-            </table>
-        </div>
-        <button id="clearAllBtn" class="btn btn-clear-all w-100 mt-3">🗑️ مسح السجل كله</button>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0">السجل</h5>
+        <button class="btn btn-sm btn-outline-secondary" id="closeLeftSidebar">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div style="max-height: calc(100vh - 150px); overflow-y: auto;">
+        <table class="history-table w-100">
+          <thead>
+            <tr>
+              <th style="width: 10%">#</th>
+              <th>النص المحسوب</th>
+            </tr>
+          </thead>
+          <tbody id="historyList">
+            <!-- سيتم ملئه ديناميكيًا -->
+          </tbody>
+        </table>
+      </div>
+      <button id="clearAllBtn" class="btn btn-clear-all w-100 mt-3">🗑️ مسح السجل كله</button>
     </div>
 
     <div class="container-fluid">
       <div class="row">
-        <div class="col-12 p-0">
+        <div class="col-3 p-0">
+          <a href="index.html" style="text-decoration: none; color: #007bff; font-size: 14px;">العودة للرئيسية</a>
+        </div>
+        <div class="col-6 p-0">
           <h3 class="text-center mb-3 fw-bold">حساب الجداول المخصصة</h3>
+        </div>
+        <div class="col-3 p-0">
         </div>
       </div>
 
       <!-- قسم الإدخال -->
       <div class="mt-3">
         <div class="glass-card">
-          <div class="row g-4 p-3">
-            <!-- عمود الإدخال فقط -->
-            <div class="col-md-12">
-              <div class="mb-3">
-                <label class="form-label fw-bold">أدخل النص:</label>
-                <div class="input-group">
-                  <input type="text" id="inputText" class="form-control text-center" placeholder="أدخل النص">
-                  <button id="calculateBtn" class="btn btn-glass" type="button">احسب العبارة</button>
-                </div>
+          <div class="row">
+            <div class="col-md-2 mx-auto">
+              <!-- Right Sidebar Toggle Button -->
+              <button class="sidebar-toggle-btn" id="rightSidebarToggle">
+                <i class="bi bi-list-task"></i> الجداول
+              </button>
+            </div>
+            <div class="col-md-8 mx-auto">
+              <div class="input-group">
+                <input type="text" id="inputText" class="form-control text-center" placeholder="أدخل النص">
+                <button id="calculateBtn" class="btn btn-glass" type="button">احسب العبارة</button>
               </div>
+            </div>
+            <div class="col-md-2 mx-auto">
+              <!-- Left Sidebar Toggle Button -->
+              <button class="sidebar-toggle-btn" id="leftSidebarToggle">
+                <i class="bi bi-clock-history"></i> السجل
+              </button>
             </div>
           </div>
         </div>
       </div>
 
       <!-- القسم السفلي: النتائج التفصيلية -->
-      <div class="row g-4 mt-3">
+      <div class="row mt-1">
         <div class="col-12">
           <div class="glass-card" style="max-height: 90vh; overflow-y: auto;">
-            <h4 class="text-center mb-3 fw-bold">النتائج التفصيلية</h4>
             <div class="table-responsive">
-                <table class="table table-bordered table-hover text-center align-middle" id="resultTable">
-                    <thead class="table-dark sticky-top">
-                        <tr id="resultHeaderRow">
-                            <th>الجدول</th>
-                            <th>العبارة</th>
-                            <!-- أعمدة الكلمات ستضاف هنا ديناميكياً -->
-                        </tr>
-                    </thead>
-                    <tbody id="resultTableBody">
-                        <!-- صفوف النتائج -->
-                    </tbody>
-                </table>
+              <table class="table table-bordered table-hover text-center align-middle" id="resultTable">
+                <thead class="table-dark sticky-top">
+                  <tr id="resultHeaderRow">
+                    <th>الجدول</th>
+                    <th>العبارة</th>
+                    <!-- أعمدة الكلمات ستضاف هنا ديناميكياً -->
+                  </tr>
+                </thead>
+                <tbody id="resultTableBody">
+                  <!-- صفوف النتائج -->
+                </tbody>
+              </table>
             </div>
             <div id="noResultMsg" class="text-center text-muted py-4">
-                لم يتم حساب أي عبارات بعد. أدخل نصاً واضغط "احسب".
+              لم يتم حساب أي عبارات بعد. أدخل نصاً واضغط "احسب".
             </div>
           </div>
         </div>
