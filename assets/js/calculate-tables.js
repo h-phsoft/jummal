@@ -115,11 +115,15 @@ function saveHistory() {
 }
 
 function addToHistory(cleanText, tableName) {
-  history.unshift({text: cleanText, tableName});
-  if (history.length > 50)
-    history = history.slice(0, 50);
-  saveHistory();
-  updateHistoryDisplay();
+  // Check if this text already exists in history to avoid duplicates
+  const exists = history.some(item => item.text === cleanText);
+  if (!exists) {
+    history.unshift({text: cleanText});
+    if (history.length > 50)
+      history = history.slice(0, 50);
+    saveHistory();
+    updateHistoryDisplay();
+  }
 }
 
 function removeItem(index) {
@@ -140,7 +144,7 @@ function updateHistoryDisplay() {
   const container = $('#historyList');
   container.empty();
   if (history.length === 0) {
-    const row = $('<tr><td colspan="2" class="text-center text-muted py-3">لا توجد سجلات بعد</td></tr>');
+    const row = $('<tr><td colspan="1" class="text-center text-muted py-3">لا توجد سجلات بعد</td></tr>');
     container.append(row);
     return;
   }
@@ -149,7 +153,6 @@ function updateHistoryDisplay() {
     const row = $(`
             <tr class="history-row">
               <td title="${item.text}">${item.text}</td>
-              <td>${item.tableName}</td>
             </tr>
           `);
 
@@ -289,10 +292,8 @@ $('#calculateBtn').on('click', function () {
   // إخفاء حاوية المجموع القديم (لم يعد مستخدماً)
   $('#totalSumContainer').hide();
 
-  // إضافة كل نتيجة إلى السجل
-  results.forEach(r => {
-    addToHistory(cleanText, r.name);
-  });
+  // إضافة النص إلى السجل (مرة واحدة فقط)
+  addToHistory(cleanText, '');
 
   $('#inputText').val('').focus();
 });
