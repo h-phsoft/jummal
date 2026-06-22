@@ -1,29 +1,81 @@
-# Examples 1:
-(empty — output nothing)
-
-# Example 2 (Project with artifacts):
+```gitignore
 # Compiled and build artifacts
 *.pyc
 __pycache__/
 *.o
 *.obj
+*.exe
+*.dll
+*.so
+*.a
+*.out
+*.class
+
+# Dependencies
+node_modules/
+venv/
+.venv/
+.env
+.env.local
+*.env.*
+
+# Build directories
 dist/
 build/
-# Dependencies
-.venv/
-venv/
-node_modules/
-# Logs and temp files
+target/
+*.jar
+*.war
+*.zip
+*.tar.gz
+
+# Logs and temporary files
 *.log
 *.tmp
 *.swp
-# Environment
-.env
-.env.local
-.env.*
-# Editors
+*.swo
+*.bak
+*.~
+*~
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE specific
 .vscode/
 .idea/
+*.iml
+*.ipr
+*.iws
+.settings/
+.project
 
-# Original rules preserved
-*.log
+# Coverage reports
+coverage/
+htmlcov/
+.coverage
+*.cover
+coverage.xml
+
+# Testing
+.pytest_cache/
+.mypy_cache/
+*.pytest
+nosetests.xml
+
+# Compression files
+*.zip
+*.gz
+*.tar
+*.tgz
+*.bz2
+*.xz
+*.7z
+*.rar
+*.Z
+*.lz
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+```

@@ -119,17 +119,18 @@ input.form-control:focus {
 /* ========== Buttons (Jummal) ========== */
 .btn-delete-item {
   background: rgba(220, 53, 69, 0.15);
-  color: #c35a3b;
+  color: #dc3545;
   border: none;
-  width: 26px;
-  height: 26px;
-  font-size: 0.8rem;
+  width: 28px;
+  height: 28px;
+  font-size: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 6px;
   padding: 0;
   margin-right: 6px;
+  cursor: pointer;
 }
 
 .btn-delete-item:hover {

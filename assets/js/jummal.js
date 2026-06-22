@@ -278,9 +278,16 @@ $('#calculateBtn').on('click', function () {
 
   // البحث في QWords.json عن كلمات مطابقة لقيمة الجمل
   // تنفيذ البحث تلقائياً باستخدام الدالة searchByJummalValue من combined-search.js
+  // مع "الجمل" كحالة افتراضية دائماً
   const checkJummal = document.getElementById('checkJummal');
   const checkAbjad = document.getElementById('checkAbjad');
   const checkAyqagh = document.getElementById('checkAyqagh');
+  // التأكد أن "الجمل" مختار كحالة افتراضية
+  if (checkJummal && !checkJummal.checked) {
+    checkJummal.checked = true;
+    if (checkAbjad) checkAbjad.checked = false;
+    if (checkAyqagh) checkAyqagh.checked = false;
+  }
   if ((checkJummal && checkJummal.checked) ||
     (checkAbjad && checkAbjad.checked) ||
     (checkAyqagh && checkAyqagh.checked)) {

@@ -10,7 +10,7 @@ function searchByJummalValue(jummalValue) {
   tbody.innerHTML = '';
 
   if (!qWordsData.length) {
-    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-3">جاري تحميل البيانات...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">جاري تحميل البيانات...</td></tr>';
     return;
   }
 
@@ -60,7 +60,7 @@ function searchByJummalValue(jummalValue) {
     ayqaghCountEl.textContent = checkAyqagh ? ` (${ayqaghMatchCount})` : ' (0)';
 
   if (results.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-3">لا توجد كلمات مطابقة</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">لا توجد كلمات مطابقة</td></tr>';
     return;
   }
 
@@ -79,15 +79,44 @@ function searchByJummalValue(jummalValue) {
       <td class="${jummalMatch ? 'match-jummal' : ''}">${word.jummal}</td>
       <td class="${abjadMatch ? 'match-abjad' : ''}">${word.abjad}</td>
       <td class="${ayqaghMatch ? 'match-ayqagh' : ''}">${word.ayqagh}</td>
+      <td>
+        <button class="btn-delete-item" onclick="deleteSearchRow(this)" title="حذف">×</button>
+      </td>
     `;
 
     tbody.appendChild(row);
   });
 }
 
+// دالة حذف سطر من جدول البحث
+function deleteSearchRow(btn) {
+  const row = btn.closest('tr');
+  if (row) {
+    row.remove();
+    // تحديث العدادات بعد الحذف
+    const totalCountEl = document.getElementById('totalCount');
+    const jummalCountEl = document.getElementById('jummalCount');
+    const abjadCountEl = document.getElementById('abjadCount');
+    const ayqaghCountEl = document.getElementById('ayqaghCount');
+    
+    const tbody = document.getElementById('searchResultsBody');
+    const remainingRows = tbody.querySelectorAll('tr').length;
+    
+    if (totalCountEl) {
+      const currentTotal = parseInt(totalCountEl.textContent.replace(/[()]/g, '')) || 0;
+      totalCountEl.textContent = ` (${Math.max(0, currentTotal - 1)})`;
+    }
+    
+    // إذا لم يبق أي صفوف، إظهار رسالة
+    if (remainingRows === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">لا توجد كلمات مطابقة</td></tr>';
+    }
+  }
+}
+
 // تعديل حدث الحساب في jummal.js ليشغل البحث
 function initCombinedSearch() {
-  // الاستماع لتغييرات checkboxes
+  // الاستماع لتغييرات radio buttons للبحث
   document.getElementById('checkJummal').addEventListener('change', () => {
     const inputText = document.getElementById('inputText').value;
     if (inputText.trim()) {
