@@ -249,6 +249,9 @@ $('#calculateBtn').on('click', function () {
   // تقسيم النص إلى كلمات
   const words = cleanText.split(/\s+/).filter(w => w.length > 0);
   
+  // تحديث عنوان الـ accordion بالعبارة المحسوبة
+  $('#accordionTitle').text(`النتائج: ${cleanText}`);
+  
   // حساب القيم لكل جدول محدد باستخدام CHARS_INDEX و tablesData
   const results = [];
   selectedTables.forEach(table => {
@@ -277,21 +280,20 @@ $('#calculateBtn').on('click', function () {
 
   // عرض النتائج في الجدول الجديد
   const headerRow = $('#resultHeaderRow');
-  const wordsHeaderRow = $('#wordsHeaderRow');
   const tbody = $('#resultTableBody');
   
-  // مسح المحتوى القديم
-  wordsHeaderRow.empty();
-  tbody.empty();
+  // مسح المحتوى القديم من الرأس
+  headerRow.find('th:gt(1)').remove(); // إزالة أعمدة الكلمات القديمة
   
-  // إضافة أعمدة الكلمات في الصف الثاني من الرأس
+  // إضافة أعمدة الكلمات في الرأس (بعد عمودي "الجدول" و"العبارة")
   words.forEach((word, index) => {
-    wordsHeaderRow.append(`<th class="word-header">كلمة ${index + 1}<br><small>"${word}"</small></th>`);
+    headerRow.append(`<th>${word}</th>`);
   });
   
   // إضافة صفوف النتائج
+  tbody.empty();
   results.forEach(r => {
-    let rowHTML = `<tr><td><strong>${r.name}</strong></td><td>${r.title}<br><span class="text-primary fw-bold">${r.totalValue.toLocaleString()}</span></td>`;
+    let rowHTML = `<tr><td><strong>${r.name}</strong></td><td>${r.totalValue.toLocaleString()}</td>`;
     
     r.wordValues.forEach(val => {
       rowHTML += `<td class="result-word-col">${val.toLocaleString()}</td>`;

@@ -11,10 +11,10 @@
     <style>
         .table-selector-container { max-height: 200px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 5px; padding: 10px; background: #fff; }
         .result-word-col { min-width: 80px; text-align: center; vertical-align: middle; font-weight: bold; color: #0d6efd; }
-        .word-header { font-size: 0.9rem; color: #6c757d; }
         #calculationDisplay { font-size: 1.2rem; font-weight: bold; color: #198754; margin: 10px 0; min-height: 1.5em; }
-        .toggle-btn { cursor: pointer; user-select: none; }
         .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border-radius: 15px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .accordion-button:not(.collapsed) { background-color: #e7f1ff; color: #0c63e4; }
+        .accordion-body { padding: 0; }
     </style>
   </head>
   <body class="p-3 p-md-4">
@@ -30,68 +30,71 @@
         </div>
       </div>
 
-      <!-- القسم العلوي: الإدخال والسجل -->
-      <div class="row g-4 mt-3">
-        <!-- عمود الإدخال واختيار الجداول -->
-        <div class="col-md-7">
-          <div class="glass-card h-100">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4 class="fw-bold mb-0">إعدادات الحساب</h4>
-                <button class="btn btn-sm btn-outline-secondary toggle-btn" onclick="toggleTableSelector()">
-                    <span id="toggleIcon">▼</span> اختر الجداول
-                </button>
-            </div>
-            
-            <!-- منطقة اختيار الجداول (قابلة للطي) -->
-            <div id="tableSelectorBox" class="table-selector-container mb-3">
-                <div class="mb-2">
-                    <input type="text" id="searchTable" class="form-control form-control-sm" placeholder="بحث عن جدول..." onkeyup="filterTables()">
+      <!-- Accordion للقسم العلوي: الإدخال والجداول والسجل -->
+      <div class="accordion mt-3" id="mainAccordion">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingOne">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+              <span id="accordionTitle">إعدادات الحساب</span>
+            </button>
+          </h2>
+          <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#mainAccordion">
+            <div class="accordion-body">
+              <div class="row g-4 p-3">
+                <!-- عمود الإدخال واختيار الجداول -->
+                <div class="col-md-7">
+                  <div class="mb-3">
+                    <label class="form-label fw-bold">أدخل النص:</label>
+                    <div class="input-group">
+                      <input type="text" id="inputText" class="form-control text-center" placeholder="أدخل النص">
+                      <button id="calculateBtn" class="btn btn-glass" type="button">احسب العبارة</button>
+                    </div>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <label class="form-label fw-bold">اختر الجداول:</label>
+                    <div class="table-selector-container">
+                        <div class="mb-2">
+                            <input type="text" id="searchTable" class="form-control form-control-sm" placeholder="بحث عن جدول..." onkeyup="filterTables()">
+                        </div>
+                        <div class="tables-list-container" style="max-height: 150px; overflow-y: auto; border: none; padding: 0;">
+                          <table class="tables-list-table">
+                            <thead>
+                              <tr>
+                                <th>تحديد</th>
+                                <th>اسم الجدول</th>
+                              </tr>
+                            </thead>
+                            <tbody id="tablesCheckboxes">
+                              <!-- سيتم ملئه ديناميكيًا من tablesData -->
+                            </tbody>
+                          </table>
+                        </div>
+                    </div>
+                  </div>
                 </div>
-                <div class="tables-list-container" style="max-height: 150px; overflow-y: auto; border: none; padding: 0;">
-                  <table class="tables-list-table">
-                    <thead>
-                      <tr>
-                        <th>تحديد</th>
-                        <th>اسم الجدول</th>
-                      </tr>
-                    </thead>
-                    <tbody id="tablesCheckboxes">
-                      <!-- سيتم ملئه ديناميكيًا من tablesData -->
-                    </tbody>
-                  </table>
-                </div>
-            </div>
 
-            <div class="mb-3">
-              <div class="input-group">
-                <input type="text" id="inputText" class="form-control text-center" placeholder="أدخل النص">
-                <button id="calculateBtn" class="btn btn-glass" type="button">احسب العبارة</button>
+                <!-- عمود سجل العمليات (History) -->
+                <div class="col-md-5">
+                  <h4 class="text-center mb-3 fw-bold">السجل</h4>
+                  <div style="max-height: 440px; overflow-y: auto;">
+                    <table class="history-table w-100">
+                      <thead>
+                        <tr>
+                          <th style="width: 10%">#</th>
+                          <th>النص المحسوب</th>
+                          <th style="width: 15%">الإجراء</th>
+                        </tr>
+                      </thead>
+                      <tbody id="historyList">
+                        <!-- سيتم ملئه ديناميكيًا -->
+                      </tbody>
+                    </table>
+                  </div>
+                  <button id="clearAllBtn" class="btn btn-clear-all w-100 mt-2">🗑️ مسح السجل كله</button>
+                </div>
               </div>
             </div>
-            
-            <div id="calculationDisplay"></div>
-          </div>
-        </div>
-
-        <!-- عمود سجل العمليات (History) -->
-        <div class="col-md-5">
-          <div class="glass-card h-100">
-            <h4 class="text-center mb-3 fw-bold">السجل</h4>
-            <div style="max-height: 440px; overflow-y: auto;">
-              <table class="history-table w-100">
-                <thead>
-                  <tr>
-                    <th style="width: 10%">#</th>
-                    <th>النص المحسوب</th>
-                    <th style="width: 15%">الإجراء</th>
-                  </tr>
-                </thead>
-                <tbody id="historyList">
-                  <!-- سيتم ملئه ديناميكيًا -->
-                </tbody>
-              </table>
-            </div>
-            <button id="clearAllBtn" class="btn btn-clear-all w-100 mt-2">🗑️ مسح السجل كله</button>
           </div>
         </div>
       </div>
@@ -105,12 +108,9 @@
                 <table class="table table-bordered table-hover text-center align-middle" id="resultTable">
                     <thead class="table-dark">
                         <tr id="resultHeaderRow">
-                            <th rowspan="2" style="vertical-align: middle;">اسم الجدول</th>
-                            <th rowspan="2" style="vertical-align: middle;">العنوان / القيمة الكلية</th>
+                            <th>الجدول</th>
+                            <th>العبارة</th>
                             <!-- أعمدة الكلمات ستضاف هنا ديناميكياً -->
-                        </tr>
-                        <tr id="wordsHeaderRow" class="table-light">
-                            <!-- رؤوس الكلمات -->
                         </tr>
                     </thead>
                     <tbody id="resultTableBody">
@@ -134,21 +134,6 @@
     <script src="assets/vendors/sheetjs/xlsx.full.min.js"></script>
     <script src="assets/js/data/tables-data.js"></script>
     <script src="assets/js/calculate-tables.js"></script>
-
-    <script>
-        // دالة مساعدة لإظهار/إخفاء قائمة الجداول
-        function toggleTableSelector() {
-            const box = document.getElementById('tableSelectorBox');
-            const icon = document.getElementById('toggleIcon');
-            if (box.style.display === 'none') {
-                box.style.display = 'block';
-                icon.innerHTML = '▼';
-            } else {
-                box.style.display = 'none';
-                icon.innerHTML = '▲';
-            }
-        }
-    </script>
 
   </body>
 </html>
