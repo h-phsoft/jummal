@@ -1,1 +1,1 @@
-Nothing should be ignored based on the provided file changes, as they only include HTML files which are source code/config files. Therefore, no .gitignore content is needed.
+Nothing needs to be added to .gitignore since the changes only include HTML and CSS files, which are source files that should be tracked in version control.
