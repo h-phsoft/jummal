@@ -1,131 +1,112 @@
 $(document).ready(function () {
 
-  const positions = {
-    key: {row: 2, col: 1, name: "المفتاح"},
-    ghalaq: {row: 1, col: 2, name: "المغلاق"}, // ← الرقم 7 في الوفق الأساسي
-    middle: {row: 1, col: 1, name: "الوسط"},
-    fractionFix: {row: 1, col: 2, name: "جبر الكسر"}
-  };
-
-  const fillOrder = [
-    [0, 2], // → 2
-    [1, 0], // → 3
-    [0, 0], // → 4
-    [1, 1], // → 5
-    [2, 2], // → 6
-    [1, 2], // → 7 ← جبر الكسر
-    [2, 0], // → 8
-    [0, 1]  // → 9
+  // المربع السحري الثابت 4x4 كما طُلب
+  const fixedMagicSquare4x4 = [
+    [16, 3, 2, 13],
+    [5, 10, 11, 8],
+    [9, 7, 6, 12],
+    [4, 15, 14, 1]
   ];
 
-  function generateMagicSquare(inputNumber) {
-    const base = Math.floor((inputNumber - 12) / 3);
-    const remainder = (inputNumber - 12) % 3;
-
-    const square = Array(3).fill().map(() => Array(3).fill(0));
-    square[positions.key.row][positions.key.col] = base;
-
-    let currentValue = base;
-    for (let i = 0; i < fillOrder.length; i++) {
-      const [row, col] = fillOrder[i];
-      currentValue += 1;
-      if (row === positions.fractionFix.row && col === positions.fractionFix.col && remainder > 0) {
-        currentValue += remainder;
-      }
-      square[row][col] = currentValue;
+  /**
+   * حسابات المربع السحري 4x4 (WFQ-4x4)
+   * @param {number[][]} grid - مصفوفة 4x4 تحتوي على القيم
+   * @returns {Object} - كائن يحتوي على جميع النتائج الحسابية
+   */
+  function calculateWFQ4x4(grid) {
+    // التحقق من أن المصفوفة 4x4
+    if (!grid || grid.length !== 4 || grid.some(row => row.length !== 4)) {
+      throw new Error("يجب أن تكون المصفوفة 4x4");
     }
 
-    // ✅ حساب القيم المطلوبة
-    const allValues = square.flat();
-    const minVal = Math.min(...allValues);
-    const maxVal = Math.max(...allValues);
+    // تسطيح المصفوفة للحصول على جميع القيم
+    const allValues = grid.flat();
+    
+    // خانات الضلع = عدد الخانات في كل ضلع
+    const khanatAlDila = 4;
 
-    // نعتبر الصف العلوي (الضلع) هو الصف 0
-    const wufuq = square[0].reduce((a, b) => a + b, 0); // مجموع الصف العلوي
-    const khanaatAlDhal3 = 3;
-    const al3Adl = minVal + maxVal;
-    const alAs = wufuq - khanaatAlDhal3;
-    const alMasaha = allValues.reduce((a, b) => a + b, 0);
-    const alDhabeet = wufuq + alMasaha;
-    const alGhaya = alDhabeet * 2;
-    const alAsl = alGhaya * maxVal;
+    // الوفق = مجموع القيم في خانات الضلع (مجموع الصف الأول)
+    const wafq = grid[0].reduce((a, b) => a + b, 0);
+
+    // المفتاح = أصغر قيمة
+    const miftah = Math.min(...allValues);
+
+    // المغلاق = أكبر قيمة
+    const mighlaq = Math.max(...allValues);
+
+    // العدل = المفتاح والمغلاق
+    const adl = [miftah, mighlaq];
+
+    // الأس = قيمة الوفق منقوصًا منها عدد خانات الضلع
+    const uss = wafq - khanatAlDila;
+
+    // المساحة = مجموعة قيم الخانات كلها
+    const masaha = allValues.reduce((sum, val) => sum + val, 0);
+
+    // الضابط = مجموعة الوفق مع المساحة
+    const dabt = wafq + masaha;
+
+    // الغاية = ضعف قيمة الضابط
+    const ghaya = 2 * dabt;
+
+    // الأصل = حاصل ضرب الغاية في المغلاق
+    const asl = ghaya * mighlaq;
+
+    // جبر الكسر = التحقق مما إذا كانت هناك كسور
+    const hasFractions = allValues.some(val => !Number.isInteger(val));
+    const jabrAlKasr = hasFractions ? "يحتاج إلى جبر" : "لا يحتاج";
 
     return {
-      square: square,
-      keyVal: minVal,
-      ghalaqVal: maxVal,
-      wufuq: wufuq,
-      khanaatAlDhal3: khanaatAlDhal3,
-      al3Adl: al3Adl,
-      alAs: alAs,
-      alMasaha: alMasaha,
-      alDhabeet: alDhabeet,
-      alGhaya: alGhaya,
-      alAsl: alAsl,
-      fraction: remainder
+      grid: grid,
+      khanatAlDila,       // خانات الضلع
+      wafq,               // الوفق
+      miftah,             // المفتاح
+      mighlaq,            // المغلاق
+      adl,                // العدل
+      uss,                // الأس
+      masaha,             // المساحة
+      dabt,               // الضابط
+      ghaya,              // الغاية
+      asl,                // الأصل
+      jabrAlKasr          // جبر الكسر
     };
   }
 
-  function updateFractionIndicator(fraction) {
-    const $indicator = $('#fractionIndicator');
-    if (fraction === 0) {
-      $indicator.css('background-color', 'green');
-    } else {
-      $indicator.css('background-color', 'red');
-    }
-    $indicator.show();
-  }
-
-  function renderMagicSquare(square, keyVal, ghalaqVal, wufuq, khanaatAlDhal3, al3Adl, alAs, alMasaha, alDhabeet, alGhaya, alAsl, fraction) {
+  function renderMagicSquare4x4(square, results) {
     const $container = $('#magicSquare').empty();
-    const allValues = square.flat();
+    
+    // تعيين حجم الشبكة لـ 4x4
+    $container.addClass('grid-4x4');
 
-    // تحديث مؤشر الكسر (أخضر إذا لا يوجد كسر، أحمر إذا وجد كسر)
-    const $indicator = $('#fractionIndicator');
-    if (fraction === 0) {
-      $indicator.css('background-color', 'green');
-    } else {
-      $indicator.css('background-color', 'red');
-    }
-
-    // إظهار المؤشر دائمًا بعد الحساب
-    $indicator.show();
-
-    // تمييز المفتاح والمغلاق حسب القيمة
-    const minVal = Math.min(...allValues);
-    const maxVal = Math.max(...allValues);
-
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
+    // إنشاء خلايا المربع 4x4
+    for (let i = 0; i < 4; i++) {
+      for (let j = 0; j < 4; j++) {
         const $cell = $('<div class="magic-cell">').text(square[i][j]);
-
-        if (square[i][j] === minVal) {
+        
+        // تمييز المفتاح (أصغر قيمة) والمغلاق (أكبر قيمة)
+        if (square[i][j] === results.miftah) {
           $cell.addClass('key');
-        } else if (square[i][j] === maxVal) {
+        } else if (square[i][j] === results.mighlaq) {
           $cell.addClass('ghalaq');
-        } else if (i === 1 && j === 1) {
-          $cell.addClass('middle');
-        } else if (i === 1 && j === 2 && fraction > 0) {
-          $cell.addClass('fraction-fix');
         }
-
+        
         $container.append($cell);
       }
     }
 
-    // ✅ الجدول مع جبر الكسر في النهاية
+    // ✅ الجدول مع جميع القيم المطلوبة
     const tableRows = [
-      {name: "جبر الكسر", explanation: "الباقي من قسمة (الرقم - 12) على 3", value: fraction},
-      {name: "خانات الضلع", explanation: "عدد الخانات في كل ضلع", value: khanaatAlDhal3},
-      {name: "الوفق", explanation: "مجموع القيم في خانات الضلع", value: wufuq},
-      {name: "المفتاح", explanation: "أصغر قيمة", value: keyVal},
-      {name: "المغلاق", explanation: "أكبر قيمة", value: ghalaqVal},
-      {name: "العدل", explanation: "المفتاح والمغلاق", value: al3Adl},
-      {name: "الأس", explanation: "قيمة الوفق منقوصًا منها عدد خانات الضلع", value: alAs},
-      {name: "المساحة", explanation: "مجموعة قيم الخانات كلها", value: alMasaha},
-      {name: "الضابط", explanation: "مجموعة الوفق مع المساحة", value: alDhabeet},
-      {name: "الغاية", explanation: "ضعف قيمة الضابط", value: alGhaya},
-      {name: "الأصل", explanation: "حاصل ضرب الغاية في المغلاق", value: alAsl},
+      {name: "خانات الضلع", explanation: "عدد الخانات في كل ضلع", value: results.khanatAlDila},
+      {name: "الوفق", explanation: "مجموع القيم في خانات الضلع", value: results.wafq},
+      {name: "المفتاح", explanation: "أصغر قيمة", value: results.miftah},
+      {name: "المغلاق", explanation: "أكبر قيمة", value: results.mighlaq},
+      {name: "العدل", explanation: "المفتاح والمغلاق", value: `[${results.adl[0]}, ${results.adl[1]}]`},
+      {name: "الأس", explanation: "قيمة الوفق منقوصًا منها عدد خانات الضلع", value: results.uss},
+      {name: "المساحة", explanation: "مجموعة قيم الخانات كلها", value: results.masaha},
+      {name: "الضابط", explanation: "مجموعة الوفق مع المساحة", value: results.dabt},
+      {name: "الغاية", explanation: "ضعف قيمة الضابط", value: results.ghaya},
+      {name: "الأصل", explanation: "حاصل ضرب الغاية في المغلاق", value: results.asl},
+      {name: "جبر الكسر", explanation: "التحقق من وجود كسور", value: results.jabrAlKasr}
     ];
 
     const $tbody = $('#infoTableBody').empty();
@@ -140,33 +121,14 @@ $(document).ready(function () {
     });
 
     $('#magicResult').removeClass('d-none');
-
-    // ✅ إظهار زر الدليل
-    $('#toggleGuideBtn').show();
   }
 
-  $('#generateBtn').on('click', function () {
-    const input = $('#targetSum').val().trim();
-    const inputNumber = parseInt(input);
+  // عرض المربع السحري الثابت عند التحميل
+  const results = calculateWFQ4x4(fixedMagicSquare4x4);
+  renderMagicSquare4x4(fixedMagicSquare4x4, results);
 
-    if (isNaN(inputNumber)) {
-      alert("الرجاء إدخال عدد صحيح.");
-      return;
-    }
-
-    if (inputNumber < 12) {
-      alert("الرقم يجب أن يكون 12 أو أكبر.");
-      return;
-    }
-
-    const result = generateMagicSquare(inputNumber);
-
-    // إظهار الجدول الكامل مع زر الدليل
-    renderMagicSquare(result.square, result.keyVal, result.ghalaqVal, result.wufuq, result.khanaatAlDhal3, result.al3Adl, result.alAs, result.alMasaha, result.alDhabeet, result.alGhaya, result.alAsl, result.fraction);
-
-    // التأكد من إظهار زر الدليل
-    $('#toggleGuideBtn').show();
-  });
+  // إظهار زر الدليل
+  $('#toggleGuideBtn').show();
 
   // ✅ حدث زر إظهار/إخفاء الدليل
   $('#toggleGuideBtn').on('click', function () {
@@ -177,12 +139,6 @@ $(document).ready(function () {
     } else {
       $table.addClass('d-none');
       $(this).text('إظهار الدليل');
-    }
-  }).show(); // إظهار الزر عند التحميل
-
-  $('#targetSum').on('keypress', function (e) {
-    if (e.which === 13) {
-      $('#generateBtn').click();
     }
   });
 
