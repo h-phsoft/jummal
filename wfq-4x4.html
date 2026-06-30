@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jumma | Wefeq 4x4</title>
+    <title>تعمير الوفق المربع</title>
     <link href="assets/vendors/bootstrap/css/bootstrap.rtl.min.css" rel="stylesheet">
     <link href="assets/vendors/bootstrap/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet">
     <link href="assets/vendors/bootstrap/ph-bootstrap-colors.css" rel="stylesheet">
@@ -23,20 +23,41 @@
       </div>
       <div class="row mt-1 justify-content-center">
         <div class="col-md-8 col-lg-6">
-          <div class="card shadow">
-            <div class="card-body">
-              <div class="mb-3">
-                <input type="number" id="targetSum" class="form-control text-center" placeholder="أدخل الرقم هنا" required>
+          <div class="card p-2 shadow">
+            <div class="row">
+              <div class="col-2">
+                <label for="targetSum" class="form-label p-3">الأساس</label>
               </div>
-              <div class="d-grid">
-                <button id="generateBtn" class="btn btn-success">أنشئ الوفق</button>
+              <div class="col-8 text-center">
+                <div class="input-group text-center">
+                  <input type="number" id="targetSum" class="form-control" value="34" min="34" style="padding: 10px; width: 100px; text-align: center; font-size: 1.5rem;">
+                  <button id="generateBtn" class="btn-glass" style="padding: 10px 25px; cursor: pointer;">أنشئ الوفق</button>
+                </div>
               </div>
-
-              <div id="magicResult" class="result-section text-center d-none">
+              <div class="col-2 pt-3">
+                <span id="fractionIndicator" class="fraction-indicator-circle" style="display:none;"></span>
+              </div>
+            </div>
+            <div class="row d-none">
+              <div class="col-12">
+                <div id="magicResult" class="result-box d-none" style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px;">
+                  <div id="alertBox"></div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
                 <div id="magicSquare" class="magic-square grid-4x4"></div>
-                <button id="toggleGuideBtn" class="btn btn-outline-primary mt-3">إظهار الدليل</button>
-                <!-- ✅ جدول المعلومات الجديد (3 أعمدة) -->
-                <div id="guideTable" class="table-responsive mt-4 d-none">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 text-center">
+                <button id="toggleGuideBtn" class="btn btn-glass" style="display:none; cursor: pointer;">إظهار الدليل</button>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <div id="guideTable" class="table-wrapper d-none">
                   <table class="info-table">
                     <thead>
                       <tr>
@@ -46,7 +67,6 @@
                       </tr>
                     </thead>
                     <tbody id="infoTableBody">
-                      <!-- سيتم ملؤه ديناميًا -->
                     </tbody>
                   </table>
                 </div>
@@ -56,13 +76,11 @@
         </div>
       </div>
     </div>
-
     <!-- jQuery + Bootstrap JS -->
     <script src="assets/vendors/jquery/jquery.min.js"></script>
     <script src="assets/vendors/bootstrap/js/bootstrap.bundle.min.js"></script>
     <!-- SheetJS for Excel export -->
     <script src="assets/vendors/sheetjs/xlsx.full.min.js"></script>
     <script src="assets/js/wfq-4x4.js"></script>
-
   </body>
 </html>
