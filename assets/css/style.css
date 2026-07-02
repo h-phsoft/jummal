@@ -220,6 +220,7 @@ input.form-control:focus {
 }
 
 /* ========== Magic Cell Types ========== */
+/*
 .key {
   background-color: #ffc107 !important;
   border-color: #ff9800;
@@ -237,14 +238,13 @@ input.form-control:focus {
   border-color: #4caf50;
   color: #000;
 }
-
+*/
 .fraction-fix {
   background-color: #d1a8f5 !important;
   border-color: #9c27b0;
   color: #000;
   font-weight: bold;
 }
-
 /* ========== Result Section (Magic Squares) ========== */
 .result-section {
   margin-top: 30px;
