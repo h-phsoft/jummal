@@ -231,6 +231,59 @@ $(document).ready(function () {
   }
 
   // ============================================
+  // الوفق المثمن 8x8 - طريقة خاصة للأرقام الزوجية
+  // ============================================
+  function generateOctagonWefeq(inputNumber, n = 8) {
+    const magicConstant = n * (n * n + 1) / 2;
+    const diff = inputNumber - magicConstant;
+    const base = Math.floor(diff / n);
+    const remainder = diff % n;
+
+    const square = Array(n).fill().map(() => Array(n).fill(0));
+
+    // استخدام طريقة الضرب للزوجي
+    // نبدأ بالأرقام من 1 إلى n² ونضيف base
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) {
+        square[i][j] = (i * n + j + 1) + base;
+      }
+    }
+
+    // إضافة جبر الكسر في آخر خانة
+    if (remainder > 0) {
+      square[n - 1][n - 1] += remainder;
+    }
+
+    const allValues = square.flat();
+    const minVal = Math.min(...allValues);
+    const maxVal = Math.max(...allValues);
+
+    const wufuq = inputNumber;
+    const khanaatAlDhal3 = n;
+    const al3Adl = minVal + maxVal;
+    const alAs = wufuq - khanaatAlDhal3;
+    const alMasaha = allValues.reduce((a, b) => a + b, 0);
+    const alDhabeet = wufuq + alMasaha;
+    const alGhaya = alDhabeet * 2;
+    const alAsl = alGhaya * maxVal;
+
+    return {
+      square: square,
+      keyVal: minVal,
+      ghalaqVal: maxVal,
+      wufuq: wufuq,
+      khanaatAlDhal3: khanaatAlDhal3,
+      al3Adl: al3Adl,
+      alAs: alAs,
+      alMasaha: alMasaha,
+      alDhabeet: alDhabeet,
+      alGhaya: alGhaya,
+      alAsl: alAsl,
+      fraction: remainder
+    };
+  }
+
+  // ============================================
   // الوفق المسدس 6x6 - طريقة خاصة للأرقام الزوجية
   // ============================================
   function generateEvenWefeq(inputNumber, n) {
@@ -294,6 +347,7 @@ $(document).ready(function () {
     pentagon: 65,
     hexagon: 111,
     heptagon: 175,
+    octagon: 260,
     nonagon: 369
   };
 
@@ -303,6 +357,7 @@ $(document).ready(function () {
     pentagon: 65,
     hexagon: 111,
     heptagon: 175,
+    octagon: 260,
     nonagon: 369
   };
 
@@ -314,7 +369,8 @@ $(document).ready(function () {
       shape === 'square' ? 4 :
       shape === 'pentagon' ? 5 :
       shape === 'hexagon' ? 6 :
-      shape === 'heptagon' ? 7 : 9;
+      shape === 'heptagon' ? 7 :
+      shape === 'octagon' ? 8 : 9;
 
     if (inputNumber < minVal) {
       return {
@@ -353,6 +409,8 @@ $(document).ready(function () {
         return generateOddWefeq(inputNumber, 5);
       case 'heptagon':
         return generateOddWefeq(inputNumber, 7);
+      case 'octagon':
+        return generateOctagonWefeq(inputNumber, 8);
       case 'nonagon':
         return generateOddWefeq(inputNumber, 9);
       case 'hexagon':
@@ -513,6 +571,7 @@ $(document).ready(function () {
       pentagon: 'المخمس',
       hexagon: 'المسدس',
       heptagon: 'المسبع',
+      octagon: 'المثمن',
       nonagon: 'المتسع'
     };
 
