@@ -22,17 +22,36 @@ $(document).ready(function () {
   ];
   
   function generateTriangleWefeq(inputNumber) {
+    // استخدام نفس المنطق تماماً من wfq-3x3.js
+    const positions = {
+      key: {row: 2, col: 1, name: "المفتاح"},
+      ghalaq: {row: 1, col: 2, name: "المغلاق"},
+      middle: {row: 1, col: 1, name: "الوسط"},
+      fractionFix: {row: 1, col: 2, name: "جبر الكسر"}
+    };
+
+    const fillOrder = [
+      [0, 2], // → 2
+      [1, 0], // → 3
+      [0, 0], // → 4
+      [1, 1], // → 5
+      [2, 2], // → 6
+      [1, 2], // → 7 ← جبر الكسر
+      [2, 0], // → 8
+      [0, 1]  // → 9
+    ];
+
     const base = Math.floor((inputNumber - 12) / 3);
     const remainder = (inputNumber - 12) % 3;
 
     const square = Array(3).fill().map(() => Array(3).fill(0));
-    square[trianglePositions.key.row][trianglePositions.key.col] = base;
+    square[positions.key.row][positions.key.col] = base;
 
     let currentValue = base;
-    for (let i = 0; i < triangleFillOrder.length; i++) {
-      const [row, col] = triangleFillOrder[i];
+    for (let i = 0; i < fillOrder.length; i++) {
+      const [row, col] = fillOrder[i];
       currentValue += 1;
-      if (row === trianglePositions.fractionFix.row && col === trianglePositions.fractionFix.col && remainder > 0) {
+      if (row === positions.fractionFix.row && col === positions.fractionFix.col && remainder > 0) {
         currentValue += remainder;
       }
       square[row][col] = currentValue;
@@ -68,31 +87,40 @@ $(document).ready(function () {
   }
   
   // ============================================
-  // الوفق المربع 4x4 - نفس منطق wfq-4x4.js
+  // الوفق المربع 4x4 - التوزيع المطلوب
+  // النموذج الأساسي (مجموع 34):
+  // 15  4  5 10
+  //  6  9 16  3
+  // 12  7  2 13
+  //  1 14 11  8
   // ============================================
-  const squareFillOrder = [
-    [0, 0], [1, 2], [2, 3], [3, 1],
-    [3, 2], [2, 0], [1, 1], [0, 3],
-    [2, 1], [3, 3], [0, 2], [1, 0],
-    [1, 3], [0, 1], [3, 0], [2, 2]
-  ];
-  
   function generateSquareWefeq(inputNumber) {
-    const base = Math.floor((inputNumber - 30) / 4);
-    const remainder = (inputNumber - 30) % 4;
-
+    // النموذج الأساسي للوفق المربع (عندما يكون الأساس 34)
+    const baseSquare = [
+      [15,  4,  5, 10],
+      [ 6,  9, 16,  3],
+      [12,  7,  2, 13],
+      [ 1, 14, 11,  8]
+    ];
+    
+    // حساب الفرق عن الأساس 34
+    const diff = inputNumber - 34;
+    const addPerCell = Math.floor(diff / 4);
+    const remainder = diff % 4;
+    
     const square = Array(4).fill().map(() => Array(4).fill(0));
-
-    squareFillOrder.forEach((pos, index) => {
-      const [row, col] = pos;
-      const cellNumber = index + 1;
-
-      if (cellNumber >= 13) {
-        square[row][col] = base + index + remainder;
-      } else {
-        square[row][col] = base + index;
+    
+    // إضافة القيمة الأساسية لكل خلية
+    for (let i = 0; i < 4; i++) {
+      for (let j = 0; j < 4; j++) {
+        square[i][j] = baseSquare[i][j] + addPerCell;
       }
-    });
+    }
+    
+    // إضافة جبر الكسر في الخانة المناسبة (الصف 1، العمود 2 - حيث يوجد الرقم 16 في النموذج الأساسي)
+    if (remainder > 0) {
+      square[1][2] += remainder;
+    }
 
     const allValues = square.flat();
     const minVal = Math.min(...allValues);
@@ -269,7 +297,7 @@ $(document).ready(function () {
   };
   
   const minValues = {
-    triangle: 12,
+    triangle: 15,
     square: 34,
     pentagon: 65,
     hexagon: 111,
@@ -350,7 +378,14 @@ $(document).ready(function () {
           $cell.addClass('key');
         } else if (val === result.ghalaqVal) {
           $cell.addClass('ghalaq');
+        } else if (shape === 'triangle' && result.fraction > 0 && i === 1 && j === 2) {
+          // خانة جبر الكسر في الوفق المثلث (المغلاق)
+          $cell.addClass('fraction-fix');
+        } else if (shape === 'square' && result.fraction > 0 && i === 1 && j === 2) {
+          // خانة جبر الكسر في الوفق المربع (الصف 1، العمود 2 - حيث الرقم 16)
+          $cell.addClass('fraction-fix');
         } else if (result.fraction > 0 && i === n - 1 && j === n - 1) {
+          // للأوفاق الأخرى
           $cell.addClass('fraction-fix');
         }
         
