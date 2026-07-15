@@ -413,6 +413,47 @@ input.form-control:focus {
   transition: background-color 0.3s ease;
 }
 
+/* ========== Awfaq Shamil Button Colors ========== */
+.shape-btn.success {
+  border-color: #28a745 !important;
+  color: #28a745 !important;
+  background-color: #f8fff9 !important;
+  font-weight: bold !important;
+}
+
+.shape-btn.danger {
+  border-color: #dc3545 !important;
+  color: #dc3545 !important;
+  background-color: #fff8f8 !important;
+  font-weight: bold !important;
+}
+
+.shape-btn.warning {
+  border-color: #fd7e14 !important;
+  color: #fd7e14 !important;
+  background-color: #fffbf8 !important;
+  font-weight: bold !important;
+}
+
+/* Magic Cell Special Classes */
+.magic-cell.key {
+  background-color: #ffc107 !important;
+  border-color: #ff9800;
+  color: #000;
+}
+
+.magic-cell.ghalaq {
+  background-color: #ff9e9e !important;
+  border-color: #f44336;
+  color: #000;
+}
+
+.magic-cell.middle {
+  background-color: #8fd1a8 !important;
+  border-color: #4caf50;
+  color: #000;
+}
+
 /* ========== Search Page Styles ========== */
 .search-body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;

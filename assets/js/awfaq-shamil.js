@@ -1,29 +1,131 @@
 $(document).ready(function () {
   
-  // تسكينات الأوفاق المختلفة
-  const fillOrders = {
-    // الوفق المثلث 3×2 (6 خانات)
-    triangle: [
-      [0, 2], [1, 0], [0, 0], [1, 1], [1, 2], [0, 1]
-    ],
-    // الوفق المربع 4×4 (16 خانة)
-    square: [
-      [0, 0], [1, 2], [2, 3], [3, 1],
-      [3, 2], [2, 0], [1, 1], [0, 3],
-      [2, 1], [3, 3], [0, 2], [1, 0],
-      [1, 3], [0, 1], [3, 0], [2, 2]
-    ],
-    // الوفق المخمس 5×5 (25 خانة) - نمط متتابع
-    pentagon: [],
-    // الوفق المسدس 6×6 (36 خانة)
-    hexagon: [],
-    // الوفق المسبع 7×7 (49 خانة)
-    heptagon: [],
-    // الوفق المتسع 9×9 (81 خانة)
-    nonagon: []
+  // ============================================
+  // الوفق المثلث 3x3 - نفس منطق wfq-3x3.js
+  // ============================================
+  const trianglePositions = {
+    key: {row: 2, col: 1, name: "المفتاح"},
+    ghalaq: {row: 1, col: 2, name: "المغلاق"},
+    middle: {row: 1, col: 1, name: "الوسط"},
+    fractionFix: {row: 1, col: 2, name: "جبر الكسر"}
   };
   
-  // توليد تسكينات للأوفاق الكبيرة باستخدام خوارزمية Siamese method للأرقام الفردية
+  const triangleFillOrder = [
+    [0, 2], // → 2
+    [1, 0], // → 3
+    [0, 0], // → 4
+    [1, 1], // → 5
+    [2, 2], // → 6
+    [1, 2], // → 7 ← جبر الكسر
+    [2, 0], // → 8
+    [0, 1]  // → 9
+  ];
+  
+  function generateTriangleWefeq(inputNumber) {
+    const base = Math.floor((inputNumber - 12) / 3);
+    const remainder = (inputNumber - 12) % 3;
+
+    const square = Array(3).fill().map(() => Array(3).fill(0));
+    square[trianglePositions.key.row][trianglePositions.key.col] = base;
+
+    let currentValue = base;
+    for (let i = 0; i < triangleFillOrder.length; i++) {
+      const [row, col] = triangleFillOrder[i];
+      currentValue += 1;
+      if (row === trianglePositions.fractionFix.row && col === trianglePositions.fractionFix.col && remainder > 0) {
+        currentValue += remainder;
+      }
+      square[row][col] = currentValue;
+    }
+
+    const allValues = square.flat();
+    const minVal = Math.min(...allValues);
+    const maxVal = Math.max(...allValues);
+
+    const wufuq = square[0].reduce((a, b) => a + b, 0);
+    const khanaatAlDhal3 = 3;
+    const al3Adl = minVal + maxVal;
+    const alAs = wufuq - khanaatAlDhal3;
+    const alMasaha = allValues.reduce((a, b) => a + b, 0);
+    const alDhabeet = wufuq + alMasaha;
+    const alGhaya = alDhabeet * 2;
+    const alAsl = alGhaya * maxVal;
+
+    return {
+      square: square,
+      keyVal: minVal,
+      ghalaqVal: maxVal,
+      wufuq: wufuq,
+      khanaatAlDhal3: khanaatAlDhal3,
+      al3Adl: al3Adl,
+      alAs: alAs,
+      alMasaha: alMasaha,
+      alDhabeet: alDhabeet,
+      alGhaya: alGhaya,
+      alAsl: alAsl,
+      fraction: remainder
+    };
+  }
+  
+  // ============================================
+  // الوفق المربع 4x4 - نفس منطق wfq-4x4.js
+  // ============================================
+  const squareFillOrder = [
+    [0, 0], [1, 2], [2, 3], [3, 1],
+    [3, 2], [2, 0], [1, 1], [0, 3],
+    [2, 1], [3, 3], [0, 2], [1, 0],
+    [1, 3], [0, 1], [3, 0], [2, 2]
+  ];
+  
+  function generateSquareWefeq(inputNumber) {
+    const base = Math.floor((inputNumber - 30) / 4);
+    const remainder = (inputNumber - 30) % 4;
+
+    const square = Array(4).fill().map(() => Array(4).fill(0));
+
+    squareFillOrder.forEach((pos, index) => {
+      const [row, col] = pos;
+      const cellNumber = index + 1;
+
+      if (cellNumber >= 13) {
+        square[row][col] = base + index + remainder;
+      } else {
+        square[row][col] = base + index;
+      }
+    });
+
+    const allValues = square.flat();
+    const minVal = Math.min(...allValues);
+    const maxVal = Math.max(...allValues);
+
+    const wufuq = inputNumber;
+    const khanaatAlDhal3 = 4;
+    const al3Adl = minVal + maxVal;
+    const alAs = wufuq - khanaatAlDhal3;
+    const alMasaha = allValues.reduce((a, b) => a + b, 0);
+    const alDhabeet = wufuq + alMasaha;
+    const alGhaya = alDhabeet * 2;
+    const alAsl = alGhaya * maxVal;
+
+    return {
+      square: square,
+      keyVal: minVal,
+      ghalaqVal: maxVal,
+      wufuq: wufuq,
+      khanaatAlDhal3: khanaatAlDhal3,
+      al3Adl: al3Adl,
+      alAs: alAs,
+      alMasaha: alMasaha,
+      alDhabeet: alDhabeet,
+      alGhaya: alGhaya,
+      alAsl: alAsl,
+      fraction: remainder
+    };
+  }
+  
+  // ============================================
+  // الأوفاق الفردية (5x5, 7x7, 9x9) - Siamese Method
+  // ============================================
   function generateSiameseFillOrder(n) {
     const order = [];
     const grid = Array(n).fill().map(() => Array(n).fill(false));
@@ -48,76 +150,144 @@ $(document).ready(function () {
     return order;
   }
   
-  // ملء التسكينات للأوفاق الفردية
-  fillOrders.pentagon = generateSiameseFillOrder(5);
-  fillOrders.heptagon = generateSiameseFillOrder(7);
-  fillOrders.nonagon = generateSiameseFillOrder(9);
-  
-  // توليد تسكين للوفق المسدس (زوجي) باستخدام طريقة مختلفة
-  function generateEvenFillOrder(n) {
-    const order = [];
-    const grid = Array(n).fill().map(() => Array(n).fill(0));
-    let counter = 1;
+  function generateOddWefeq(inputNumber, n) {
+    const magicConstant = n * (n * n + 1) / 2;
+    const diff = inputNumber - magicConstant;
+    const base = Math.floor(diff / n);
+    const remainder = diff % n;
     
-    // ملء القطرين أولاً
-    for (let i = 0; i < n; i++) {
-      grid[i][i] = counter++;
-      grid[i][n - 1 - i] = counter++;
-    }
+    const fillOrder = generateSiameseFillOrder(n);
+    const square = Array(n).fill().map(() => Array(n).fill(0));
     
-    // ملء الباقي من الأسفل للأعلى
-    for (let i = n - 1; i >= 0; i--) {
-      for (let j = 0; j < n; j++) {
-        if (grid[i][j] === 0) {
-          grid[i][j] = counter++;
-        }
+    // البدء بالقيم الأساسية (1 إلى n²) مرتبة حسب Siamese
+    fillOrder.forEach((pos, index) => {
+      const [row, col] = pos;
+      let value = (index + 1) + base;
+      
+      // إضافة جبر الكسر في آخر خانة
+      if (remainder > 0 && index === fillOrder.length - 1) {
+        value += remainder;
       }
-    }
+      
+      square[row][col] = value;
+    });
     
-    // تحويل الشبكة إلى قائمة مرتبة
-    for (let i = 0; i < n; i++) {
-      for (let j = 0; j < n; j++) {
-        order.push([i, j]);
-      }
-    }
+    const allValues = square.flat();
+    const minVal = Math.min(...allValues);
+    const maxVal = Math.max(...allValues);
     
-    return order;
+    const wufuq = inputNumber;
+    const khanaatAlDhal3 = n;
+    const al3Adl = minVal + maxVal;
+    const alAs = wufuq - khanaatAlDhal3;
+    const alMasaha = allValues.reduce((a, b) => a + b, 0);
+    const alDhabeet = wufuq + alMasaha;
+    const alGhaya = alDhabeet * 2;
+    const alAsl = alGhaya * maxVal;
+    
+    return {
+      square: square,
+      keyVal: minVal,
+      ghalaqVal: maxVal,
+      wufuq: wufuq,
+      khanaatAlDhal3: khanaatAlDhal3,
+      al3Adl: al3Adl,
+      alAs: alAs,
+      alMasaha: alMasaha,
+      alDhabeet: alDhabeet,
+      alGhaya: alGhaya,
+      alAsl: alAsl,
+      fraction: remainder
+    };
   }
   
-  fillOrders.hexagon = generateEvenFillOrder(6);
+  // ============================================
+  // الوفق المسدس 6x6 - طريقة خاصة للأرقام الزوجية
+  // ============================================
+  function generateEvenWefeq(inputNumber, n) {
+    const magicConstant = n * (n * n + 1) / 2;
+    const diff = inputNumber - magicConstant;
+    const base = Math.floor(diff / n);
+    const remainder = diff % n;
+    
+    const square = Array(n).fill().map(() => Array(n).fill(0));
+    
+    // استخدام طريقة الضرب للزوجي
+    // نبدأ بالأرقام من 1 إلى n² ونضيف base
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) {
+        square[i][j] = (i * n + j + 1) + base;
+      }
+    }
+    
+    // إضافة جبر الكسر في آخر خانة
+    if (remainder > 0) {
+      square[n - 1][n - 1] += remainder;
+    }
+    
+    const allValues = square.flat();
+    const minVal = Math.min(...allValues);
+    const maxVal = Math.max(...allValues);
+    
+    const wufuq = inputNumber;
+    const khanaatAlDhal3 = n;
+    const al3Adl = minVal + maxVal;
+    const alAs = wufuq - khanaatAlDhal3;
+    const alMasaha = allValues.reduce((a, b) => a + b, 0);
+    const alDhabeet = wufuq + alMasaha;
+    const alGhaya = alDhabeet * 2;
+    const alAsl = alGhaya * maxVal;
+    
+    return {
+      square: square,
+      keyVal: minVal,
+      ghalaqVal: maxVal,
+      wufuq: wufuq,
+      khanaatAlDhal3: khanaatAlDhal3,
+      al3Adl: al3Adl,
+      alAs: alAs,
+      alMasaha: alMasaha,
+      alDhabeet: alDhabeet,
+      alGhaya: alGhaya,
+      alAsl: alAsl,
+      fraction: remainder
+    };
+  }
   
-  // حدود دنيا للأوفاق
-  const minValues = {
-    triangle: 12,   // مجموع أقل قيمة للمثلث
-    square: 34,     // مجموع أقل قيمة للمربع (Magic Constant لـ 4x4)
-    pentagon: 65,   // Magic Constant لـ 5x5
-    hexagon: 111,   // Magic Constant لـ 6x6
-    heptagon: 175,  // Magic Constant لـ 7x7
-    nonagon: 369    // Magic Constant لـ 9x9
+  // ============================================
+  // دوال مساعدة
+  // ============================================
+  
+  // ثوابت سحرية وحدود دنيا
+  const magicConstants = {
+    triangle: 15,
+    square: 34,
+    pentagon: 65,
+    hexagon: 111,
+    heptagon: 175,
+    nonagon: 369
   };
   
-  // ثوابت سحرية أساسية
-  const magicConstants = {
-    triangle: 15,   // 3x3 magic constant
-    square: 34,     // 4x4 magic constant
-    pentagon: 65,   // 5x5 magic constant
-    hexagon: 111,   // 6x6 magic constant
-    heptagon: 175,  // 7x7 magic constant
-    nonagon: 369    // 9x9 magic constant
+  const minValues = {
+    triangle: 12,
+    square: 34,
+    pentagon: 65,
+    hexagon: 111,
+    heptagon: 175,
+    nonagon: 369
   };
   
   // دالة دراسة الرقم وتحديد إمكانية التعمير
   function studyNumber(inputNumber, shape) {
-    const order = fillOrders[shape];
-    const n = shape === 'triangle' ? 3 : parseInt($('.shape-btn[data-shape="' + shape + '"]').data('order'));
-    const cellsCount = n * n;
-    const baseConstant = magicConstants[shape];
+    const minVal = minValues[shape];
+    const magicConst = magicConstants[shape];
+    const n = shape === 'triangle' ? 3 : 
+              shape === 'square' ? 4 :
+              shape === 'pentagon' ? 5 :
+              shape === 'hexagon' ? 6 :
+              shape === 'heptagon' ? 7 : 9;
     
-    // حساب الفرق بين الرقم المدخل والثابت السحري
-    const diff = inputNumber - baseConstant;
-    
-    // تحديد الحالة
-    if (diff < 0) {
+    if (inputNumber < minVal) {
       return {
         possible: false,
         needsFractionFix: false,
@@ -125,61 +295,42 @@ $(document).ready(function () {
       };
     }
     
-    // التحقق من قابلية القسمة (لتجنب الكسور)
+    const diff = inputNumber - magicConst;
     const remainder = diff % n;
     
     if (remainder === 0) {
       return {
         possible: true,
         needsFractionFix: false,
-        remainder: 0,
-        baseValue: Math.floor(diff / n)
+        remainder: 0
       };
     } else {
       return {
         possible: true,
         needsFractionFix: true,
-        remainder: remainder,
-        baseValue: Math.floor(diff / n)
+        remainder: remainder
       };
     }
   }
   
-  // دالة توليد الوفق
+  // دالة توليد الوفق حسب الشكل
   function generateWefeq(inputNumber, shape) {
-    const n = shape === 'triangle' ? 3 : parseInt($('.shape-btn[data-shape="' + shape + '"]').data('order'));
-    const order = fillOrders[shape];
-    const baseConstant = magicConstants[shape];
-    const diff = inputNumber - baseConstant;
-    const baseValue = Math.floor(diff / n);
-    const remainder = diff % n;
-    
-    const square = Array(n).fill().map(() => Array(n).fill(0));
-    
-    // البدء بالقيم الأساسية (1 إلى n²)
-    const baseSquare = Array(n).fill().map((_, i) => 
-      Array(n).fill().map((_, j) => i * n + j + 1)
-    );
-    
-    // تطبيق التسكين مع الإضافة
-    order.forEach((pos, index) => {
-      const [row, col] = pos;
-      let value = baseSquare[row][col] + baseValue * n;
-      
-      // إضافة جبر الكسر في خانة محددة (آخر خانة في التسكين)
-      if (remainder > 0 && index === order.length - 1) {
-        value += remainder;
-      }
-      
-      square[row][col] = value;
-    });
-    
-    return {
-      square: square,
-      remainder: remainder,
-      minValue: Math.min(...square.flat()),
-      maxValue: Math.max(...square.flat())
-    };
+    switch(shape) {
+      case 'triangle':
+        return generateTriangleWefeq(inputNumber);
+      case 'square':
+        return generateSquareWefeq(inputNumber);
+      case 'pentagon':
+        return generateOddWefeq(inputNumber, 5);
+      case 'heptagon':
+        return generateOddWefeq(inputNumber, 7);
+      case 'nonagon':
+        return generateOddWefeq(inputNumber, 9);
+      case 'hexagon':
+        return generateEvenWefeq(inputNumber, 6);
+      default:
+        return null;
+    }
   }
   
   // دالة عرض الوفق
@@ -195,11 +346,11 @@ $(document).ready(function () {
         const $cell = $('<div class="magic-cell">').text(val);
         
         // تمييز الخلايا الخاصة
-        if (val === result.minValue) {
+        if (val === result.keyVal) {
           $cell.addClass('key');
-        } else if (val === result.maxValue) {
+        } else if (val === result.ghalaqVal) {
           $cell.addClass('ghalaq');
-        } else if (result.remainder > 0 && i === n - 1 && j === n - 1) {
+        } else if (result.fraction > 0 && i === n - 1 && j === n - 1) {
           $cell.addClass('fraction-fix');
         }
         
@@ -219,14 +370,27 @@ $(document).ready(function () {
     const allValues = result.square.flat();
     const sum = allValues.reduce((a, b) => a + b, 0);
     
+    let fractionExplanation = "";
+    if (shape === 'triangle') {
+      fractionExplanation = `الباقي من قسمة (الرقم - 12) على 3`;
+    } else if (shape === 'square') {
+      fractionExplanation = `الباقي من قسمة (الأساس - 30) على 4`;
+    } else {
+      fractionExplanation = `الباقي من قسمة (الرقم - ${magicConstants[shape]}) على ${n}`;
+    }
+    
     const tableRows = [
-      {name: "جبر الكسر", explanation: `الباقي من قسمة (الرقم - ${magicConstants[shape]}) على ${n}`, value: result.remainder},
+      {name: "جبر الكسر", explanation: fractionExplanation, value: result.fraction},
       {name: "خانات الضلع", explanation: `عدد الخانات في الضلع الواحد`, value: n},
       {name: "الوفق", explanation: "مجموع القيم في كل سطر أو عمود", value: inputNumber},
-      {name: "المفتاح", explanation: "أصغر قيمة في الوفق", value: result.minValue},
-      {name: "المغلاق", explanation: "أكبر قيمة في الوفق", value: result.maxValue},
-      {name: "العدل", explanation: "مجموع المفتاح والمغلاق", value: result.minValue + result.maxValue},
-      {name: "المساحة", explanation: "مجموع قيم جميع الخانات", value: sum},
+      {name: "المفتاح", explanation: "أصغر قيمة في الوفق", value: result.keyVal},
+      {name: "المغلاق", explanation: "أكبر قيمة في الوفق", value: result.ghalaqVal},
+      {name: "العدل", explanation: "مجموع المفتاح والمغلاق", value: result.al3Adl},
+      {name: "الأس", explanation: "قيمة الوفق منقوصًا منها عدد خانات الضلع", value: result.alAs},
+      {name: "المساحة", explanation: "مجموع قيم جميع الخانات", value: result.alMasaha},
+      {name: "الضابط", explanation: "مجموع الوفق مع المساحة", value: result.alDhabeet},
+      {name: "الغاية", explanation: "ضعف قيمة الضابط", value: result.alGhaya},
+      {name: "الأصل", explanation: "حاصل ضرب الغاية في المغلاق", value: result.alAsl},
     ];
     
     const $tbody = $('#infoTableBody').empty();
