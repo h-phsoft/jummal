@@ -373,7 +373,7 @@ $(document).ready(function () {
         const val = result.square[i][j];
         const $cell = $('<div class="magic-cell">').text(val);
         
-        // تمييز الخلايا الخاصة
+        // تمييز الخلايا الخاصة - الأولوية لخانة جبر الكسر
         if (shape === 'triangle' && result.fraction > 0 && i === 1 && j === 2) {
           // خانة جبر الكسر في الوفق المثلث (المغلاق) - حيث يوجد الرقم 7 في النموذج الأساسي
           $cell.addClass('fraction-fix');
@@ -383,15 +383,18 @@ $(document).ready(function () {
         } else if (result.fraction > 0 && i === n - 1 && j === n - 1) {
           // للأوفاق الأخرى - آخر خانة
           $cell.addClass('fraction-fix');
-        } else if (val === result.keyVal) {
-          // المفتاح (أصغر قيمة)
-          $cell.addClass('key');
-        } else if (val === result.ghalaqVal) {
-          // المغلاق (أكبر قيمة)
-          $cell.addClass('ghalaq');
-        } else if (shape === 'triangle' && i === 1 && j === 1) {
-          // الوسط في المثلث
-          $cell.addClass('middle');
+        } else if (result.fraction === 0) {
+          // فقط عندما لا يوجد جبر كسر، نميز المفتاح والمغلاق والوسط
+          if (val === result.keyVal) {
+            // المفتاح (أصغر قيمة)
+            $cell.addClass('key');
+          } else if (val === result.ghalaqVal) {
+            // المغلاق (أكبر قيمة)
+            $cell.addClass('ghalaq');
+          } else if (shape === 'triangle' && i === 1 && j === 1) {
+            // الوسط في المثلث
+            $cell.addClass('middle');
+          }
         }
         
         $grid.append($cell);
