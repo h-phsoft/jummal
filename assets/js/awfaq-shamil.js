@@ -392,7 +392,7 @@ $(document).ready(function () {
         }
         
         // تلوين المفتاح والمغلاق والوسط فقط عندما لا يوجد جبر كسر
-        if (!isFractionFix && result.fraction === 0) {
+        if (result.fraction === 0) {
           if (val === result.keyVal) {
             // المفتاح (أصغر قيمة)
             $cell.addClass('key');
