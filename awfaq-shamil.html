@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jumma | عالم الأوفاق الشامل</title>
+    <title>Jumma | عالم الأوفاق</title>
     <link href="assets/vendors/bootstrap/css/bootstrap.rtl.min.css" rel="stylesheet">
     <link href="assets/vendors/bootstrap/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet">
     <link href="assets/vendors/bootstrap/ph-bootstrap-colors.css" rel="stylesheet">
@@ -17,7 +17,7 @@
         flex-wrap: wrap;
         margin-top: 15px;
       }
-      
+
       .shape-btn {
         min-width: 80px;
         padding: 10px 15px;
@@ -30,36 +30,36 @@
         transition: all 0.3s ease;
         font-weight: 600;
       }
-      
+
       .shape-btn:hover {
         background-color: #e9ecef;
         transform: translateY(-2px);
       }
-      
+
       .shape-btn.active {
         background-color: #007bff;
         color: white;
         border-color: #0056b3;
       }
-      
+
       .shape-btn.success {
         border-color: #28a745 !important;
         color: #28a745 !important;
         background-color: #f8fff9;
       }
-      
+
       .shape-btn.danger {
         border-color: #dc3545 !important;
         color: #dc3545 !important;
         background-color: #fff8f8;
       }
-      
+
       .shape-btn.warning {
         border-color: #fd7e14 !important;
         color: #fd7e14 !important;
         background-color: #fffbf8;
       }
-      
+
       .magic-square {
         display: grid;
         gap: 8px;
@@ -67,35 +67,35 @@
         margin: 20px auto;
         direction: ltr;
       }
-      
+
       .magic-square.grid-3x2 {
         grid-template-columns: repeat(3, 1fr);
       }
-      
+
       .magic-square.grid-4x4 {
         grid-template-columns: repeat(4, 1fr);
       }
-      
+
       .magic-square.grid-5x5 {
         grid-template-columns: repeat(5, 1fr);
       }
-      
+
       .magic-square.grid-6x6 {
         grid-template-columns: repeat(6, 1fr);
       }
-      
+
       .magic-square.grid-7x7 {
         grid-template-columns: repeat(7, 1fr);
       }
-      
+
       .magic-square.grid-8x8 {
         grid-template-columns: repeat(8, 1fr);
       }
-      
+
       .magic-square.grid-9x9 {
         grid-template-columns: repeat(9, 1fr);
       }
-      
+
       .magic-cell {
         aspect-ratio: 1;
         display: flex;
@@ -108,38 +108,38 @@
         border-radius: 6px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
-      
+
       /* تمييز الخلايا الخاصة */
       .magic-cell.key {
         background-color: #fff3cd !important;
         border-color: #ffc107 !important;
         color: #856404 !important;
       }
-      
+
       .magic-cell.ghalaq {
         background-color: #f8d7da !important;
         border-color: #dc3545 !important;
         color: #721c24 !important;
       }
-      
+
       .magic-cell.middle {
         background-color: #d4edda !important;
         border-color: #28a745 !important;
         color: #155724 !important;
       }
-      
+
       .magic-cell.fraction-fix {
         background-color: #e2d5f1 !important;
         border-color: #9c27b0 !important;
         color: #4a148c !important;
         font-weight: bold;
       }
-      
+
       .result-display {
         margin-top: 20px;
         text-align: center;
       }
-      
+
       .info-section {
         margin-top: 20px;
         background: rgba(255, 255, 255, 0.7);
@@ -155,7 +155,7 @@
           <a href="index.html" style="text-decoration: none; color: #007bff; font-size: 14px;">العودة للرئيسية</a>
         </div>
         <div class="col-6 p-0">
-          <h3 class="text-center mb-3 fw-bold">عالم الأوفاق الشامل</h3>
+          <h3 class="text-center mb-3 fw-bold">عالم الأوفاق</h3>
         </div>
         <div class="col-3 p-0">
         </div>
@@ -173,7 +173,7 @@
                   </div>
                 </div>
               </div>
-              
+
               <!-- أزرار الأشكال الستة -->
               <div class="shape-buttons-row">
                 <button class="shape-btn" data-shape="triangle" data-order="3">مثلث</button>
@@ -184,7 +184,7 @@
                 <button class="shape-btn" data-shape="octagon" data-order="8">مثمن</button>
                 <button class="shape-btn" data-shape="nonagon" data-order="9">متسع</button>
               </div>
-              
+
               <!-- منطقة عرض النتيجة -->
               <div id="resultDisplay" class="result-display d-none">
                 <h5 id="resultTitle" class="fw-bold mb-3"></h5>
