@@ -179,6 +179,70 @@ $(document).ready(function () {
     return order;
   }
 
+  // النموذج الأساسي للمخمس 5x5 حسب النمط المطلوب:
+  // 11 18 25 2  9
+  // 10 12 19 21 3
+  // 4  6  13 20 22
+  // 23 5  7  14 16
+  // 17 24 1  8  15
+  const pentagonBaseSquare = [
+    [11, 18, 25, 2,  9],
+    [10, 12, 19, 21, 3],
+    [4,  6,  13, 20, 22],
+    [23, 5,  7,  14, 16],
+    [17, 24, 1,  8,  15]
+  ];
+
+  function generatePentagonWefeq(inputNumber) {
+    const n = 5;
+    const magicConstant = 65; // الثابت السحري للمخمس 5x5
+    const diff = inputNumber - magicConstant;
+    const addPerCell = Math.floor(diff / n);
+    const remainder = diff % n;
+
+    const square = Array(n).fill().map(() => Array(n).fill(0));
+
+    // إضافة القيمة الأساسية لكل خلية من النموذج الأساسي
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) {
+        square[i][j] = pentagonBaseSquare[i][j] + addPerCell;
+      }
+    }
+
+    // إضافة جبر الكسر في آخر خانة (الصف الأخير، العمود الأخير)
+    if (remainder > 0) {
+      square[n - 1][n - 1] += remainder;
+    }
+
+    const allValues = square.flat();
+    const minVal = Math.min(...allValues);
+    const maxVal = Math.max(...allValues);
+
+    const wufuq = inputNumber;
+    const khanaatAlDhal3 = n;
+    const al3Adl = minVal + maxVal;
+    const alAs = wufuq - khanaatAlDhal3;
+    const alMasaha = allValues.reduce((a, b) => a + b, 0);
+    const alDhabeet = wufuq + alMasaha;
+    const alGhaya = alDhabeet * 2;
+    const alAsl = alGhaya * maxVal;
+
+    return {
+      square: square,
+      keyVal: minVal,
+      ghalaqVal: maxVal,
+      wufuq: wufuq,
+      khanaatAlDhal3: khanaatAlDhal3,
+      al3Adl: al3Adl,
+      alAs: alAs,
+      alMasaha: alMasaha,
+      alDhabeet: alDhabeet,
+      alGhaya: alGhaya,
+      alAsl: alAsl,
+      fraction: remainder
+    };
+  }
+
   function generateOddWefeq(inputNumber, n) {
     const magicConstant = n * (n * n + 1) / 2;
     const diff = inputNumber - magicConstant;
@@ -406,7 +470,7 @@ $(document).ready(function () {
       case 'square':
         return generateSquareWefeq(inputNumber);
       case 'pentagon':
-        return generateOddWefeq(inputNumber, 5);
+        return generatePentagonWefeq(inputNumber);
       case 'heptagon':
         return generateOddWefeq(inputNumber, 7);
       case 'octagon':
