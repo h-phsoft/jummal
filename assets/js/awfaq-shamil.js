@@ -374,19 +374,24 @@ $(document).ready(function () {
         const $cell = $('<div class="magic-cell">').text(val);
         
         // تمييز الخلايا الخاصة
-        if (val === result.keyVal) {
-          $cell.addClass('key');
-        } else if (val === result.ghalaqVal) {
-          $cell.addClass('ghalaq');
-        } else if (shape === 'triangle' && result.fraction > 0 && i === 1 && j === 2) {
-          // خانة جبر الكسر في الوفق المثلث (المغلاق)
+        if (shape === 'triangle' && result.fraction > 0 && i === 1 && j === 2) {
+          // خانة جبر الكسر في الوفق المثلث (المغلاق) - حيث يوجد الرقم 7 في النموذج الأساسي
           $cell.addClass('fraction-fix');
         } else if (shape === 'square' && result.fraction > 0 && i === 1 && j === 2) {
-          // خانة جبر الكسر في الوفق المربع (الصف 1، العمود 2 - حيث الرقم 16)
+          // خانة جبر الكسر في الوفق المربع (الصف 1، العمود 2 - حيث الرقم 16 في النموذج الأساسي)
           $cell.addClass('fraction-fix');
         } else if (result.fraction > 0 && i === n - 1 && j === n - 1) {
-          // للأوفاق الأخرى
+          // للأوفاق الأخرى - آخر خانة
           $cell.addClass('fraction-fix');
+        } else if (val === result.keyVal) {
+          // المفتاح (أصغر قيمة)
+          $cell.addClass('key');
+        } else if (val === result.ghalaqVal) {
+          // المغلاق (أكبر قيمة)
+          $cell.addClass('ghalaq');
+        } else if (shape === 'triangle' && i === 1 && j === 1) {
+          // الوسط في المثلث
+          $cell.addClass('middle');
         }
         
         $grid.append($cell);
