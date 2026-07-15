@@ -82,7 +82,8 @@ $(document).ready(function () {
       alDhabeet: alDhabeet,
       alGhaya: alGhaya,
       alAsl: alAsl,
-      fraction: remainder
+      fraction: remainder,
+      positions: positions
     };
   }
   
@@ -373,34 +374,22 @@ $(document).ready(function () {
         const val = result.square[i][j];
         const $cell = $('<div class="magic-cell">').text(val);
         
-        // تمييز الخلايا الخاصة - الأولوية لخانة جبر الكسر دائماً
-        let isFractionFix = false;
-        
-        // التحقق من خانة جبر الكسر أولاً
-        if (shape === 'triangle' && result.fraction > 0 && i === 1 && j === 2) {
-          // خانة جبر الكسر في الوفق المثلث (المغلاق) - حيث يوجد الرقم 7 في النموذج الأساسي
-          $cell.addClass('fraction-fix');
-          isFractionFix = true;
-        } else if (shape === 'square' && result.fraction > 0 && i === 1 && j === 2) {
-          // خانة جبر الكسر في الوفق المربع (الصف 1، العمود 2 - حيث الرقم 16 في النموذج الأساسي)
-          $cell.addClass('fraction-fix');
-          isFractionFix = true;
-        } else if (result.fraction > 0 && i === n - 1 && j === n - 1) {
-          // للأوفاق الأخرى - آخر خانة
-          $cell.addClass('fraction-fix');
-          isFractionFix = true;
-        }
-        
-        // تلوين المفتاح والمغلاق والوسط فقط عندما لا يوجد جبر كسر
-        if (!isFractionFix && result.fraction === 0) {
+        // تلوين خانة جبر الكسر فقط إذا وجد
+        if (result.fraction > 0) {
+          if (shape === 'triangle' && i === result.positions.fractionFix.row && j === result.positions.fractionFix.col) {
+            $cell.addClass('fraction-fix');
+          } else if (shape === 'square' && i === 1 && j === 2) {
+            $cell.addClass('fraction-fix');
+          } else if (i === n - 1 && j === n - 1) {
+            $cell.addClass('fraction-fix');
+          }
+        } else {
+          // تلوين المفتاح والمغلاق والوسط فقط عندما لا يوجد جبر كسر
           if (val === result.keyVal) {
-            // المفتاح (أصغر قيمة)
             $cell.addClass('key');
           } else if (val === result.ghalaqVal) {
-            // المغلاق (أكبر قيمة)
             $cell.addClass('ghalaq');
-          } else if (shape === 'triangle' && i === 1 && j === 1) {
-            // الوسط في المثلث
+          } else if (shape === 'triangle' && i === result.positions.middle.row && j === result.positions.middle.col) {
             $cell.addClass('middle');
           }
         }
