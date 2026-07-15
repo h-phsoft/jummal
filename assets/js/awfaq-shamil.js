@@ -421,6 +421,99 @@ $(document).ready(function () {
   }
 
   // ============================================
+  // الوفق المتسع 9x9 - الطريقة المركبة (Composite Squares)
+  // يتكون من 9 مربعات 3x3، كل مربع هو وفق مثلثي
+  // النموذج الأساسي (مجموع 369):
+  // 31 36 29 | 76 81 74 | 13 18 11
+  // 30 32 34 | 75 77 79 | 12 14 16
+  // 35 28 33 | 80 73 78 | 17 10 15
+  // ---------+----------+---------
+  // 22 27 20 | 40 45 38 | 58 63 56
+  // 21 23 25 | 39 41 43 | 57 59 61
+  // 26 19 24 | 44 37 42 | 62 55 60
+  // ---------+----------+---------
+  // 67 72 65 |  4  9  2 | 49 54 47
+  // 66 68 70 |  3  5  7 | 48 50 52
+  // 71 64 69 |  8  1  6 | 53 46 51
+  // ============================================
+  
+  // النموذج الأساسي للمربع 3x3 (لو شو Lo Shu)
+  const loShuBase = [
+    [4, 9, 2],
+    [3, 5, 7],
+    [8, 1, 6]
+  ];
+  
+  // نموذج الإزاحة للكتل 3x3 (أيضاً وفق مثلثي بمجموع 12)
+  const offsetMultiplier = [
+    [3, 8, 1],
+    [2, 4, 6],
+    [7, 0, 5]
+  ];
+  
+  function generateNonagonWefeq(inputNumber) {
+    const n = 9;
+    const magicConstant = 369; // الثابت السحري للمربع 9x9: 9*(81+1)/2 = 369
+    const diff = inputNumber - magicConstant;
+    
+    // حساب الإضافة الأساسية لكل خلية
+    const addPerCell = Math.floor(diff / n);
+    const remainder = diff % n;
+    
+    const square = Array(n).fill().map(() => Array(n).fill(0));
+    
+    // بناء المربع 9x9 من 9 كتل 3x3
+    for (let blockRow = 0; blockRow < 3; blockRow++) {
+      for (let blockCol = 0; blockCol < 3; blockCol++) {
+        // حساب الإزاحة لهذه الكتلة
+        const offset = offsetMultiplier[blockRow][blockCol] * 9;
+        
+        // ملء الكتلة 3x3
+        for (let i = 0; i < 3; i++) {
+          for (let j = 0; j < 3; j++) {
+            const row = blockRow * 3 + i;
+            const col = blockCol * 3 + j;
+            square[row][col] = loShuBase[i][j] + offset + addPerCell;
+          }
+        }
+      }
+    }
+    
+    // إضافة جبر الكسر في آخر خانة (الصف الأول، العمود الأخير)
+    if (remainder > 0) {
+      square[0][n - 1] += remainder;
+    }
+    
+    const allValues = square.flat();
+    const minVal = Math.min(...allValues);
+    const maxVal = Math.max(...allValues);
+    
+    const wufuq = inputNumber;
+    const khanaatAlDhal3 = n;
+    const al3Adl = minVal + maxVal;
+    const alAs = wufuq - khanaatAlDhal3;
+    const alMasaha = allValues.reduce((a, b) => a + b, 0);
+    const alDhabeet = wufuq + alMasaha;
+    const alGhaya = alDhabeet * 2;
+    const alAsl = alGhaya * maxVal;
+    
+    return {
+      square: square,
+      keyVal: minVal,
+      ghalaqVal: maxVal,
+      wufuq: wufuq,
+      khanaatAlDhal3: khanaatAlDhal3,
+      al3Adl: al3Adl,
+      alAs: alAs,
+      alMasaha: alMasaha,
+      alDhabeet: alDhabeet,
+      alGhaya: alGhaya,
+      alAsl: alAsl,
+      fraction: remainder
+    };
+  }
+
+  // ============================================
   // دوال مساعدة
   // ============================================
 
