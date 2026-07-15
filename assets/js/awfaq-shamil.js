@@ -23,22 +23,23 @@ $(document).ready(function () {
 
   function generateTriangleWefeq(inputNumber) {
     // استخدام نفس المنطق تماماً من wfq-3x3.js
+    // مع قلب الصفوف ليبدأ الترتيب من الأسفل
     const positions = {
-      key: {row: 2, col: 1, name: "المفتاح"},
+      key: {row: 0, col: 1, name: "المفتاح"}, // بعد القلب يصبح في الصف الأول
       ghalaq: {row: 1, col: 2, name: "المغلاق"},
       middle: {row: 1, col: 1, name: "الوسط"},
       fractionFix: {row: 1, col: 2, name: "جبر الكسر"}
     };
 
     const fillOrder = [
-      [0, 2], // → 2
+      [2, 2], // → 2 (بعد القلب يصبح في الصف الأخير)
       [1, 0], // → 3
-      [0, 0], // → 4
+      [2, 0], // → 4
       [1, 1], // → 5
-      [2, 2], // → 6
+      [0, 0], // → 6
       [1, 2], // → 7 ← جبر الكسر
-      [2, 0], // → 8
-      [0, 1]  // → 9
+      [0, 2], // → 8
+      [2, 1]  // → 9
     ];
 
     const base = Math.floor((inputNumber - 12) / 3);
@@ -97,11 +98,12 @@ $(document).ready(function () {
   // ============================================
   function generateSquareWefeq(inputNumber) {
     // النموذج الأساسي للوفق المربع (عندما يكون الأساس 34)
+    // مقلوب ليبدأ من الأسفل
     const baseSquare = [
-      [15, 4, 5, 10],
-      [6, 9, 16, 3],
+      [1, 14, 11, 8],
       [12, 7, 2, 13],
-      [1, 14, 11, 8]
+      [6, 9, 16, 3],
+      [15, 4, 5, 10]
     ];
 
     // حساب الفرق عن الأساس 34
@@ -118,9 +120,9 @@ $(document).ready(function () {
       }
     }
 
-    // إضافة جبر الكسر في الخانة المناسبة (الصف 1، العمود 2 - حيث يوجد الرقم 16 في النموذج الأساسي)
+    // إضافة جبر الكسر في الخانة المناسبة (الصف الأول، العمود الثالث - أعلى يمين بعد القلب)
     if (remainder > 0) {
-      square[1][2] += remainder;
+      square[0][2] += remainder;
     }
 
     const allValues = square.flat();
@@ -203,15 +205,17 @@ $(document).ready(function () {
     const square = Array(n).fill().map(() => Array(n).fill(0));
 
     // إضافة القيمة الأساسية لكل خلية من النموذج الأساسي
+    // نعكس الصفوف ليبدأ الترتيب من الأسفل
     for (let i = 0; i < n; i++) {
       for (let j = 0; j < n; j++) {
-        square[i][j] = pentagonBaseSquare[i][j] + addPerCell;
+        const rowFromBottom = n - 1 - i;
+        square[i][j] = pentagonBaseSquare[rowFromBottom][j] + addPerCell;
       }
     }
 
-    // إضافة جبر الكسر في آخر خانة (الصف الأخير، العمود الأخير)
+    // إضافة جبر الكسر في آخر خانة (الصف الأول، العمود الأخير - أعلى يمين بعد القلب)
     if (remainder > 0) {
-      square[n - 1][n - 1] += remainder;
+      square[0][n - 1] += remainder;
     }
 
     const allValues = square.flat();
@@ -253,8 +257,11 @@ $(document).ready(function () {
     const square = Array(n).fill().map(() => Array(n).fill(0));
 
     // البدء بالقيم الأساسية (1 إلى n²) مرتبة حسب Siamese
+    // لكن نملأ من الأسفل للأعلى (نعكس ترتيب الصفوف)
     fillOrder.forEach((pos, index) => {
-      const [row, col] = pos;
+      let [row, col] = pos;
+      // عكس الصف ليبدأ من الأسفل
+      row = n - 1 - row;
       let value = (index + 1) + base;
 
       // إضافة جبر الكسر في آخر خانة
@@ -296,6 +303,7 @@ $(document).ready(function () {
 
   // ============================================
   // الوفق المثمن 8x8 - طريقة خاصة للأرقام الزوجية
+  // النمط مقلوب: يبدأ من الأسفل إلى الأعلى، ومن اليسار إلى اليمين
   // ============================================
   function generateOctagonWefeq(inputNumber, n = 8) {
     const magicConstant = n * (n * n + 1) / 2;
@@ -305,17 +313,17 @@ $(document).ready(function () {
 
     const square = Array(n).fill().map(() => Array(n).fill(0));
 
-    // استخدام طريقة الضرب للزوجي
-    // نبدأ بالأرقام من 1 إلى n² ونضيف base
+    // توليد الأرقام من الأسفل إلى الأعلى، ومن اليسار إلى اليمين
     for (let i = 0; i < n; i++) {
       for (let j = 0; j < n; j++) {
-        square[i][j] = (i * n + j + 1) + base;
+        const rowFromBottom = n - 1 - i;
+        square[i][j] = (rowFromBottom * n + j + 1) + base;
       }
     }
 
-    // إضافة جبر الكسر في آخر خانة
+    // إضافة جبر الكسر في آخر خانة (الصف الأول، العمود الأخير - أعلى يمين)
     if (remainder > 0) {
-      square[n - 1][n - 1] += remainder;
+      square[0][n - 1] += remainder;
     }
 
     const allValues = square.flat();
@@ -349,6 +357,14 @@ $(document).ready(function () {
 
   // ============================================
   // الوفق المسدس 6x6 - طريقة خاصة للأرقام الزوجية
+  // النمط مقلوب: يبدأ من الأسفل إلى الأعلى، ومن اليسار إلى اليمين
+  // النموذج الأساسي (مقلوب):
+  // 31 32 33 34 35 36
+  // 25 26 27 28 29 30
+  // 19 20 21 22 23 24
+  // 13 14 15 16 17 18
+  // 7  8  9  10 11 12
+  // 1  2  3  4  5  6
   // ============================================
   function generateEvenWefeq(inputNumber, n) {
     const magicConstant = n * (n * n + 1) / 2;
@@ -358,17 +374,21 @@ $(document).ready(function () {
 
     const square = Array(n).fill().map(() => Array(n).fill(0));
 
-    // استخدام طريقة الضرب للزوجي
-    // نبدأ بالأرقام من 1 إلى n² ونضيف base
+    // توليد الأرقام من الأسفل إلى الأعلى، ومن اليسار إلى اليمين
+    // الصف الأخير (n-1) يحتوي على 1 إلى n
+    // الصف قبل الأخير (n-2) يحتوي على n+1 إلى 2n
+    // ... وهكذا
     for (let i = 0; i < n; i++) {
       for (let j = 0; j < n; j++) {
-        square[i][j] = (i * n + j + 1) + base;
+        // الصف السفلي (i = n-1) يبدأ بـ 1، الصف الذي فوقه (i = n-2) يبدأ بـ n+1، إلخ
+        const rowFromBottom = n - 1 - i;
+        square[i][j] = (rowFromBottom * n + j + 1) + base;
       }
     }
 
-    // إضافة جبر الكسر في آخر خانة
+    // إضافة جبر الكسر في آخر خانة (الصف الأول، العمود الأخير - أعلى يمين)
     if (remainder > 0) {
-      square[n - 1][n - 1] += remainder;
+      square[0][n - 1] += remainder;
     }
 
     const allValues = square.flat();
