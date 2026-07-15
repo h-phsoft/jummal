@@ -373,18 +373,26 @@ $(document).ready(function () {
         const val = result.square[i][j];
         const $cell = $('<div class="magic-cell">').text(val);
         
-        // تمييز الخلايا الخاصة - الأولوية لخانة جبر الكسر
+        // تمييز الخلايا الخاصة - الأولوية لخانة جبر الكسر دائماً
+        let isFractionFix = false;
+        
+        // التحقق من خانة جبر الكسر أولاً
         if (shape === 'triangle' && result.fraction > 0 && i === 1 && j === 2) {
           // خانة جبر الكسر في الوفق المثلث (المغلاق) - حيث يوجد الرقم 7 في النموذج الأساسي
           $cell.addClass('fraction-fix');
+          isFractionFix = true;
         } else if (shape === 'square' && result.fraction > 0 && i === 1 && j === 2) {
           // خانة جبر الكسر في الوفق المربع (الصف 1، العمود 2 - حيث الرقم 16 في النموذج الأساسي)
           $cell.addClass('fraction-fix');
+          isFractionFix = true;
         } else if (result.fraction > 0 && i === n - 1 && j === n - 1) {
           // للأوفاق الأخرى - آخر خانة
           $cell.addClass('fraction-fix');
-        } else if (result.fraction === 0) {
-          // فقط عندما لا يوجد جبر كسر، نميز المفتاح والمغلاق والوسط
+          isFractionFix = true;
+        }
+        
+        // تلوين المفتاح والمغلاق والوسط فقط عندما لا يوجد جبر كسر
+        if (!isFractionFix && result.fraction === 0) {
           if (val === result.keyVal) {
             // المفتاح (أصغر قيمة)
             $cell.addClass('key');
