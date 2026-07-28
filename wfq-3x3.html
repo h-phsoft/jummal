@@ -8,6 +8,14 @@
     <link href="assets/vendors/bootstrap/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet">
     <link href="assets/vendors/bootstrap/ph-bootstrap-colors.css" rel="stylesheet">
     <link href="assets/css/style.css" rel="stylesheet">
+    <style>
+      .fraction-indicator-circle {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+    </style>
   </head>
   <body class="p-3 p-md-4">
     <div class="container-fluid">
@@ -26,14 +34,21 @@
           <div class="card shadow">
             <div class="card-body">
               <div class="mb-3">
-                <input type="number" id="targetSum" class="form-control text-center" placeholder="أدخل الرقم هنا" required>
+                <div class="row g-2 align-items-center">
+                  <div class="col-10">
+                    <input type="number" id="targetSum" class="form-control text-center" placeholder="أدخل الرقم هنا" required>
+                  </div>
+                  <div class="col-2 text-center">
+                    <span id="fractionIndicator" class="fraction-indicator-circle d-none mx-auto"></span>
+                  </div>
+                </div>
               </div>
-              <div class="d-grid">
+              <div class="d-grid mb-3">
                 <button id="generateBtn" class="btn btn-success">أنشئ الوفق</button>
               </div>
 
               <div id="magicResult" class="result-section text-center d-none">
-                <div id="magicSquare" class="magic-square grid-3x3"></div>
+                <div id="magicSquare" class="magic-square"></div>
                 <button id="toggleGuideBtn" class="btn btn-outline-primary mt-3">إظهار الدليل</button>
                 <!-- ✅ جدول المعلومات الجديد (3 أعمدة) -->
                 <div id="guideTable" class="table-responsive mt-4 d-none">
@@ -63,6 +78,5 @@
     <!-- SheetJS for Excel export -->
     <script src="assets/vendors/sheetjs/xlsx.full.min.js"></script>
     <script src="assets/js/wfq-3x3.js"></script>
-
   </body>
 </html>

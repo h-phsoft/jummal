@@ -1,21 +1,22 @@
 $(document).ready(function () {
 
+  // استخدام نفس الإعدادات المعتمدة والمقلوبة للوفق المثلث التي تعمل بشكل صحيح
   const positions = {
-    key: {row: 2, col: 1, name: "المفتاح"},
-    ghalaq: {row: 1, col: 2, name: "المغلاق"}, // ← الرقم 7 في الوفق الأساسي
+    key: {row: 0, col: 1, name: "المفتاح"},
+    ghalaq: {row: 1, col: 2, name: "المغلاق"},
     middle: {row: 1, col: 1, name: "الوسط"},
     fractionFix: {row: 1, col: 2, name: "جبر الكسر"}
   };
 
   const fillOrder = [
-    [0, 2], // → 2
+    [2, 2], // → 2
     [1, 0], // → 3
-    [0, 0], // → 4
+    [2, 0], // → 4
     [1, 1], // → 5
-    [2, 2], // → 6
+    [0, 0], // → 6
     [1, 2], // → 7 ← جبر الكسر
-    [2, 0], // → 8
-    [0, 1]  // → 9
+    [0, 2], // → 8
+    [2, 1]  // → 9
   ];
 
   function generateMagicSquare(inputNumber) {
@@ -40,8 +41,7 @@ $(document).ready(function () {
     const minVal = Math.min(...allValues);
     const maxVal = Math.max(...allValues);
 
-    // نعتبر الصف العلوي (الضلع) هو الصف 0
-    const wufuq = square[0].reduce((a, b) => a + b, 0); // مجموع الصف العلوي
+    const wufuq = inputNumber; // أو يمكنك حسابه من الصف الأول: square[0].reduce((a, b) => a + b, 0);
     const khanaatAlDhal3 = 3;
     const al3Adl = minVal + maxVal;
     const alAs = wufuq - khanaatAlDhal3;
@@ -66,19 +66,8 @@ $(document).ready(function () {
     };
   }
 
-  function updateFractionIndicator(fraction) {
-    const $indicator = $('#fractionIndicator');
-    if (fraction === 0) {
-      $indicator.css('background-color', 'green');
-    } else {
-      $indicator.css('background-color', 'red');
-    }
-    $indicator.show();
-  }
-
   function renderMagicSquare(square, keyVal, ghalaqVal, wufuq, khanaatAlDhal3, al3Adl, alAs, alMasaha, alDhabeet, alGhaya, alAsl, fraction) {
     const $container = $('#magicSquare').empty();
-    const allValues = square.flat();
 
     // تحديث مؤشر الكسر (أخضر إذا لا يوجد كسر، أحمر إذا وجد كسر)
     const $indicator = $('#fractionIndicator');
@@ -87,33 +76,33 @@ $(document).ready(function () {
     } else {
       $indicator.css('background-color', 'red');
     }
-
-    // إظهار المؤشر دائمًا بعد الحساب
     $indicator.show();
 
-    // تمييز المفتاح والمغلاق حسب القيمة
-    const minVal = Math.min(...allValues);
-    const maxVal = Math.max(...allValues);
-
+    // رسم خلايا الوفق 3x3
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
-        const $cell = $('<div class="magic-cell">').text(square[i][j]);
+        const val = square[i][j];
+        const $cell = $('<div class="magic-cell">').text(val);
 
-        if (square[i][j] === minVal) {
-          $cell.addClass('key');
-        } else if (square[i][j] === maxVal) {
-          $cell.addClass('ghalaq');
-        } else if (i === 1 && j === 1) {
-          $cell.addClass('middle');
-        } else if (i === 1 && j === 2 && fraction > 0) {
-          $cell.addClass('fraction-fix');
+        if (fraction > 0) {
+          if (i === positions.fractionFix.row && j === positions.fractionFix.col) {
+            $cell.addClass('fraction-fix');
+          }
+        } else {
+          if (val === keyVal) {
+            $cell.addClass('key');
+          } else if (val === ghalaqVal) {
+            $cell.addClass('ghalaq');
+          } else if (i === positions.middle.row && j === positions.middle.col) {
+            $cell.addClass('middle');
+          }
         }
 
         $container.append($cell);
       }
     }
 
-    // ✅ الجدول مع جبر الكسر في النهاية
+    // جدول المعلومات التفصيلي
     const tableRows = [
       {name: "جبر الكسر", explanation: "الباقي من قسمة (الرقم - 12) على 3", value: fraction},
       {name: "خانات الضلع", explanation: "عدد الخانات في كل ضلع", value: khanaatAlDhal3},
@@ -131,17 +120,15 @@ $(document).ready(function () {
     const $tbody = $('#infoTableBody').empty();
     tableRows.forEach(row => {
       $tbody.append(`
-                        <tr>
-                            <td><strong>${row.name}</strong></td>
-                            <td>${row.explanation}</td>
-                            <td><strong>${row.value}</strong></td>
-                        </tr>
-                    `);
+        <tr>
+          <td><strong>${row.name}</strong></td>
+          <td>${row.explanation}</td>
+          <td><strong>${row.value}</strong></td>
+        </tr>
+      `);
     });
 
     $('#magicResult').removeClass('d-none');
-
-    // ✅ إظهار زر الدليل
     $('#toggleGuideBtn').show();
   }
 
@@ -160,15 +147,15 @@ $(document).ready(function () {
     }
 
     const result = generateMagicSquare(inputNumber);
-
-    // إظهار الجدول الكامل مع زر الدليل
-    renderMagicSquare(result.square, result.keyVal, result.ghalaqVal, result.wufuq, result.khanaatAlDhal3, result.al3Adl, result.alAs, result.alMasaha, result.alDhabeet, result.alGhaya, result.alAsl, result.fraction);
-
-    // التأكد من إظهار زر الدليل
-    $('#toggleGuideBtn').show();
+    renderMagicSquare(
+      result.square, result.keyVal, result.ghalaqVal,
+      result.wufuq, result.khanaatAlDhal3, result.al3Adl,
+      result.alAs, result.alMasaha, result.alDhabeet,
+      result.alGhaya, result.alAsl, result.fraction
+      );
   });
 
-  // ✅ حدث زر إظهار/إخفاء الدليل
+  // حدث زر إظهار/إخفاء الدليل
   $('#toggleGuideBtn').on('click', function () {
     const $table = $('#guideTable');
     if ($table.hasClass('d-none')) {
@@ -178,7 +165,7 @@ $(document).ready(function () {
       $table.addClass('d-none');
       $(this).text('إظهار الدليل');
     }
-  }).show(); // إظهار الزر عند التحميل
+  });
 
   $('#targetSum').on('keypress', function (e) {
     if (e.which === 13) {
