@@ -20,7 +20,7 @@ class OracleLovModal {
 
     const modalHTML = `
       <div id="oracleLovModal" class="oracle-lov-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1050; align-items: center; justify-content: center; direction: rtl;">
-        <div class="oracle-lov-dialog" style="background: #f0f0f0; border: 2px solid #0055ea; border-radius: 4px; width: 650px; max-width: 90%; box-shadow: 0 4px 15px rgba(0,0,0,0.3); font-family: Tahoma, sans-serif;">
+        <div class="oracle-lov-dialog" style="background: #f0f0f0; border: 2px solid #0055ea; border-radius: 4px; width: 90%; max-width: 90%; box-shadow: 0 4px 15px rgba(0,0,0,0.3); font-family: Tahoma, sans-serif;">
           <!-- Oracle 6i Style Title Bar -->
           <div class="oracle-lov-header" style="background: linear-gradient(to bottom, #0055ea, #003399); color: white; padding: 6px 12px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 14px;">
             <span id="oracleLovTitle">${this.title}</span>
@@ -35,7 +35,7 @@ class OracleLovModal {
             </div>
 
             <!-- Table Container -->
-            <div style="background: white; border: 1px solid #7f9db9; max-height: 50vh; overflow-y: auto;">
+            <div style="background: white; border: 1px solid #7f9db9; height: 50vh; max-height: 50vh; overflow-y: auto;">
               <table class="table table-sm table-bordered table-hover mb-0" style="font-size: 13px;">
                 <thead style="background: #ebeadb; position: sticky; top: 0; z-index: 1;">
                   <tr>
@@ -141,15 +141,18 @@ class OracleLovModal {
     if (!query) {
       this.filteredData = [...this.data];
     } else {
+      const lowerQuery = query.toLowerCase();
       this.filteredData = this.data.filter(item => {
-        return this.columns.some(col => {
-          const val = String(item[col.field] || '').toLowerCase();
-          return val.includes(query);
-        });
+        // Search exclusively within the ayatSearch field
+        const val = String(item.ayatSearch || '').toLowerCase();
+        return val.includes(lowerQuery);
       });
     }
     this.selectedIndex = 0;
     this.selectedIndices.clear();
+    if (this.filteredData.length > 0) {
+      this.selectedIndices.add(0);
+    }
     this.renderTable();
   }
 
