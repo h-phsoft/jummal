@@ -69,7 +69,70 @@
     <script src="assets/vendors/bootstrap/js/bootstrap.bundle.min.js"></script>
     <!-- SheetJS for Excel export -->
     <script src="assets/vendors/sheetjs/xlsx.full.min.js"></script>
+    <script src="assets/js/data/ayat-data.js"></script>
+    <script src="assets/js/oracle-lov.js"></script>
     <script src="assets/js/jummal.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const ayatLov = new OracleLovModal({
+          title: 'قائمة القيم (LOV)',
+          columns: [
+            {field: 'ayat28Text', label: 'الآية'},
+            {field: 'swarName', label: 'السورة'}
+          ],
+          data: typeof qAyatData !== 'undefined' ? qAyatData : [],
+          onSelect: (selectedData) => {
+            const inputEl = document.getElementById('inputText');
+            if (!inputEl)
+              return;
 
+            let finalCombinedText = '';
+
+            // Check if multiple rows were selected (Array) or a single row (Object)
+            if (Array.isArray(selectedData)) {
+              // Map through multiple rows and change/replace characters if needed
+              finalCombinedText = selectedData.map(item => {
+                let text = item.ayat28Text || '';
+
+                // 💡 Example: Change/replace specific characters here if needed
+                // text = text.replace(/أ/g, 'ا').replace(/ي/g, 'ى');
+
+                return text;
+              }).join(' '); // Join multiple selected ayat with a space
+            } else {
+              // Single row selected
+              let text = selectedData.ayat28Text || '';
+
+              // 💡 Example character transformation for single selection:
+              // text = text.replace(/أ/g, 'ا');
+
+              finalCombinedText = text;
+            }
+
+            // Set the final transformed text to the input field
+            inputEl.value = finalCombinedText;
+
+            // Trigger calculation button if desired
+            /*
+             const calcBtn = document.getElementById('calculateBtn');
+             if (calcBtn) {
+             calcBtn.click();
+             }
+             */
+          }
+        });
+
+        // Bind key shortcut (e.g., F9) to open the LOV
+        const inputEl = document.getElementById('inputText');
+        if (inputEl) {
+          inputEl.addEventListener('keydown', (e) => {
+            if (e.key === 'F9') {
+              e.preventDefault();
+              ayatLov.open(inputEl.value);
+            }
+          });
+        }
+      });
+    </script>
   </body>
 </html>
