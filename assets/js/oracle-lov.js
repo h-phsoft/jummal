@@ -199,6 +199,9 @@ class OracleLovModal {
       tr.innerHTML = checkboxHtml + dataHtml;
 
       tr.addEventListener('mousedown', (e) => {
+        if (!e.ctrlKey) {
+          return;
+        }
         e.preventDefault();
         this.selectedIndex = index;
         this.toggleSelection(index);
