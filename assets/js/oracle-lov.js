@@ -15,8 +15,9 @@ class OracleLovModal {
   }
 
   createModalDOM() {
-    if (document.getElementById('oracleLovModal'))
+    if (document.getElementById('oracleLovModal')) {
       return;
+    }
 
     const modalHTML = `
       <div id="oracleLovModal" class="oracle-lov-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1050; align-items: center; justify-content: center; direction: rtl;">
@@ -70,8 +71,12 @@ class OracleLovModal {
   }
 
   addEventListeners() {
-    document.getElementById('oracleLovCloseBtn').addEventListener('click', () => this.close());
-    document.getElementById('oracleLovCancelBtn').addEventListener('click', () => this.close());
+    document.getElementById('oracleLovCloseBtn').addEventListener('click', () => {
+      this.close();
+    });
+    document.getElementById('oracleLovCancelBtn').addEventListener('click', () => {
+      this.close();
+    });
 
     // Explicit binding to confirmSelection method
     document.getElementById('oracleLovSelectBtn').addEventListener('click', (e) => {
@@ -85,8 +90,9 @@ class OracleLovModal {
     });
 
     this.modalEl.addEventListener('keydown', (e) => {
-      if (!this.isOpen)
+      if (!this.isOpen) {
         return;
+      }
 
       if (e.key === 'ArrowDown') {
         e.preventDefault();
@@ -193,10 +199,18 @@ class OracleLovModal {
         tr.style.outline = '2px solid #0055ea';
       }
 
-      const checkboxHtml = `<td style="text-align: center;"><input type="checkbox" ${isSelected ? 'checked' : ''} style="pointer-events: none;"></td>`;
+      const checkboxHtml = `<td style="text-align: center;"><input type="checkbox" ${isSelected ? 'checked' : ''} style="cursor: pointer;"></td>`;
       const dataHtml = this.columns.map(col => `<td>${item[col.field] || ''}</td>`).join('');
 
       tr.innerHTML = checkboxHtml + dataHtml;
+
+      const checkboxEl = tr.querySelector('input[type="checkbox"]');
+      checkboxEl.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.selectedIndex = index;
+        this.toggleSelection(index);
+        this.renderTable();
+      });
 
       tr.addEventListener('mousedown', (e) => {
         if (!e.ctrlKey) {
