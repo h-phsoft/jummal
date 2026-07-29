@@ -69,8 +69,6 @@
         display: block;
       }
       .sidebar-toggle-btn {
-        position: fixed;
-        top: 20px;
         z-index: 1050;
         background: #0d6efd;
         color: #fff;
@@ -187,53 +185,48 @@
       <div class="mt-3">
         <div class="glass-card">
           <div class="row">
-            <div class="col-md-2 mx-auto">
-              <!-- Right Sidebar Toggle Button -->
-              <button class="sidebar-toggle-btn" id="rightSidebarToggle">
-                <i class="bi bi-list-task"></i> الجداول
-              </button>
+            <div class="col-md-12 mx-auto text-center">
+              <textarea id="inputText" class="form-control text-center w-100" rows="3" placeholder="أدخل النص"></textarea>
             </div>
-            <div class="col-md-8 mx-auto">
-              <div class="input-group">
-                <input type="text" id="inputText" class="form-control text-center" placeholder="أدخل النص">
-                <button id="calculateBtn" class="btn btn-glass" type="button">احسب العبارة</button>
-              </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-sm-2 text-start">
+              <button class="sidebar-toggle-btn" id="rightSidebarToggle"><i class="bi bi-list-task"></i> الجداول  </button>
             </div>
-            <div class="col-md-2 mx-auto">
-              <!-- Left Sidebar Toggle Button -->
-              <button class="sidebar-toggle-btn" id="leftSidebarToggle">
-                <i class="bi bi-clock-history"></i> السجل
-              </button>
+            <div class="col-sm-8 text-center">
+              <button id="calculateBtn" class="btn btn-glass" type="button">احسب العبارة</button>
+            </div>
+            <div class="col-sm-2 text-end">
+              <button class="sidebar-toggle-btn" id="leftSidebarToggle"><i class="bi bi-clock-history"></i> السجل  </button>
             </div>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- القسم السفلي: النتائج التفصيلية -->
-      <div class="row mt-1">
-        <div class="col-12">
-          <div class="glass-card" style="max-height: 90vh; overflow-y: auto;">
-            <div class="table-responsive">
-              <table class="table table-bordered table-hover text-center align-middle" id="resultTable">
-                <thead class="table-dark sticky-top">
-                  <tr id="resultHeaderRow">
-                    <th>الجدول</th>
-                    <th>العبارة</th>
-                    <!-- أعمدة الكلمات ستضاف هنا ديناميكياً -->
-                  </tr>
-                </thead>
-                <tbody id="resultTableBody">
-                  <!-- صفوف النتائج -->
-                </tbody>
-              </table>
-            </div>
-            <div id="noResultMsg" class="text-center text-muted py-4">
-              لم يتم حساب أي عبارات بعد. أدخل نصاً واضغط "احسب".
-            </div>
+    <!-- القسم السفلي: النتائج التفصيلية -->
+    <div class="row mt-1">
+      <div class="col-12">
+        <div class="glass-card" style="max-height: 90vh; overflow-y: auto;">
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover text-center align-middle" id="resultTable">
+              <thead class="table-dark sticky-top">
+                <tr id="resultHeaderRow">
+                  <th>الجدول</th>
+                  <th>العبارة</th>
+                  <!-- أعمدة الكلمات ستضاف هنا ديناميكياً -->
+                </tr>
+              </thead>
+              <tbody id="resultTableBody">
+                <!-- صفوف النتائج -->
+              </tbody>
+            </table>
+          </div>
+          <div id="noResultMsg" class="text-center text-muted py-4">
+            لم يتم حساب أي عبارات بعد. أدخل نصاً واضغط "احسب".
           </div>
         </div>
       </div>
-
     </div>
 
     <!-- jQuery + Bootstrap JS -->
