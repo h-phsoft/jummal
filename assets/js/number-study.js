@@ -10,32 +10,32 @@ async function performNumberStudy() {
   try {
     const steps = getDigitalRootSteps(targetNum);
     const digitalRootStr = steps.join(' ⟵ ');
-    
+
     const sum1toN = (targetNum * (targetNum + 1)) / 2;
     const nSquared = targetNum * targetNum;
     const sum1toNSquared = (nSquared * (nSquared + 1)) / 2;
-    
+
     const divisors = getDivisors(targetNum);
     const sumDivisors = divisors.reduce((a, b) => a + b, 0);
-    
+
     const primeFactors = getPrimeFactors(targetNum);
     const primeFactorsStr = primeFactors.length > 0 ? primeFactors.join(' × ') : 'لا يوجد';
-    
+
     const isPrm = isPrime(targetNum);
     const primeRank = isPrm ? getPrimeRank(targetNum) : 'ليس عدداً أولياً';
-    
+
     const palindrome = isPalindrome(targetNum) ? 'نعم' : 'لا';
-    
+
     const fibRank = getFibonacciRank(targetNum);
     const fibStr = fibRank ? `نعم (ترتيبه ${fibRank})` : 'لا';
-    
+
     const oddEven = getOddEvenRank(targetNum);
 
     let html = `
       <style>
         .study-results-table tbody th { text-align: left; vertical-align: middle; }
         .study-results-table tbody td { text-align: right; vertical-align: middle; }
-        
+
         .number-tree-container {
           overflow-x: auto;
           padding: 10px 0;
@@ -135,6 +135,8 @@ async function performNumberStudy() {
               <th>التناظر</th>
               <td>${palindrome}</td>
             </tr>
+            ${getReverseAndRatioRow(targetNum)}
+            ${getPerfectNumberRow(targetNum)}
             <tr>
               <th>هل العدد أولي؟</th>
               <td>${isPrm ? '<span class="badge bg-success">نعم</span>' : '<span class="badge bg-danger">لا</span>'}</td>
@@ -173,7 +175,7 @@ async function performNumberStudy() {
         </table>
       </div>
     `;
-    
+
     let treeHtml = `
       <div class="card mt-4">
         <div class="card-header bg-light d-flex justify-content-between align-items-center">
@@ -191,7 +193,7 @@ async function performNumberStudy() {
         </div>
       </div>
     `;
-    
+
     resultContainer.innerHTML = html;
     document.getElementById('number-Study-Tree').innerHTML = treeHtml;
   } catch (error) {
@@ -199,98 +201,185 @@ async function performNumberStudy() {
   }
 }
 
+function isPerfectNumber(n) {
+  if (n <= 1)
+    return false;
+
+  // نستخدم دالة getDivisors الموجودة مسبقاً لديك
+  const divisors = getDivisors(n);
+
+  // مجموع القواسم باستثناء العدد نفسه
+  // ملاحظة: دالة getDivisors لديك تعيد جميع القواسم بما فيها العدد نفسه
+  const sumExcludingSelf = divisors.reduce((a, b) => a + b, 0) - n;
+
+  return sumExcludingSelf === n;
+}
+function getPerfectNumberRow(targetNum) {
+  const isPerfect = isPerfectNumber(targetNum);
+  const statusBadge = isPerfect
+    ? '<span class="badge bg-success">نعم (عدد كامل)</span>'
+    : '<span class="badge bg-secondary">لا</span>';
+
+  // عرض القواسم الحقيقية (بدون العدد نفسه) للتوضيح
+  const divisors = getDivisors(targetNum).filter(d => d !== targetNum);
+  const divisorsStr = divisors.join(' + ');
+  const sum = divisors.reduce((a, b) => a + b, 0);
+
+  return `
+      <tr>
+        <th>هل هو عدد كامل؟</th>
+        <td>
+          ${statusBadge}
+          ${isPerfect ? `<br><small class="text-muted" style="direction: ltr; display: block; text-align: right;">${divisorsStr} = ${sum}</small>` : ''}
+        </td>
+      </tr>
+    `;
+}
+
+function getReverseAndRatioRow(targetNum) {
+  const numStr = targetNum.toString();
+  const reversedStr = numStr.split('').reverse().join('');
+  const reversedNum = parseInt(reversedStr);
+
+  let ratio1Text = 'غير معرف'; // العدد / المقلوب
+  let ratio2Text = 'غير معرف'; // المقلوب / العدد
+
+  if (reversedNum !== 0 && targetNum !== 0) {
+    const r1 = targetNum / reversedNum;
+    const r2 = reversedNum / targetNum;
+
+    // عرض النسبة بأقصى دقة ممكنة
+    ratio1Text = r1.toString();
+    ratio2Text = r2.toString();
+  } else if (targetNum === 0) {
+    ratio1Text = '0';
+    ratio2Text = 'غير معرف (القسمة على صفر)';
+  }
+
+  return `
+      <tr>
+        <th>العدد ومقلوبه والنسب</th>
+        <td style="direction: ltr; text-align: right;">
+          <div class="mb-1">
+            العدد: <span class="fw-bold">${targetNum.toLocaleString()}</span> |
+            المقلوب: <span class="fw-bold">${reversedNum.toLocaleString()}</span>
+          </div>
+          <div class="small text-muted">
+            نسبة العدد للمقلوب: <span class="fw-bold text-primary">${ratio1Text}</span>
+          </div>
+          <div class="small text-muted">
+            نسبة المقلوب للعدد: <span class="fw-bold text-info">${ratio2Text}</span>
+          </div>
+        </td>
+      </tr>
+    `;
+}
+
 // Helper Functions
 function getDigitalRootSteps(n) {
-    let steps = [n];
-    let current = Math.abs(n);
-    while (current > 9) {
-        current = String(current).split('').reduce((a, b) => parseInt(a) + parseInt(b), 0);
-        steps.push(current);
-    }
-    return steps;
+  let steps = [n];
+  let current = Math.abs(n);
+  while (current > 9) {
+    current = String(current).split('').reduce((a, b) => parseInt(a) + parseInt(b), 0);
+    steps.push(current);
+  }
+  return steps;
 }
 
 function getDivisors(n) {
-    let divisors = [];
-    for (let i = 1; i <= n; i++) {
-        if (n % i === 0) divisors.push(i);
-    }
-    return divisors;
+  let divisors = [];
+  for (let i = 1; i <= n; i++) {
+    if (n % i === 0)
+      divisors.push(i);
+  }
+  return divisors;
 }
 
 function getPrimeFactors(n) {
-    let factors = [];
-    let d = 2;
-    let curr = n;
-    while (curr > 1) {
-        while (curr % d === 0) {
-            factors.push(d);
-            curr /= d;
-        }
-        d++;
-        if (d * d > curr) {
-            if (curr > 1) factors.push(curr);
-            break;
-        }
+  let factors = [];
+  let d = 2;
+  let curr = n;
+  while (curr > 1) {
+    while (curr % d === 0) {
+      factors.push(d);
+      curr /= d;
     }
-    return factors;
+    d++;
+    if (d * d > curr) {
+      if (curr > 1)
+        factors.push(curr);
+      break;
+    }
+  }
+  return factors;
 }
 
 function isPrime(n) {
-    if (n <= 1) return false;
-    if (n <= 3) return true;
-    if (n % 2 === 0 || n % 3 === 0) return false;
-    for (let i = 5; i * i <= n; i += 6) {
-        if (n % i === 0 || n % (i + 2) === 0) return false;
-    }
+  if (n <= 1)
+    return false;
+  if (n <= 3)
     return true;
+  if (n % 2 === 0 || n % 3 === 0)
+    return false;
+  for (let i = 5; i * i <= n; i += 6) {
+    if (n % i === 0 || n % (i + 2) === 0)
+      return false;
+  }
+  return true;
 }
 
 function getPrimeRank(n) {
-    if (!isPrime(n)) return null;
-    let rank = 0;
-    for (let i = 2; i <= n; i++) {
-        if (isPrime(i)) rank++;
-    }
-    return rank;
+  if (!isPrime(n))
+    return null;
+  let rank = 0;
+  for (let i = 2; i <= n; i++) {
+    if (isPrime(i))
+      rank++;
+  }
+  return rank;
 }
 
 function getPrimeRankSameOnes(n) {
-    if (!isPrime(n)) return null;
-    let rank = 0;
-    let onesDigit = n % 10;
-    for (let i = 2; i <= n; i++) {
-        if (isPrime(i) && (i % 10) === onesDigit) rank++;
-    }
-    return rank;
+  if (!isPrime(n))
+    return null;
+  let rank = 0;
+  let onesDigit = n % 10;
+  for (let i = 2; i <= n; i++) {
+    if (isPrime(i) && (i % 10) === onesDigit)
+      rank++;
+  }
+  return rank;
 }
 
 function isPalindrome(n) {
-    const str = String(n);
-    return str === str.split('').reverse().join('');
+  const str = String(n);
+  return str === str.split('').reverse().join('');
 }
 
 function getFibonacciRank(n) {
-    if (n < 0) return null;
-    if (n === 0) return 0;
-    let a = 1, b = 1;
-    let index = 1;
-    if (n === 1) return "1 أو 2"; 
-    while (b < n) {
-        let temp = b;
-        b = a + b;
-        a = temp;
-        index++;
-    }
-    return b === n ? index + 1 : null;
+  if (n < 0)
+    return null;
+  if (n === 0)
+    return 0;
+  let a = 1, b = 1;
+  let index = 1;
+  if (n === 1)
+    return "1 أو 2";
+  while (b < n) {
+    let temp = b;
+    b = a + b;
+    a = temp;
+    index++;
+  }
+  return b === n ? index + 1 : null;
 }
 
 function getOddEvenRank(n) {
-    if (n % 2 === 0) {
-        return { type: 'زوجي', rank: n / 2 };
-    } else {
-        return { type: 'فردي', rank: (n + 1) / 2 };
-    }
+  if (n % 2 === 0) {
+    return {type: 'زوجي', rank: n / 2};
+  } else {
+    return {type: 'فردي', rank: (n + 1) / 2};
+  }
 }
 
 $('#studyNumber').on('keypress', function (e) {
@@ -300,22 +389,118 @@ $('#studyNumber').on('keypress', function (e) {
 });
 
 function generateDecompositionTree(n) {
-    if (n <= 0) return '';
-    
-    function buildNode(val) {
-        let html = `<li><div class="node-box">${val}</div>`;
-        if (val > 1) {
-            let left = Math.floor(val / 2);
-            let right = Math.ceil(val / 2);
-            html += `<ul>${buildNode(left)}${buildNode(right)}</ul>`;
-        }
-        html += `</li>`;
-        return html;
+  if (n <= 0)
+    return '';
+
+  // كائن لتخزين تكرار كل رقم (مثلاً: { "5": 1, "2": 2, "1": 3 })
+  let valueCounts = {};
+  let totalNodes = 0;
+
+  function buildNode(val) {
+    totalNodes++;
+
+    // زيادة عداد الرقم الحالي
+    if (valueCounts[val]) {
+      valueCounts[val]++;
+    } else {
+      valueCounts[val] = 1;
     }
-    
-    // Reset zoom state on new render
-    currentZoom = 1; 
-    return `
+
+    let html = `<li><div class="node-box">${val}</div>`;
+
+    if (val > 1) {
+      let left = Math.floor(val / 2);
+      let right = Math.ceil(val / 2);
+      html += `<ul>${buildNode(left)}${buildNode(right)}</ul>`;
+    }
+    html += `</li>`;
+    return html;
+  }
+
+  // بناء الشجرة أولاً لملء بيانات التكرار
+  currentZoom = 1;
+  const treeContent = `<div class="number-tree"><ul>${buildNode(n)}</ul></div>`;
+
+  // الآن نحسب الإحصائيات بناءً على valueCounts
+  let calculationParts = [];
+  let runningSum = 0;
+  let finalTotal = 0;
+
+  // ترتيب الأرقام تنازلياً لعرضها بشكل منظم (اختياري، لكن يبدو أجمل)
+  const sortedKeys = Object.keys(valueCounts).sort((a, b) => b - a);
+
+  sortedKeys.forEach(key => {
+    const val = parseInt(key);
+    const count = valueCounts[key];
+    const product = val * count;
+
+    calculationParts.push(`(${val}×${count})`);
+    runningSum += product;
+  });
+
+  // المعادلة النهائية: مجموع المضروبات + (أي قيم متبقية إذا وجدت، لكن هنا غطينا الكل)
+  // في مثالك كان هناك "+ 5" في النهاية، يبدو أنه كان يقصد شيئاً آخر أو خطأ مطبعي في المثال،
+  // لكن رياضياً مجموع (القيمة × التكرار) هو المجموع الكلي.
+  // سنعرض المعادلة كما طلبت:
+
+  const equationString = calculationParts.join(' + ');
+  finalTotal = runningSum;
+
+  // عدد الروابط في الشجرة = عدد العقد - 1
+  const connections = totalNodes > 0 ? totalNodes - 1 : 0;
+
+  // تنسيق عرض الإحصائيات
+  const statsHtml = `
+        <div class="alert alert-light border mt-3 mb-0 text-start" dir="ltr">
+            <div class="small text-muted mb-1">تحليل مكونات الشجرة:</div>
+            <div class="fw-bold fs-6 font-monospace">
+                ${equationString} = <span class="text-primary">${finalTotal}</span>
+            </div>
+            <div class="row mt-2 pt-2 border-top text-center small">
+                <div class="col-4">
+                    <span class="d-block text-muted">مجموع الأعداد</span>
+                    <span class="fw-bold text-dark">${finalTotal}</span>
+                </div>
+                <div class="col-4">
+                    <span class="d-block text-muted">عدد القيم (العقد)</span>
+                    <span class="fw-bold text-dark">${totalNodes}</span>
+                </div>
+                <div class="col-4">
+                    <span class="d-block text-muted">عدد الروابط</span>
+                    <span class="fw-bold text-dark">${connections}</span>
+                </div>
+            </div>
+        </div>
+    `;
+
+  return `
+      <div class="number-tree-container" dir="ltr">
+        <div id="decomposition-tree-wrapper" style="display: inline-block; transform-origin: top center; transition: all 0.2s ease;">
+          ${treeContent}
+        </div>
+      </div>
+      ${statsHtml}
+    `;
+}
+
+function generateDecompositionTree0(n) {
+  if (n <= 0)
+    return '';
+
+  function buildNode(val) {
+    let html = `<li><div class="node-box">${val}</div>`;
+    if (val > 1) {
+      let left = Math.floor(val / 2);
+      let right = Math.ceil(val / 2);
+      html += `<ul>${buildNode(left)}${buildNode(right)}</ul>`;
+    }
+    html += `</li>`;
+    return html;
+  }
+
+  // Reset zoom state on new render
+  currentZoom = 1;
+  return `
       <div class="number-tree-container" dir="ltr">
         <div id="decomposition-tree-wrapper" style="display: inline-block; transform-origin: top center; transition: all 0.2s ease;">
           <div class="number-tree">
@@ -329,29 +514,31 @@ function generateDecompositionTree(n) {
 // Zoom functionality
 let currentZoom = 1;
 function zoomTree(step) {
-    const tree = document.getElementById('decomposition-tree-wrapper');
-    if (tree) {
-        currentZoom += step;
-        // Restrict zoom limits
-        if (currentZoom < 0.2) currentZoom = 0.2;
-        if (currentZoom > 3) currentZoom = 3;
-        
-        if (CSS.supports('zoom', '1')) {
-            tree.style.zoom = currentZoom;
-        } else {
-            tree.style.transform = `scale(${currentZoom})`;
-        }
+  const tree = document.getElementById('decomposition-tree-wrapper');
+  if (tree) {
+    currentZoom += step;
+    // Restrict zoom limits
+    if (currentZoom < 0.2)
+      currentZoom = 0.2;
+    if (currentZoom > 3)
+      currentZoom = 3;
+
+    if (CSS.supports('zoom', '1')) {
+      tree.style.zoom = currentZoom;
+    } else {
+      tree.style.transform = `scale(${currentZoom})`;
     }
+  }
 }
 
 function resetZoom() {
-    currentZoom = 1;
-    const tree = document.getElementById('decomposition-tree-wrapper');
-    if (tree) {
-        if (CSS.supports('zoom', '1')) {
-            tree.style.zoom = currentZoom;
-        } else {
-            tree.style.transform = `scale(1)`;
-        }
+  currentZoom = 1;
+  const tree = document.getElementById('decomposition-tree-wrapper');
+  if (tree) {
+    if (CSS.supports('zoom', '1')) {
+      tree.style.zoom = currentZoom;
+    } else {
+      tree.style.transform = `scale(1)`;
     }
+  }
 }
