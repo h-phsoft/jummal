@@ -483,34 +483,6 @@ function generateDecompositionTree(n) {
     `;
 }
 
-function generateDecompositionTree0(n) {
-  if (n <= 0)
-    return '';
-
-  function buildNode(val) {
-    let html = `<li><div class="node-box">${val}</div>`;
-    if (val > 1) {
-      let left = Math.floor(val / 2);
-      let right = Math.ceil(val / 2);
-      html += `<ul>${buildNode(left)}${buildNode(right)}</ul>`;
-    }
-    html += `</li>`;
-    return html;
-  }
-
-  // Reset zoom state on new render
-  currentZoom = 1;
-  return `
-      <div class="number-tree-container" dir="ltr">
-        <div id="decomposition-tree-wrapper" style="display: inline-block; transform-origin: top center; transition: all 0.2s ease;">
-          <div class="number-tree">
-            <ul>${buildNode(n)}</ul>
-          </div>
-        </div>
-      </div>
-    `;
-}
-
 // Zoom functionality
 let currentZoom = 1;
 function zoomTree(step) {
