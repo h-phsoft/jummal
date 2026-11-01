@@ -31,6 +31,8 @@ async function performNumberStudy() {
 
     const oddEven = getOddEvenRank(targetNum);
 
+    const tree = generateDecompositionTree(targetNum);
+
     let html = `
       <style>
         .study-results-table tbody th { text-align: left; vertical-align: middle; }
@@ -171,6 +173,9 @@ async function performNumberStudy() {
               <th>في سلسلة فيبوناتشي؟</th>
               <td>${fibStr}</td>
             </tr>
+            <tr>
+              <td colspan="2">${tree[1]}</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -188,7 +193,7 @@ async function performNumberStudy() {
         </div>
         <div class="card-body" style="overflow: hidden;">
           <div style="overflow-x: auto; overflow-y: hidden;">
-             ${generateDecompositionTree(targetNum)}
+             ${tree[0]}
           </div>
         </div>
       </div>
@@ -451,7 +456,7 @@ function generateDecompositionTree(n) {
 
   // تنسيق عرض الإحصائيات
   const statsHtml = `
-        <div class="alert alert-light border mt-3 mb-0 text-start" dir="ltr">
+        <div class="alert alert-light border mb-0 text-start" dir="ltr">
             <div class="small text-muted mb-1">تحليل مكونات الشجرة:</div>
             <div class="fw-bold fs-6 font-monospace">
                 ${equationString} = <span class="text-primary">${finalTotal}</span>
@@ -473,14 +478,14 @@ function generateDecompositionTree(n) {
         </div>
     `;
 
-  return `
+  return [`
       <div class="number-tree-container" dir="ltr">
         <div id="decomposition-tree-wrapper" style="display: inline-block; transform-origin: top center; transition: all 0.2s ease;">
           ${treeContent}
         </div>
       </div>
       ${statsHtml}
-    `;
+    `, statsHtml];
 }
 
 // Zoom functionality
