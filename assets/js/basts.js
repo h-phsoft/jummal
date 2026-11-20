@@ -1,25 +1,15 @@
 // ============================================
 // الثوابت الأساسية
 // ============================================
-const chars = ['ا', 'ب', 'ج', 'د', 'ه', 'و', 'ز', 'ح', 'ط', 'ي',
-  'ك', 'ل', 'م', 'ن', 'س', 'ع', 'ف', 'ص', 'ق', 'ر',
-  'ش', 'ت', 'ث', 'خ', 'ذ', 'ض', 'ظ', 'غ'];
-const jummalValues = {
-  'ا': 1n, 'ب': 2n, 'ج': 3n, 'د': 4n, 'ه': 5n, 'و': 6n, 'ز': 7n,
-  'ح': 8n, 'ط': 9n, 'ي': 10n, 'ك': 20n, 'ل': 30n, 'م': 40n, 'ن': 50n,
-  'س': 60n, 'ع': 70n, 'ف': 80n, 'ص': 90n, 'ق': 100n, 'ر': 200n,
-  'ش': 300n, 'ت': 400n, 'ث': 500n, 'خ': 600n, 'ذ': 700n, 'ض': 800n,
-  'ظ': 900n, 'غ': 1000n
-};
-
+// الحروف والقيم من core/letters.js (BigInt لأن قيم البسط كبيرة)
+const chars = BASE_LETTERS;
+const jummalValues = {};
 const abjadValues = {};
-chars.forEach((char, index) => {
-  abjadValues[char] = BigInt(index + 1);
-});
-
 const abjadIgValues = {};
 chars.forEach((char, index) => {
-  abjadIgValues[char] = BigInt((index % 9) + 1);
+  jummalValues[char] = BigInt(JUMMAL_VALUES[index]);
+  abjadValues[char] = BigInt(ABJAD_VALUES[index]);
+  abjadIgValues[char] = BigInt(AYQAGH_VALUES[index]);
 });
 
 const bast1Names = [

@@ -1,89 +1,45 @@
-/* global qWordsData */
+// منطق البحث نفسه في core/word-search.js (مشترك مع صفحة البحث)
+
+// قراءة أنواع البحث المحددة
+function getSelectedSearchTypes() {
+  return {
+    jummal: document.getElementById('checkJummal').checked,
+    abjad: document.getElementById('checkAbjad').checked,
+    ayqagh: document.getElementById('checkAyqagh').checked
+  };
+}
 
 // دالة البحث عن الكلمات المطابقة لقيمة الجمل المدخلة
 function searchByJummalValue(jummalValue) {
-  const checkJummal = document.getElementById('checkJummal').checked;
-  const checkAbjad = document.getElementById('checkAbjad').checked;
-  const checkAyqagh = document.getElementById('checkAyqagh').checked;
-
+  const types = getSelectedSearchTypes();
   const tbody = document.getElementById('searchResultsBody');
   tbody.innerHTML = '';
 
-  if (!qWordsData.length) {
+  if (typeof qWordsData === 'undefined' || !qWordsData.length) {
     tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">جاري تحميل البيانات...</td></tr>';
     return;
   }
 
-  // تصفية الكلمات التي تطابق القيمة في أي من الحقول المحددة
-  const results = qWordsData.filter(word => {
-    if (checkJummal && word.jummal === jummalValue)
-      return true;
-    if (checkAbjad && word.abjad === jummalValue)
-      return true;
-    if (checkAyqagh && word.ayqagh === jummalValue)
-      return true;
-    return false;
-  });
+  const found = findWordsByValue(jummalValue, types);
+  updateWordSearchCounters(found.counts, types);
 
-  // حساب العدادات
-  let totalCount = 0;
-  let jummalMatchCount = 0;
-  let abjadMatchCount = 0;
-  let ayqaghMatchCount = 0;
-
-  results.forEach(word => {
-    totalCount++;
-    if (checkJummal && word.jummal === jummalValue) {
-      jummalMatchCount++;
-    }
-    if (checkAbjad && word.abjad === jummalValue) {
-      abjadMatchCount++;
-    }
-    if (checkAyqagh && word.ayqagh === jummalValue) {
-      ayqaghMatchCount++;
-    }
-  });
-
-  // تحديث عدادات العناوين
-  const totalCountEl = document.getElementById('totalCount');
-  const jummalCountEl = document.getElementById('jummalCount');
-  const abjadCountEl = document.getElementById('abjadCount');
-  const ayqaghCountEl = document.getElementById('ayqaghCount');
-
-  if (totalCountEl)
-    totalCountEl.textContent = ` (${totalCount})`;
-  if (jummalCountEl)
-    jummalCountEl.textContent = checkJummal ? ` (${jummalMatchCount})` : ' (0)';
-  if (abjadCountEl)
-    abjadCountEl.textContent = checkAbjad ? ` (${abjadMatchCount})` : ' (0)';
-  if (ayqaghCountEl)
-    ayqaghCountEl.textContent = checkAyqagh ? ` (${ayqaghMatchCount})` : ' (0)';
-
-  if (results.length === 0) {
+  if (found.items.length === 0) {
     tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">لا توجد كلمات مطابقة</td></tr>';
     return;
   }
 
-  // عرض جميع النتائج
-  results.forEach(word => {
+  found.items.forEach(item => {
     const row = document.createElement('tr');
     row.className = 'history-row';
-
-    // تحديد الخلايا التي تطابق القيمة وتلوينها
-    const jummalMatch = checkJummal && word.jummal === jummalValue;
-    const abjadMatch = checkAbjad && word.abjad === jummalValue;
-    const ayqaghMatch = checkAyqagh && word.ayqagh === jummalValue;
-
     row.innerHTML = `
-      <td title="${word.text28}">${word.text28}</td>
-      <td class="number-cell ${jummalMatch ? 'match-jummal' : ''}" data-number="${word.jummal}">${numberCellContent(word.jummal, false)}</td>
-      <td class="number-cell ${abjadMatch ? 'match-abjad' : ''}" data-number="${word.abjad}">${numberCellContent(word.abjad, false)}</td>
-      <td class="number-cell ${ayqaghMatch ? 'match-ayqagh' : ''}" data-number="${word.ayqagh}">${numberCellContent(word.ayqagh, false)}</td>
+      <td title="${item.text}">${item.text}</td>
+      <td class="number-cell ${item.match.jummal ? 'match-jummal' : ''}" data-number="${item.jummal}">${numberCellContent(item.jummal, false)}</td>
+      <td class="number-cell ${item.match.abjad ? 'match-abjad' : ''}" data-number="${item.abjad}">${numberCellContent(item.abjad, false)}</td>
+      <td class="number-cell ${item.match.ayqagh ? 'match-ayqagh' : ''}" data-number="${item.ayqagh}">${numberCellContent(item.ayqagh, false)}</td>
       <td>
         <button class="btn-delete-item" onclick="deleteSearchRow(this)" title="حذف">×</button>
       </td>
     `;
-
     tbody.appendChild(row);
   });
 }
@@ -121,45 +77,23 @@ function initCombinedSearch() {
     initNumberActions('#searchResultsBody');
   }
 
-  // الاستماع لتغييرات radio buttons للبحث
-  document.getElementById('checkJummal').addEventListener('change', () => {
+  // إعادة البحث عند تغيير نوع البحث (نفس المعالج للأزرار الثلاثة)
+  function researchFromResult() {
     const inputText = document.getElementById('inputText').value;
-    if (inputText.trim()) {
-      // إعادة البحث إذا كان هناك نص
-      const currentResult = document.getElementById('jummalResult');
-      if (currentResult.classList.contains('result-success')) {
-        const jummalValue = parseInt(currentResult.textContent.replace(/[^0-9]/g, ''));
-        if (!isNaN(jummalValue)) {
-          searchByJummalValue(jummalValue);
-        }
+    if (!inputText.trim()) {
+      return;
+    }
+    const currentResult = document.getElementById('jummalResult');
+    if (currentResult.classList.contains('result-success')) {
+      const jummalValue = parseInt(currentResult.textContent.replace(/[^0-9]/g, ''));
+      if (!isNaN(jummalValue)) {
+        searchByJummalValue(jummalValue);
       }
     }
-  });
+  }
 
-  document.getElementById('checkAbjad').addEventListener('change', () => {
-    const inputText = document.getElementById('inputText').value;
-    if (inputText.trim()) {
-      const currentResult = document.getElementById('jummalResult');
-      if (currentResult.classList.contains('result-success')) {
-        const jummalValue = parseInt(currentResult.textContent.replace(/[^0-9]/g, ''));
-        if (!isNaN(jummalValue)) {
-          searchByJummalValue(jummalValue);
-        }
-      }
-    }
-  });
-
-  document.getElementById('checkAyqagh').addEventListener('change', () => {
-    const inputText = document.getElementById('inputText').value;
-    if (inputText.trim()) {
-      const currentResult = document.getElementById('jummalResult');
-      if (currentResult.classList.contains('result-success')) {
-        const jummalValue = parseInt(currentResult.textContent.replace(/[^0-9]/g, ''));
-        if (!isNaN(jummalValue)) {
-          searchByJummalValue(jummalValue);
-        }
-      }
-    }
+  ['checkJummal', 'checkAbjad', 'checkAyqagh'].forEach(id => {
+    document.getElementById(id).addEventListener('change', researchFromResult);
   });
 }
 

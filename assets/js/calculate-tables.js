@@ -1,117 +1,12 @@
-// === تعريف الحروف المدعومة ===
-const BAST_CHARS = {
-  "ا": "الف",
-  "ب": "با",
-  "ج": "جيم",
-  "د": "دال",
-  "ه": "ها",
-  "و": "واو",
-  "ز": "زاي",
-  "ح": "حا",
-  "ط": "طا",
-  "ي": "يا",
-  "ك": "كاف",
-  "ل": "لام",
-  "م": "ميم",
-  "ن": "نون",
-  "س": "سين",
-  "ع": "عين",
-  "ف": "فا",
-  "ص": "صاد",
-  "ق": "قاف",
-  "ر": "را",
-  "ش": "شين",
-  "ت": "تا",
-  "ث": "ثا",
-  "خ": "خا",
-  "ذ": "ذال",
-  "ض": "ضاد",
-  "ظ": "ظا",
-  "غ": "غين"
-};
-const BAST_ARRAY = [
-  "الف",
-  "با",
-  "جيم",
-  "دال",
-  "ها",
-  "واو",
-  "زاي",
-  "حا",
-  "طا",
-  "يا",
-  "كاف",
-  "لام",
-  "ميم",
-  "نون",
-  "سين",
-  "عين",
-  "فا",
-  "صاد",
-  "قاف",
-  "را",
-  "شين",
-  "تا",
-  "ثا",
-  "خا",
-  "ذال",
-  "ضاد",
-  "ظا",
-  "غين"
-];
-const SUPPORTED_CHARS = [
-  'ا', 'أ', 'إ', 'آ',
-  'ب',
-  'ج',
-  'د',
-  'ه', 'ة',
-  'و',
-  'ز',
-  'ح',
-  'ط',
-  'ي', 'ى', 'ئ',
-  'ك',
-  'ل',
-  'م',
-  'ن',
-  'س',
-  'ع',
-  'ف',
-  'ص',
-  'ق',
-  'ر',
-  'ش',
-  'ت',
-  'ث',
-  'خ',
-  'ذ',
-  'ض',
-  'ظ',
-  'غ'
-];
-
-// تنقية النص
-function cleanArabicText(input) {
-  let cleaned = '';
-  let inWord = false;
-  for (let char of input) {
-    if (SUPPORTED_CHARS.includes(char)) {
-      cleaned += char;
-      inWord = true;
-    } else if (char === ' ' && inWord) {
-      cleaned += ' ';
-      inWord = false;
-    }
-  }
-  return cleaned.trim();
-}
+// الحروف وقيمها وتنقية النص والحساب في core/letters.js
+// التخزين في core/common.js
 
 // === إدارة السجل ===
 const STORAGE_KEY = 'calculate_tables_history';
-let history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+let history = loadStoredList(STORAGE_KEY);
 
 function saveHistory() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+  saveStoredList(STORAGE_KEY, history);
 }
 
 function addToHistory(cleanText) {
@@ -179,21 +74,6 @@ function updateHistoryDisplay() {
     const index = $(this).data('index');
     removeItem(index);
   });
-}
-
-// === وظائف مساعدة ===
-function copyToClipboard(text) {
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(String(text)).catch(() => {
-    });
-  } else {
-    const textarea = document.createElement('textarea');
-    textarea.value = text;
-    document.body.appendChild(textarea);
-    textarea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textarea);
-  }
 }
 
 // === توليد خانات الاختيار للجداول ديناميكياً ===
@@ -317,33 +197,16 @@ $('#calculateBtn').on('click', function () {
     return;
   }
 
-  // تقسيم النص إلى كلمات
-  const words = cleanText.split(/\s+/).filter(w => w.length > 0);
-  
-  // حساب القيم لكل جدول محدد باستخدام CHARS_INDEX و tablesData
-  const results = [];
-  selectedTables.forEach(table => {
-    let totalValue = 0;
-    const wordValues = [];
-    
-    words.forEach(word => {
-      let wordValue = 0;
-      for (let char of word) {
-        const idx = CHARS_INDEX[char];
-        if (idx !== undefined) {
-          wordValue += table.values[idx];
-        }
-      }
-      wordValues.push(wordValue);
-      totalValue += wordValue;
-    });
-    
-    results.push({
+  // حساب القيم لكل جدول محدد (الحساب نفسه في core/letters.js)
+  const words = splitWords(cleanText);
+  const results = selectedTables.map(table => {
+    const calc = calculateWords(cleanText, table.values);
+    return {
       name: table.name,
       title: table.title || table.name,
-      totalValue: totalValue,
-      wordValues: wordValues
-    });
+      totalValue: calc.total,
+      wordValues: calc.wordValues
+    };
   });
 
   // عرض النتائج في الجدول الجديد

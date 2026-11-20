@@ -258,3 +258,36 @@ class OracleLovModal {
     }
   }
 }
+// =====================================================
+// قائمة الآيات (F9) لحقل الإدخال - دالة واحدة لكل الصفحات
+// =====================================================
+/* global qAyatData */
+function initAyatLov(inputId) {
+  const inputEl = document.getElementById(inputId);
+  if (!inputEl) {
+    return null;
+  }
+
+  const ayatLov = new OracleLovModal({
+    title: 'قائمة القيم (LOV)',
+    columns: [
+      {field: 'ayat28Text', label: 'الآية'},
+      {field: 'swarName', label: 'السورة'}
+    ],
+    data: typeof qAyatData !== 'undefined' ? qAyatData : [],
+    onSelect: (selectedData) => {
+      // آية واحدة (Object) أو عدة آيات (Array) تُدمج بمسافة
+      const items = Array.isArray(selectedData) ? selectedData : [selectedData];
+      inputEl.value = items.map(item => item.ayat28Text || '').join(' ');
+    }
+  });
+
+  inputEl.addEventListener('keydown', (e) => {
+    if (e.key === 'F9') {
+      e.preventDefault();
+      ayatLov.open(inputEl.value);
+    }
+  });
+
+  return ayatLov;
+}

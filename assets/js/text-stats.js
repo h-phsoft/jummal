@@ -1,14 +1,5 @@
 // === إحصاءات أحرف النص ===
-// ترتيب الحروف المعتمد للعرض (الترتيب الأبجدي مع الصور الفرعية لكل حرف)
-const TEXT_STATS_ORDER = [
-  'ا', 'أ', 'إ', 'آ',
-  'ب', 'ج', 'د',
-  'ه', 'ة',
-  'و', 'ز', 'ح', 'ط',
-  'ي', 'ى', 'ئ',
-  'ك', 'ل', 'م', 'ن', 'س', 'ع', 'ف', 'ص', 'ق', 'ر',
-  'ش', 'ت', 'ث', 'خ', 'ذ', 'ض', 'ظ', 'غ'
-];
+// ترتيب العرض: SUPPORTED_CHARS من core/letters.js
 
 // حساب الإحصاءات من النص المنقّى (تُستبعد المسافات)
 function computeTextStats(cleanText) {
@@ -24,8 +15,8 @@ function computeTextStats(cleanText) {
   }
 
   const letters = Object.keys(counts).sort((a, b) => {
-    const ia = TEXT_STATS_ORDER.indexOf(a);
-    const ib = TEXT_STATS_ORDER.indexOf(b);
+    const ia = SUPPORTED_CHARS.indexOf(a);
+    const ib = SUPPORTED_CHARS.indexOf(b);
     return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
   });
 

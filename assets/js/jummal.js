@@ -1,125 +1,14 @@
 /* global XLSX */
 
-// === تعريف الحروف المدعومة ===
-const SUPPORTED_CHARS = [
-  'ا', 'أ', 'إ', 'آ',
-  'ب',
-  'ج',
-  'د',
-  'ه', 'ة',
-  'و',
-  'ز',
-  'ح',
-  'ط',
-  'ي', 'ى', 'ئ',
-  'ك',
-  'ل',
-  'م',
-  'ن',
-  'س',
-  'ع',
-  'ف',
-  'ص',
-  'ق',
-  'ر',
-  'ش',
-  'ت',
-  'ث',
-  'خ',
-  'ذ',
-  'ض',
-  'ظ',
-  'غ'
-];
-// 1. حساب الجمل (كلاسيكي)
-const jummalValues = {
-  'ا': 1, 'أ': 1, 'إ': 1, 'آ': 1,
-  'ب': 2,
-  'ج': 3,
-  'د': 4,
-  'ه': 5, 'ة': 5,
-  'و': 6,
-  'ز': 7,
-  'ح': 8,
-  'ط': 9,
-  'ي': 10, 'ى': 10, 'ئ': 10,
-  'ك': 20,
-  'ل': 30,
-  'م': 40,
-  'ن': 50,
-  'س': 60,
-  'ع': 70,
-  'ف': 80,
-  'ص': 90,
-  'ق': 100,
-  'ر': 200,
-  'ش': 300,
-  'ت': 400,
-  'ث': 500,
-  'خ': 600,
-  'ذ': 700,
-  'ض': 800,
-  'ظ': 900,
-  'غ': 1000
-};
-
-// دالة للحصول على الترتيب الفريد (1-28)
-function getUniqueIndex(char) {
-  const baseOrder = ['ا', 'ب', 'ج', 'د', 'ه', 'و', 'ز', 'ح', 'ط', 'ي', 'ك', 'ل', 'م', 'ن', 'س', 'ع', 'ف', 'ص', 'ق', 'ر', 'ش', 'ت', 'ث', 'خ', 'ذ', 'ض', 'ظ', 'غ'];
-  const map = {
-    'ا': 'ا', 'أ': 'ا', 'إ': 'ا', 'آ': 'ا',
-    'ه': 'ه', 'ة': 'ه',
-    'ي': 'ي', 'ى': 'ي', 'ئ': 'ي'
-  };
-  const base = map[char] || char;
-  const idx = baseOrder.indexOf(base);
-  return idx === -1 ? 0 : idx + 1;
-}
-
-// تنقية النص
-function cleanArabicText(input) {
-  let cleaned = '';
-  let inWord = false;
-  for (let char of input) {
-    if (SUPPORTED_CHARS.includes(char)) {
-      cleaned += char;
-      inWord = true;
-    } else if (char === ' ' && inWord) {
-      cleaned += ' ';
-      inWord = false;
-    }
-  }
-  return cleaned.trim();
-}
-
-// حساب القيم الثلاثة + المجموع
-function calculateAll(text) {
-  let jummal = 0, abjadi = 0, iqghy = 0;
-
-  for (let char of text) {
-    // الجمل
-    if (jummalValues[char])
-      jummal += jummalValues[char];
-    // الأبجدي
-    const idx = getUniqueIndex(char);
-    if (idx)
-      abjadi += idx;
-
-    // الإيقيغي
-    if (idx)
-      iqghy += ((idx - 1) % 9) + 1;
-  }
-
-  const triple = jummal + abjadi + iqghy;
-  return {jummal, abjadi, iqghy, triple};
-}
+// الحروف وقيمها والحساب الثلاثي في core/letters.js
+// النسخ والتخزين في core/common.js
 
 // === إدارة السجل ===
 const STORAGE_KEY = 'gematria_history_triple_v2';
-let history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+let history = loadStoredList(STORAGE_KEY);
 
 function saveHistory() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+  saveStoredList(STORAGE_KEY, history);
 }
 
 function addToHistory(cleanText, values) {
@@ -201,21 +90,6 @@ function updateHistoryDisplay() {
   });
 }
 
-// === وظائف مساعدة ===
-function copyToClipboard(text) {
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(String(text)).catch(() => {
-    });
-  } else {
-    const textarea = document.createElement('textarea');
-    textarea.value = text;
-    document.body.appendChild(textarea);
-    textarea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textarea);
-  }
-}
-
 // === حدث الحساب ===
 $('#calculateBtn').on('click', function () {
   const rawInput = $('#inputText').val();
@@ -236,7 +110,7 @@ $('#calculateBtn').on('click', function () {
     return;
   }
 
-  const values = calculateAll(cleanText);
+  const values = calculateTriple(cleanText);
   // عرض نتيجة الجمل كمرجع (مع قائمة خيارات الرقم)
   const resultHtml = 'الجمل: ' +
     `<span class="number-cell" data-number="${values.jummal}">${numberCellContent(values.jummal)}</span>`;
@@ -254,8 +128,8 @@ $('#calculateBtn').on('click', function () {
 
   // حساب الكسر وعرض المؤشر فقط دون إظهار الجدول أو زر الدليل
   const inputNumber = values.jummal;
-  if (inputNumber >= 12) {
-    const remainder = (inputNumber - 12) % 3;
+  if (inputNumber >= 12 && typeof triangleFraction === 'function') {
+    const remainder = triangleFraction(inputNumber);
     const $indicator = $('#fractionIndicator');
     if (remainder === 0) {
       $indicator.css('background-color', 'green');

@@ -31,79 +31,26 @@ async function performSearch() {
   }
 
   try {
-    // Use embedded QWORDS_DATA if available (for offline/flash memory usage)
-    let wordsArray = qWordsData;
+    // منطق البحث نفسه في core/word-search.js (مشترك مع المنصة الموحدة)
+    const types = {jummal: searchJummal, abjad: searchAbjad, ayqagh: searchAyqagh};
+    const found = findWordsByValue(targetNum, types);
 
-    let foundCount = 0;
-    let jummalMatchCount = 0;
-    let abjadMatchCount = 0;
-    let ayqaghMatchCount = 0;
-
-    wordsArray.forEach(item => {
-      // نأخذ النص من الحقل text28 كما طلبت سابقاً أو الحقل النصي الأساسي
-      const text = item.text28 || item.text || item.word || "";
-
-      // نستخدم القيم المخزنة مباشرة في الملف دون إعادة حسابها
-      const valJummal = item.jummal !== undefined ? item.jummal : 0;
-      const valAbjad = item.abjad !== undefined ? item.abjad : 0;
-      const valAyqagh = item.ayqagh !== undefined ? item.ayqagh : 0;
-
-      let matchFound = false;
-      let rowClassJummal = '';
-      let rowClassAbjad = '';
-      let rowClassAyqagh = '';
-
-      // التحقق فقط من الحقول المحددة في الـ checkboxes
-      if (searchJummal && valJummal === targetNum) {
-        matchFound = true;
-        rowClassJummal = 'highlight-jummal';
-        jummalMatchCount++;
-      }
-      if (searchAbjad && valAbjad === targetNum) {
-        matchFound = true;
-        rowClassAbjad = 'highlight-abjad';
-        abjadMatchCount++;
-      }
-      if (searchAyqagh && valAyqagh === targetNum) {
-        matchFound = true;
-        rowClassAyqagh = 'highlight-ayqagh';
-        ayqaghMatchCount++;
-      }
-
-      if (matchFound) {
-        foundCount++;
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-                    <td>${text}</td>
-                    <td class="${rowClassJummal}">${valJummal}</td>
-                    <td class="${rowClassAbjad}">${valAbjad}</td>
-                    <td class="${rowClassAyqagh}">${valAyqagh}</td>
-                `;
-        tableEl.appendChild(tr);
-      }
+    found.items.forEach(item => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${item.text}</td>
+        <td class="${item.match.jummal ? 'highlight-jummal' : ''}">${item.jummal}</td>
+        <td class="${item.match.abjad ? 'highlight-abjad' : ''}">${item.abjad}</td>
+        <td class="${item.match.ayqagh ? 'highlight-ayqagh' : ''}">${item.ayqagh}</td>
+      `;
+      tableEl.appendChild(tr);
     });
 
-    // تحديث عدادات العناوين
-    const totalCountEl = document.getElementById('totalCount');
-    const jummalCountEl = document.getElementById('jummalCount');
-    const abjadCountEl = document.getElementById('abjadCount');
-    const ayqaghCountEl = document.getElementById('ayqaghCount');
+    updateWordSearchCounters(found.counts, types);
 
-    if (totalCountEl)
-      totalCountEl.textContent = ` (${foundCount})`;
-    if (jummalCountEl)
-      jummalCountEl.textContent = searchJummal ? ` (${jummalMatchCount})` : ' (0)';
-    if (abjadCountEl)
-      abjadCountEl.textContent = searchAbjad ? ` (${abjadMatchCount})` : ' (0)';
-    if (ayqaghCountEl)
-      ayqaghCountEl.textContent = searchAyqagh ? ` (${ayqaghMatchCount})` : ' (0)';
-
-    if (foundCount === 0 && noResultsMsg) {
-      noResultsMsg.style.display = 'block';
-    } else if (noResultsMsg) {
-      noResultsMsg.style.display = 'none';
+    if (noResultsMsg) {
+      noResultsMsg.style.display = found.counts.total === 0 ? 'block' : 'none';
     }
-
   } catch (error) {
     console.error(error);
     tableEl.innerHTML = `<tr><td colspan="4" style="color:red; text-align:center;">خطأ: ${error.message}</td></tr>`;
