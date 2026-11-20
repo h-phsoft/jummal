@@ -287,6 +287,8 @@ npm run package:cpanel # حزمة zip للرفع على cPanel في release/
    - **الأسرار المطلوبة:** `FTP_SERVER`، و`FTP_USERNAME`، و`FTP_PASSWORD`، و`FTP_PROTOCOL`.
 2. **`desktop` (Windows):** يبني ملف exe ويحفظه artifact باسم `Quran-Numerical-Studies-windows` في صفحة التشغيل (يبقى 30 يوماً).
 
+⚠️ **الحالة في 2026-11-20:** كان الـ workflow معطلاً يدوياً في GitHub (`disabled_manually`)، فلم يعمل أي نشر آلي. لتفعيله: Actions ← Build and Deploy ← Enable workflow، ثم Run workflow. وتأكد من وجود أسرار FTP في Settings ← Secrets and variables ← Actions.
+
 المستودع: https://github.com/h-phsoft/jummal، والفرع `merge-phsquran` مطابق لـ `main` حالياً.
 
 ### 11.2 اليدوي (حزمة cPanel)
@@ -294,6 +296,8 @@ npm run package:cpanel # حزمة zip للرفع على cPanel في release/
 ```bash
 npm run package:cpanel
 ```
+
+أو بنقرة مزدوجة على **`package-cpanel.bat`** في جذر المشروع. يثبّت المكتبات أول مرة، ويختبر، ويبني الحزمة، ثم يفتح مجلد `release`.
 
 1. يُنتج `release/quran-numerical-studies-cpanel-<الإصدار>-<التاريخ>.zip` (نحو 2 ميغابايت، 59 ملفاً).
 2. في cPanel: مدير الملفات ← مجلد الموقع ← رفع الملف ← Extract.
