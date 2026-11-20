@@ -107,8 +107,10 @@ function initNumberActions(containerSelector) {
 }
 
 // إنشاء محتوى خلية رقمية مع الزر الصغير
-function numberCellContent(value) {
-  return `<span class="number-value">${Number(value).toLocaleString()}</span>` +
+// formatted = false يعرض الرقم كما هو دون فواصل الآلاف
+function numberCellContent(value, formatted = true) {
+  const display = formatted ? Number(value).toLocaleString() : String(value);
+  return `<span class="number-value">${display}</span>` +
     '<button type="button" class="number-actions-btn" title="خيارات الرقم"><i class="bi bi-three-dots-vertical"></i></button>';
 }
 

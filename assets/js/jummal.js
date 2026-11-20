@@ -165,10 +165,10 @@ function updateHistoryDisplay() {
     const row = $(`
             <tr class="history-row">
               <td title="${item.text}">${item.text}</td>
-              <td>${item.jummal.toLocaleString()}</td>
-              <td>${item.abjadi.toLocaleString()}</td>
-              <td>${item.iqghy.toLocaleString()}</td>
-              <td>${item.triple.toLocaleString()}</td>
+              <td class="number-cell" data-number="${item.jummal}">${numberCellContent(item.jummal)}</td>
+              <td class="number-cell" data-number="${item.abjadi}">${numberCellContent(item.abjadi)}</td>
+              <td class="number-cell" data-number="${item.iqghy}">${numberCellContent(item.iqghy)}</td>
+              <td class="number-cell" data-number="${item.triple}">${numberCellContent(item.triple)}</td>
               <td>
                 <button class="btn-delete-item" data-index="${index}">×</button>
               </td>
@@ -177,7 +177,8 @@ function updateHistoryDisplay() {
 
     // نقرة على السطر: استرجاع النص
     row.on('click', function (e) {
-      if (!$(e.target).hasClass('btn-delete-item')) {
+      const isActionBtn = $(e.target).closest('.number-actions-btn').length > 0;
+      if (!$(e.target).hasClass('btn-delete-item') && !isActionBtn) {
         $('#inputText').val(item.text).focus();
       }
     });
@@ -236,13 +237,14 @@ $('#calculateBtn').on('click', function () {
   }
 
   const values = calculateAll(cleanText);
-  // عرض نتيجة الجمل كمرجع
-  const resultText = `الجمل: ${values.jummal.toLocaleString()}`;
+  // عرض نتيجة الجمل كمرجع (مع قائمة خيارات الرقم)
+  const resultHtml = 'الجمل: ' +
+    `<span class="number-cell" data-number="${values.jummal}">${numberCellContent(values.jummal)}</span>`;
 
   $('#jummalResult')
     .removeClass('result-error')
     .addClass('result-success')
-    .text(resultText);
+    .html(resultHtml);
 
   // نسخ قيمة الجمل تلقائيًا
   copyToClipboard(values.jummal);
@@ -311,6 +313,12 @@ $('#inputText').on('keypress', function (e) {
 });
 
 $('#clearAllBtn').on('click', clearAllHistory);
+
+// قائمة خيارات الأرقام في السجل ونتيجة الحساب
+if (typeof initNumberActions === 'function') {
+  initNumberActions('#historyList');
+  initNumberActions('#jummalResult');
+}
 
 // تحميل السجل عند البدء
 updateHistoryDisplay();

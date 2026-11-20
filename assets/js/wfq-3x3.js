@@ -82,7 +82,9 @@ $(document).ready(function () {
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
         const val = square[i][j];
-        const $cell = $('<div class="magic-cell">').text(val);
+        const $cell = $('<div class="magic-cell number-cell">')
+          .attr('data-number', val)
+          .html(numberCellContent(val, false));
 
         if (fraction > 0) {
           if (i === positions.fractionFix.row && j === positions.fractionFix.col) {
@@ -123,13 +125,19 @@ $(document).ready(function () {
         <tr>
           <td><strong>${row.name}</strong></td>
           <td>${row.explanation}</td>
-          <td><strong>${row.value}</strong></td>
+          <td class="number-cell" data-number="${row.value}"><strong>${numberCellContent(row.value, false)}</strong></td>
         </tr>
       `);
     });
 
     $('#magicResult').removeClass('d-none');
     $('#toggleGuideBtn').show();
+  }
+
+  // قائمة خيارات الأرقام في خلايا الوفق وجدول الدليل
+  if (typeof initNumberActions === 'function') {
+    initNumberActions('#magicSquare');
+    initNumberActions('#infoTableBody');
   }
 
   $('#generateBtn').on('click', function () {

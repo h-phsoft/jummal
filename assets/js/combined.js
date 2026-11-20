@@ -76,9 +76,9 @@ function searchByJummalValue(jummalValue) {
 
     row.innerHTML = `
       <td title="${word.text28}">${word.text28}</td>
-      <td class="${jummalMatch ? 'match-jummal' : ''}">${word.jummal}</td>
-      <td class="${abjadMatch ? 'match-abjad' : ''}">${word.abjad}</td>
-      <td class="${ayqaghMatch ? 'match-ayqagh' : ''}">${word.ayqagh}</td>
+      <td class="number-cell ${jummalMatch ? 'match-jummal' : ''}" data-number="${word.jummal}">${numberCellContent(word.jummal, false)}</td>
+      <td class="number-cell ${abjadMatch ? 'match-abjad' : ''}" data-number="${word.abjad}">${numberCellContent(word.abjad, false)}</td>
+      <td class="number-cell ${ayqaghMatch ? 'match-ayqagh' : ''}" data-number="${word.ayqagh}">${numberCellContent(word.ayqagh, false)}</td>
       <td>
         <button class="btn-delete-item" onclick="deleteSearchRow(this)" title="حذف">×</button>
       </td>
@@ -116,6 +116,11 @@ function deleteSearchRow(btn) {
 
 // تعديل حدث الحساب في jummal.js ليشغل البحث
 function initCombinedSearch() {
+  // قائمة خيارات الأرقام في نتائج البحث
+  if (typeof initNumberActions === 'function') {
+    initNumberActions('#searchResultsBody');
+  }
+
   // الاستماع لتغييرات radio buttons للبحث
   document.getElementById('checkJummal').addEventListener('change', () => {
     const inputText = document.getElementById('inputText').value;
