@@ -276,6 +276,11 @@ $('#calculateBtn').on('click', function () {
 
   addToHistory(cleanText, values);
 
+  // عرض إحصاءات الأحرف
+  if (typeof renderTextStats === 'function') {
+    renderTextStats(cleanText, '#textStats');
+  }
+
   // البحث في QWords.json عن كلمات مطابقة لقيمة الجمل
   // تنفيذ البحث تلقائياً باستخدام الدالة searchByJummalValue من combined-search.js
   // مع "الجمل" كحالة افتراضية دائماً

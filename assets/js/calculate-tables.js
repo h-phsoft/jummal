@@ -372,6 +372,11 @@ $('#calculateBtn').on('click', function () {
   $('#resultTable').show();
   $('#noResultMsg').hide();
 
+  // عرض إحصاءات الأحرف
+  if (typeof renderTextStats === 'function') {
+    renderTextStats(cleanText, '#textStats');
+  }
+
   // إضافة النص إلى السجل (مرة واحدة فقط)
   addToHistory(cleanText);
 
