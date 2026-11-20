@@ -10,18 +10,8 @@ import { NavLink } from 'react-router-dom';
 export default function Sidebar({ isOpen, setIsOpen }) {
   const { t } = useTranslation();
 
+  // ترتيب المجموعات: الدراسات، ثم أدوات الجمّل، ثم الإحصائيات
   const menuItems = [
-    {
-      title: t('tools_jummal'),
-      items: [
-        { name: t('tool_unified'), icon: <Layers size={18} />, path: '/workspace/unified' },
-        { name: t('tool_jummal'), icon: <Calculator size={18} />, path: '/workspace/jummal' },
-        { name: t('tool_tables'), icon: <Table2 size={18} />, path: '/workspace/tables' },
-        { name: t('tool_wefq'), icon: <Grid3x3 size={18} />, path: '/workspace/wefq' },
-        { name: t('tool_number_search'), icon: <Search size={18} />, path: '/workspace/number-search' },
-        { name: t('tool_number_study'), icon: <Sigma size={18} />, path: '/workspace/number-study' },
-      ]
-    },
     {
       title: t('studies'),
       items: [
@@ -31,6 +21,17 @@ export default function Sidebar({ isOpen, setIsOpen }) {
         { name: t('menu_study_chapter'), icon: <Search size={18} />, path: '/workspace/study-chapter' },
         { name: t('menu_study_verse'), icon: <Search size={18} />, path: '/workspace/study-verse' },
         { name: t('menu_study_char'), icon: <Type size={18} />, path: '/workspace/study-char' },
+      ]
+    },
+    {
+      title: t('tools_jummal'),
+      items: [
+        { name: t('tool_unified'), icon: <Layers size={18} />, path: '/workspace/unified' },
+        { name: t('tool_jummal'), icon: <Calculator size={18} />, path: '/workspace/jummal' },
+        { name: t('tool_tables'), icon: <Table2 size={18} />, path: '/workspace/tables' },
+        { name: t('tool_wefq'), icon: <Grid3x3 size={18} />, path: '/workspace/wefq' },
+        { name: t('tool_number_search'), icon: <Search size={18} />, path: '/workspace/number-search' },
+        { name: t('tool_number_study'), icon: <Sigma size={18} />, path: '/workspace/number-study' },
       ]
     },
     {

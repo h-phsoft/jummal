@@ -6,7 +6,6 @@
   "workspaces": [
     "packages/*",
     "frontend",
-    "backend",
     "desktop"
   ],
   "scripts": {
@@ -14,7 +13,6 @@
     "build": "npm run build -w frontend",
     "preview": "npm run preview -w frontend",
     "test": "npm test -w @jummal/core",
-    "server": "npm start -w backend",
     "desktop": "npm run build && npm start -w desktop",
     "build:exe": "npm run build && npm run dist -w desktop",
     "package:cpanel": "npm run build && node tools/package-cpanel.mjs"

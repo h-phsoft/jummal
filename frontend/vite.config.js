@@ -41,14 +41,5 @@ export default defineConfig({
   ],
   build: {
     chunkSizeWarningLimit: 1500
-  },
-  server: {
-    proxy: {
-      // الخادم الاختياري (npm run server) إن احتيج لاختبار الـ API
-      '/api': {
-        target: 'http://localhost:3000',
-        changeOrigin: true
-      }
-    }
   }
 });

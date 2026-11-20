@@ -28,8 +28,8 @@
 | يعمل دون إنترنت | موقع PWA يُثبَّت على الجهاز، وبرنامج exe محمول لويندوز |
 | ملفات فقط، دون قاعدة بيانات | البيانات في `data/*.js`. لا MySQL ولا SQLite. ملف `phquran.sql` القديم تُرك عمداً |
 | لا PHP ولا jQuery | كان PHP يُستخدم فقط من أجل include، وحلّت محله مكونات React |
-| لا خادم إلزامي | الحساب يجري في المتصفح. الخادم Express اختياري، لواجهة برمجية خارجية فقط |
-| مصدر واحد لكل حساب | كل حساب في `packages/core` مرة واحدة فقط، وتستدعيه الواجهة والخادم. لا تكرر منطقاً في مكون أو مسار |
+| لا خادم | الحساب يجري في المتصفح. لا Passenger ولا Node على cPanel. واجهة برمجية اختيارية قد تُضاف لاحقاً لمن يريد (§7) |
+| مصدر واحد لكل حساب | كل حساب في `packages/core` مرة واحدة فقط، وتستدعيه الواجهة (وأي خادم يُضاف لاحقاً). لا تكرر منطقاً في مكون أو مسار |
 | الحد الأدنى للوفق المثلث | 15 في كل مكان، ويُقرأ من `WEFEQ_MAGIC_CONSTANTS.triangle` |
 | اللغة | العربية افتراضية (RTL). في الوضع العربي لا تظهر أي كلمة إنجليزية |
 | النمط | فاتح وداكن، بزر في الشريط العلوي. يُحفظ الاختيار، ويتبع النظام إن لم يُختر |
@@ -45,7 +45,7 @@ packages/core/        ← @jummal/core: كل الحسابات + الاختبار
   src/                  letters, tables, wefq, text-stats, word-search,
                         number-study, quran-analysis, quran-stats, data-file
   test/core.test.js     12 اختباراً (node:test)
-  test/legacy/          نسخة من الكود القديم لمقارنة النتائج
+  test/fixtures/        نتائج وكود قديم لمقارنة النتائج (Q01, Q02, number-study)
 frontend/             ← الواجهة: React 19 + Vite 8 + PWA
   public/               الأيقونات + .htaccess (+ data/*.json مولَّدة، غير محفوظة في git)
   scripts/prepare-data.mjs   يحوّل data/*.js إلى public/data/*.json عند البناء
@@ -59,14 +59,12 @@ frontend/             ← الواجهة: React 19 + Vite 8 + PWA
     hooks/              useApiData, useStoredList
     locales/            ar.json, en.json (كل نصوص الواجهة)
     styles/tools.css    أنماط الأدوات (فوق index.css)
-backend/              ← خادم API اختياري (Express 5)
 desktop/              ← برنامج سطح المكتب (Electron 45 + electron-builder)
-tools/                ← generate-icons.mjs, package-cpanel.mjs
-legacy/phsquran-js/   ← كود PhsQuran القديم مرجعاً فقط (لا يُبنى)
+tools/                ← package-cpanel.mjs (حزمة النشر)
 .github/workflows/deploy.yml  ← البناء والنشر الآلي
 ```
 
-المستودع npm workspaces: الحزم `packages/*` و`frontend` و`backend` و`desktop`، وملف قفل واحد `package-lock.json` في الجذر.
+المستودع npm workspaces: الحزم `packages/*` و`frontend` و`desktop`، وملف قفل واحد `package-lock.json` في الجذر.
 
 ---
 
@@ -121,9 +119,10 @@ legacy/phsquran-js/   ← كود PhsQuran القديم مرجعاً فقط (لا
 ### 4.5 كيف تصل البيانات إلى كل مكان
 
 - **الواجهة:** `npm run dev` و`npm run build` يشغّلان `prepare-data.mjs`، فيُكتب `frontend/public/data/{swar,ayat,words}.json`. بعدها يحمّلها `services/data.js` مرة واحدة.
-- **الخادم:** يقرأ `data/*.js` مباشرة.
 - **الاختبارات:** تقرأ `data/*.js` مباشرة.
 - **التعديل:** أي تصحيح للبيانات يكون في `data/` فقط، ثم أعد البناء.
+
+**ملفات حُذفت عمداً (موجودة في تاريخ git):** صفحات PhsQuran القديمة (`legacy/`)، والخادم الأول (`backend/`)، وأداة توليد الأيقونات (`tools/generate-icons.mjs`). آخر commit يحتويها: `141efdb`. استرجع أي ملف منها بـ `git show 141efdb:<المسار>`.
 
 ---
 
@@ -221,17 +220,18 @@ legacy/phsquran-js/   ← كود PhsQuran القديم مرجعاً فقط (لا
 
 ---
 
-## 7. الخادم الاختياري (`backend/index.js`)
+## 7. واجهة برمجية لاحقاً (غير موجودة حالياً)
 
-```bash
-npm run server
-```
+حُذف الخادم الأول للإبقاء على ما يلزم للتشغيل فقط. عند إضافته لاحقاً لمن يريد:
 
-يعمل على المنفذ 3000 (أو `PORT`)، ويقدّم أيضاً `frontend/dist` إن وُجد. المسارات تحت `/api`:
+- **مكانه:** حزمة جديدة `backend/` تُضاف إلى `workspaces` في `package.json` الجذر. هو اختياري للتطبيقات الخارجية، ولا يُنشر على cPanel ولا يحتاجه الموقع أو exe.
+- **الحساب:** يستورد `@jummal/core` نفسه، ويقرأ `data/*.js` بـ `parseDataFile`، دون أي حساب خاص به.
+- **المسارات:** يكرر مسارات `frontend/src/services/api.js` نفسها، فتطابق نتائجه المتصفح.
+- **نقطة بداية:** `git show 141efdb:backend/index.js` (Express 5، المنفذ 3000). كانت مساراته تحت `/api`:
 
 `/ping`, `/swar`, `/swar/:id`, `/swar/:id/ayat`, `/ayat?surah=`, `/ayat/search?q=`, `/ayat/:id`, `/qwords`, `/qwords/:id`, `/analysis/characters/surah/:id`, `/analysis/characters/ayah/:id`, `/analysis/symmetric-chapters/:id`, `/analysis/symmetric-words?word1&word2&tashkil`, `/analysis/symmetric-verses/:surah/:start`, `/analysis/letter?char=`, `/stats/chapters`, `/stats/letters`, `/jummal?text=`, `/tables`, `/tables/calculate?text&tables=0,1,2`, `/wefq/:shape/:number`, `/number/:number`, `/words/search?value&types=jummal,abjad`
 
-**أي مسار جديد:** أضفه في الخادم، وفي `frontend/src/services/api.js` بنفس الشكل.
+**ملاحظة:** هذه المسارات موجودة الآن داخل المتصفح في `services/api.js`، والخادم المستقبلي يعرضها بالشكل نفسه.
 
 ---
 
@@ -254,11 +254,9 @@ npm run dev            # تطوير الواجهة (http://localhost:5173)
 npm test               # اختبارات الحسابات والبيانات
 npm run build          # بناء الموقع في frontend/dist
 npm run preview        # معاينة البناء
-npm run server         # الخادم الاختياري
 npm run desktop        # تشغيل برنامج سطح المكتب
 npm run build:exe      # بناء ملف exe محمول
 npm run package:cpanel # حزمة zip للرفع على cPanel في release/
-node tools/generate-icons.mjs   # إعادة توليد الأيقونات
 ```
 
 ---
@@ -285,7 +283,7 @@ node tools/generate-icons.mjs   # إعادة توليد الأيقونات
 ### 11.1 الآلي (GitHub Actions)
 
 الدفع إلى `main` يشغّل `.github/workflows/deploy.yml`، وفيه مهمتان:
-1. **`site` (Ubuntu):** `npm ci` ثم `npm test` ثم `npm run build`، ثم رفع `frontend/dist/` بـ FTP إلى `/public_html/s/jummal/`.
+1. **`site` (Ubuntu):** `npm ci` ثم `npm test` ثم `npm run build`، ثم رفع `frontend/dist/` بـ FTP إلى `/public_html/quran.phsoft.me/` (المجلد الجذر لنطاق quran.phsoft.me). يجب أن يكون النطاق موجهاً إلى هذا المجلد في cPanel، وألا يكون مسجلاً تطبيقَ Node في Application Manager، لأن الموقع ملفات ثابتة.
    - **الأسرار المطلوبة:** `FTP_SERVER`، و`FTP_USERNAME`، و`FTP_PASSWORD`، و`FTP_PROTOCOL`.
 2. **`desktop` (Windows):** يبني ملف exe ويحفظه artifact باسم `Quran-Numerical-Studies-windows` في صفحة التشغيل (يبقى 30 يوماً).
 
@@ -334,7 +332,7 @@ npm run package:cpanel
 ## 14. قائمة عند إضافة ميزة جديدة
 
 1. **الحساب:** في `packages/core/src` دالةً نقية، مع اختبار في `core.test.js`، ثم `npm test`.
-2. **المسار:** في `frontend/src/services/api.js` إن كانت تحتاج بيانات، وفي `backend/index.js` بنفس الشكل.
+2. **المسار:** في `frontend/src/services/api.js` إن كانت تحتاج بيانات (وفي الخادم إن أُضيف لاحقاً).
 3. **الصفحة:** مكون React في `components/` أو `tools/`، ومسار في `pages/Workspace.jsx`، وعنصر في `components/Sidebar.jsx`.
 4. **النصوص:** في `locales/ar.json` و`en.json`. لا تكتب نصاً ظاهراً مباشرة في الكود.
 5. **التنسيق:** مسافتان للإزاحة دون tabs، وأقواس `{}` دائماً حول `if/else/for/while`.

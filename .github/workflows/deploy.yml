@@ -36,7 +36,8 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ${{ secrets.FTP_PROTOCOL }}
           local-dir: ./frontend/dist/
-          server-dir: /public_html/s/jummal/
+          # المجلد الجذر لنطاق quran.phsoft.me
+          server-dir: /public_html/quran.phsoft.me/
 
   # برنامج ويندوز: ملف exe محمول يعمل دون إنترنت (يُحمَّل من صفحة التشغيل في GitHub)
   desktop:

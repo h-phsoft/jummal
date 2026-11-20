@@ -16,7 +16,7 @@ const swar = readData(core.DATA_FILES.swar);
 
 // تشغيل ملف قديم (سكربت عام) داخل سياق معزول لمقارنة النتائج
 function loadLegacy(relPath, names) {
-  const src = fs.readFileSync(path.join(here, 'legacy', relPath), 'utf8');
+  const src = fs.readFileSync(path.join(here, 'fixtures', relPath), 'utf8');
   const ctx = {$: () => ({on() {}}), document: {getElementById: () => null}, CSS: {supports: () => false}};
   vm.createContext(ctx);
   vm.runInContext(src + `;globalThis.__out = {${names}};`, ctx);
@@ -145,7 +145,7 @@ function loadPhsQuranFixtures() {
   const ctx = {};
   vm.createContext(ctx);
   for (const file of ['Q01Characters.js', 'Q02Chapters.js']) {
-    const src = fs.readFileSync(path.join(root, 'legacy/phsquran-js', file), 'utf8').replace(/var /g, 'globalThis.');
+    const src = fs.readFileSync(path.join(here, 'fixtures', file), 'utf8').replace(/var /g, 'globalThis.');
     vm.runInContext(src, ctx);
   }
   return JSON.parse(JSON.stringify({chapters: ctx.jaChapters, letters: ctx.jCharacters}));
