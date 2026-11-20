@@ -1,4 +1,6 @@
-# Project rules (Jummal + PhsQuran)
+# Project rules (دراسات عددية في القرآن الكريم: Jummal + PhsQuran)
+
+Full handover guide (architecture, data, decisions, deploy, known issues): **[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)**. Read it before changing anything.
 
 ## Non-negotiable
 - **Offline, files only, no database.** Data lives in `data/*.js` (`const qAyatData = [...]` format). Never add a database or a required server.

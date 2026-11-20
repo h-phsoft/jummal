@@ -20,6 +20,8 @@
 | `tools/` | أدوات تطوير (توليد الأيقونات) |
 | `legacy/` | الكود القديم مرجعاً فقط، لا يدخل في البناء |
 
+دليل التطوير الكامل لمن يكمل العمل: **[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)**
+
 ## الأوامر
 
 ```bash
@@ -29,6 +31,7 @@ npm test             # اختبار الحسابات والبيانات
 npm run build        # بناء الموقع في frontend/dist
 npm run desktop      # تشغيل برنامج سطح المكتب
 npm run build:exe    # بناء ملف exe محمول في desktop/release
+npm run package:cpanel  # حزمة zip للرفع على cPanel في release/
 npm run server       # الخادم الاختياري على المنفذ 3000
 ```
 
