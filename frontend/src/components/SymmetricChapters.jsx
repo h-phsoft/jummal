@@ -79,14 +79,14 @@ export default function SymmetricChapters() {
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2rem' }}>
             <div style={{ background: 'var(--accent-primary)', color: 'white', padding: '1rem 2rem', borderRadius: '8px', textAlign: 'center', minWidth: '200px', boxShadow: 'var(--shadow-lg)' }}>
               <div style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>{result.rightArray[0].id} - {result.rightArray[0].name}</div>
-              <div style={{ fontSize: '1.5rem', marginTop: '0.5rem', fontWeight: 900 }}>{result.rightArray[0].ayahs} Ayahs</div>
+              <div style={{ fontSize: '1.5rem', marginTop: '0.5rem', fontWeight: 900 }}>{t('ayahs_count', {count: result.rightArray[0].ayahs})}</div>
             </div>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '5fr 2fr 5fr', gap: '1rem', marginBottom: '1rem', textAlign: 'center', fontWeight: 'bold' }}>
-            <div style={{ background: 'var(--accent-tertiary)', color: 'white', padding: '0.75rem', borderRadius: '8px' }}>{t('Chapter and Verses', 'Chapter and Verses')} (Left Axis)</div>
+            <div style={{ background: 'var(--accent-tertiary)', color: 'white', padding: '0.75rem', borderRadius: '8px' }}>{t('Chapter and Verses')} ({t('left_axis')})</div>
             <div style={{ background: 'var(--gold-accent)', color: 'white', padding: '0.75rem', borderRadius: '8px' }}>{t('Total', 'Total')}</div>
-            <div style={{ background: 'var(--accent-tertiary)', color: 'white', padding: '0.75rem', borderRadius: '8px' }}>{t('Chapter and Verses', 'Chapter and Verses')} (Right Axis)</div>
+            <div style={{ background: 'var(--accent-tertiary)', color: 'white', padding: '0.75rem', borderRadius: '8px' }}>{t('Chapter and Verses')} ({t('right_axis')})</div>
           </div>
 
           {result.leftArray.slice(0, -1).map((left, index) => {
@@ -108,7 +108,7 @@ export default function SymmetricChapters() {
 
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
             <div style={{ background: 'var(--accent-primary)', color: 'white', padding: '1rem 2rem', borderRadius: '8px', textAlign: 'center', minWidth: '200px', boxShadow: 'var(--shadow-lg)' }}>
-              <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem', fontWeight: 900 }}>{result.leftArray[result.leftArray.length - 1].ayahs} Ayahs</div>
+              <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem', fontWeight: 900 }}>{t('ayahs_count', {count: result.leftArray[result.leftArray.length - 1].ayahs})}</div>
               <div style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>{result.leftArray[result.leftArray.length - 1].id} - {result.leftArray[result.leftArray.length - 1].name}</div>
             </div>
           </div>

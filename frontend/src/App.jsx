@@ -3,7 +3,8 @@ import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Home from './pages/Home';
 import Workspace from './pages/Workspace';
-import { Globe } from 'lucide-react';
+import { Globe, Moon, Sun } from 'lucide-react';
+import { currentTheme, setTheme } from './services/theme.js';
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -13,6 +14,14 @@ function App() {
   useEffect(() => {
     document.title = t('app_name');
   }, [t, i18n.language]);
+
+  // النمط الفاتح/الداكن
+  const [theme, setThemeState] = useState(currentTheme);
+  const toggleTheme = () => {
+    const next = theme === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    setThemeState(next);
+  };
 
   const toggleLanguage = () => {
     const newLang = i18n.language === 'en' ? 'ar' : 'en';
@@ -38,13 +47,22 @@ function App() {
           </Link>
         </div>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <button 
+          <button
+            onClick={toggleTheme}
+            className="btn btn-secondary"
+            title={theme === 'dark' ? t('theme_light') : t('theme_dark')}
+            aria-label={theme === 'dark' ? t('theme_light') : t('theme_dark')}
+            style={{ padding: '0.5rem 0.75rem', display: 'flex', alignItems: 'center' }}
+          >
+            {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+          </button>
+          <button
             onClick={toggleLanguage}
-            className="btn btn-secondary" 
+            className="btn btn-secondary"
             style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
           >
             <Globe size={16} />
-            {i18n.language === 'en' ? 'عربي' : 'English'}
+            {t('switch_language')}
           </button>
           
           {location.pathname !== '/workspace' && (

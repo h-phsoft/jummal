@@ -36,6 +36,27 @@ function countLetters(text) {
   return counts;
 }
 
+// ملف حروف مجموعة نصوص متتالية (سورة أو آية): الحرف الأول والأخير،
+// الحروف المستخدمة بتكرارها والحروف غير المستخدمة (بالترتيب الأبجدي)
+export function letterProfile(texts) {
+  const counts = new Array(BASE_LETTERS.length).fill(0);
+  let words = 0;
+  texts.forEach(text => {
+    countLetters(text).forEach((c, i) => {
+      counts[i] += c;
+    });
+    words += wordCount(text);
+  });
+  return {
+    firstLetter: texts.length ? firstLetter(texts[0]) : '',
+    lastLetter: texts.length ? lastLetter(texts[texts.length - 1]) : '',
+    words: words,
+    letters: counts.reduce((a, b) => a + b, 0),
+    usedLetters: BASE_LETTERS.map((char, i) => ({char: char, count: counts[i]})).filter(x => x.count > 0),
+    unusedLetters: BASE_LETTERS.filter((char, i) => counts[i] === 0)
+  };
+}
+
 function groupBySurah(ayat) {
   const groups = new Map();
   ayat.forEach(a => {

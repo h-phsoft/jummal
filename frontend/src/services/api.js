@@ -30,8 +30,8 @@ const routes = [
   }],
   [/^\/api\/ayat\/search$/, async (m, q) => core.searchAyat(await loadAyat(), q.get('q') || '', toInt(q.get('limit')) || 200)],
   [/^\/api\/ayat\/(\d+)$/, async (m) => (await loadAyat()).find(a => a.ayatId === toInt(m[1])) || null],
-  [/^\/api\/analysis\/characters\/surah\/(\d+)$/, async (m) => core.analyzeSurahCharacters(await loadAyat(), toInt(m[1]))],
-  [/^\/api\/analysis\/characters\/ayah\/(\d+)$/, async (m) => core.analyzeAyahCharacters(await loadAyat(), toInt(m[1]))],
+  [/^\/api\/analysis\/characters\/surah\/(\d+)$/, async (m) => core.analyzeSurahCharacters(await loadAyat(), toInt(m[1]), await loadSwar())],
+  [/^\/api\/analysis\/characters\/ayah\/(\d+)$/, async (m) => core.analyzeAyahCharacters(await loadAyat(), toInt(m[1]), await loadSwar())],
   [/^\/api\/analysis\/symmetric-chapters\/(\d+)$/, async (m) => core.symmetricChapters(await loadSwar(), toInt(m[1]))],
   [/^\/api\/analysis\/symmetric-words$/, async (m, q) => core.symmetricWords(
     await loadAyat(), q.get('word1') || '', q.get('word2') || '', q.get('tashkil') === 'true'

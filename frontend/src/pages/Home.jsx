@@ -16,7 +16,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="hero">
         <div style={{ display: 'inline-block', padding: '0.5rem 1rem', background: 'var(--bg-secondary)', border: '1px solid var(--border-medium)', borderRadius: '9999px', fontSize: '0.875rem', fontWeight: 600, color: 'var(--accent-primary)', marginBottom: '1.5rem', boxShadow: 'var(--shadow-sm)' }}>
-          ✨ Version 1.0 is now offline-ready (PWA)
+          ✨ {t('offline_ready_badge')}
         </div>
         <h1>{t('welcome_title')}</h1>
         <p>{t('welcome_subtitle')}</p>

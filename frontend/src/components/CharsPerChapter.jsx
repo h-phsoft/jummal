@@ -52,7 +52,7 @@ export default function CharsPerChapter() {
           <div className="tool-row">
             <input className="tool-input" placeholder={t('search_surah')} value={filter} onChange={(e) => setFilter(e.target.value)} />
             <button type="button" className="btn btn-secondary btn-sm" onClick={exportTable}>
-              <Download size={14} style={{marginInlineEnd: 4}} /> CSV
+              <Download size={14} style={{marginInlineEnd: 4}} /> {t('export_table')}
             </button>
           </div>
         </div>

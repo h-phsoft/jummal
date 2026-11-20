@@ -13,6 +13,9 @@ import './styles/tools.css';
 import App from './App.jsx';
 import './i18n';
 import {registerOffline} from './services/offline.js';
+import {applyStoredTheme} from './services/theme.js';
+
+applyStoredTheme();
 
 // HashRouter ← الروابط تعمل في مجلد فرعي على الاستضافة وداخل برنامج exe دون إعداد خادم
 createRoot(document.getElementById('root')).render(

@@ -59,7 +59,7 @@ export default function SurahAnalytics() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h2 style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>{t('menu_stats_chapters', 'Surah Analytics')}</h2>
-          <p style={{ color: 'var(--text-secondary)' }}>Distribution of Ayahs across Surahs</p>
+          <p style={{ color: 'var(--text-secondary)' }}>{t('ayahs_distribution')}</p>
         </div>
         
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
@@ -96,7 +96,7 @@ export default function SurahAnalytics() {
                 fontWeight: 500
               }}
             >
-              Bar
+              {t('chart_bar')}
             </button>
             <button 
               onClick={() => setActiveTab('area')}
@@ -111,7 +111,7 @@ export default function SurahAnalytics() {
                 fontWeight: 500
               }}
             >
-              Area
+              {t('chart_area')}
             </button>
           </div>
         </div>
@@ -146,7 +146,7 @@ export default function SurahAnalytics() {
               />
               <Bar 
                 dataKey="ayahs" 
-                name="Total Ayahs"
+                name={t('st_verses')}
                 fill="url(#colorAyahs)" 
                 radius={[4, 4, 0, 0]} 
                 animationDuration={1500}
@@ -184,7 +184,7 @@ export default function SurahAnalytics() {
               <Area 
                 type="monotone" 
                 dataKey="ayahs" 
-                name="Total Ayahs"
+                name={t('st_verses')}
                 stroke="var(--accent-primary)" 
                 fillOpacity={1} 
                 fill="url(#colorAyahsArea)" 
@@ -203,15 +203,15 @@ export default function SurahAnalytics() {
       
       {/* Data Grid Preview below chart */}
       <div style={{ marginTop: '3rem', overflowX: 'auto', maxHeight: '500px', overflowY: 'auto' }}>
-        <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>Raw Data View (All Surahs)</h3>
+        <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>{t('raw_data_view')}</h3>
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
           <thead style={{ position: 'sticky', top: 0, background: 'var(--glass-bg)', backdropFilter: 'blur(10px)', zIndex: 10 }}>
             <tr style={{ borderBottom: '2px solid var(--border-medium)' }}>
-              <th style={{ padding: '1rem', color: 'var(--text-tertiary)', fontWeight: 600 }}>ID</th>
-              <th style={{ padding: '1rem', color: 'var(--text-tertiary)', fontWeight: 600 }}>Surah Name</th>
-              <th style={{ padding: '1rem', color: 'var(--text-tertiary)', fontWeight: 600 }}>Type</th>
-              <th style={{ padding: '1rem', color: 'var(--text-tertiary)', fontWeight: 600 }}>Revelation Order</th>
-              <th style={{ padding: '1rem', color: 'var(--text-tertiary)', fontWeight: 600 }}>Total Ayahs</th>
+              <th style={{ padding: '1rem', color: 'var(--text-tertiary)', fontWeight: 600 }}>#</th>
+              <th style={{ padding: '1rem', color: 'var(--text-tertiary)', fontWeight: 600 }}>{t('col_surah')}</th>
+              <th style={{ padding: '1rem', color: 'var(--text-tertiary)', fontWeight: 600 }}>{t('surah_type')}</th>
+              <th style={{ padding: '1rem', color: 'var(--text-tertiary)', fontWeight: 600 }}>{t('revelation_order')}</th>
+              <th style={{ padding: '1rem', color: 'var(--text-tertiary)', fontWeight: 600 }}>{t('st_verses')}</th>
             </tr>
           </thead>
           <tbody>

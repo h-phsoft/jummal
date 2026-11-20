@@ -88,7 +88,7 @@ api.get('/qwords/:id', (req, res) => {
 
 // ---------- تحليلات القرآن ----------
 api.get('/analysis/characters/surah/:id', (req, res) => {
-  const result = core.analyzeSurahCharacters(ayat, toInt(req.params.id));
+  const result = core.analyzeSurahCharacters(ayat, toInt(req.params.id), swar);
   if (!result) {
     return notFound(res, 'Surah');
   }
@@ -96,7 +96,7 @@ api.get('/analysis/characters/surah/:id', (req, res) => {
 });
 
 api.get('/analysis/characters/ayah/:id', (req, res) => {
-  const result = core.analyzeAyahCharacters(ayat, toInt(req.params.id));
+  const result = core.analyzeAyahCharacters(ayat, toInt(req.params.id), swar);
   if (!result) {
     return notFound(res, 'Ayah');
   }

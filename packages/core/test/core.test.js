@@ -215,3 +215,25 @@ test('triangle minimum is 15 everywhere and its fraction is unchanged', () => {
   }
   assert.equal(core.wefeqFractionExplanation('triangle'), 'الباقي من قسمة (الرقم - 15) على 3');
 });
+
+test('surah and verse studies match the legacy PhsQuran study pages', () => {
+  const old = loadPhsQuranFixtures();
+  for (let id = 1; id <= 114; id++) {
+    const s = core.analyzeSurahCharacters(ayat, id, swar);
+    const o = old.chapters[id - 1];
+    const ghain = id === 3 ? 1 : 0;
+    assert.deepEqual([s.firstLetter, s.lastLetter, s.revelationOrder, s.totalAyahs, s.letters], [o.FC, o.LC, o.TO, o.Vs, o.Cs + ghain], `surah ${id}`);
+    // الحروف المستخدمة وغير المستخدمة كما في الملف القديم (UCs / ECs)
+    const oldUsed = o.UCs.filter(([c]) => c !== '').map(([c, n]) => [c, n + (c === 'غ' ? ghain : 0)]);
+    assert.deepEqual(s.usedLetters.map(x => [x.char, x.count]), oldUsed, `surah ${id} used`);
+    assert.deepEqual(s.unusedLetters, o.ECs.filter(([c]) => c !== '').map(([c]) => c), `surah ${id} unused`);
+    assert.equal(s.usedLetters.length + s.unusedLetters.length, 28);
+  }
+  const v = core.analyzeAyahCharacters(ayat, ayat.find(a => a.swarId === 2 && a.ayatNum === 255).ayatId, swar);
+  assert.equal(v.ayahNum, 255);
+  assert.equal(v.quranOrder, 7 + 255);
+  assert.equal(v.surah.surahName, 'البقرة');
+  assert.equal(v.firstLetter, 'ا');
+  assert.equal(v.words + 0, v.totalWords);
+  assert.equal(v.usedLetters.reduce((a, b) => a + b.count, 0), v.letters);
+});

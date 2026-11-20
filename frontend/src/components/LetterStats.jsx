@@ -32,7 +32,7 @@ export default function LetterStats() {
             <p className="tool-subtitle">{t('stats_chars_desc')}</p>
           </div>
           <button type="button" className="btn btn-secondary btn-sm" onClick={exportTable}>
-            <Download size={14} style={{marginInlineEnd: 4}} /> CSV
+            <Download size={14} style={{marginInlineEnd: 4}} /> {t('export_table')}
           </button>
         </div>
       </div>

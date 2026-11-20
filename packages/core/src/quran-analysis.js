@@ -2,6 +2,7 @@
 // تحليلات القرآن (من مشروع PhsQuran): حروف السورة/الآية، تطابق السور،
 // تطابق كلمتين. كلها دوال نقية تأخذ البيانات معاملاً.
 // =====================================================
+import {letterProfile} from './quran-stats.js';
 
 // تكرار الحروف في مجموعة نصوص (ayat28Text حسب قاعدة الدراسة)
 function countCharacters(texts) {
@@ -26,33 +27,56 @@ function countCharacters(texts) {
   };
 }
 
-// حروف سورة كاملة
-export function analyzeSurahCharacters(ayat, surahId) {
+// بيانات السورة من ملف السور (ترتيب التنزيل، مكية/مدنية) إن مُرِّر
+function surahInfo(swar, surahId) {
+  const s = (swar || []).find(x => x.swarId === surahId);
+  return s ? {revelationOrder: s.swarOrd, surahType: s.sTypeRem} : {revelationOrder: null, surahType: null};
+}
+
+// دراسة سورة: الحرف الأول والأخير، ترتيب التنزيل، الآيات والكلمات والحروف،
+// الحروف المستخدمة بتكرارها وغير المستخدمة (مثل دراسة السورة في PhsQuran القديم)
+export function analyzeSurahCharacters(ayat, surahId, swar) {
   const ayahs = ayat.filter(a => a.swarId === surahId);
   if (ayahs.length === 0) {
     return null;
   }
+  const texts = ayahs.map(a => a.ayat28Text);
   return Object.assign({
     surahId: surahId,
     surahName: ayahs[0].swarName,
     totalAyahs: ayahs.length
-  }, countCharacters(ayahs.map(a => a.ayat28Text)));
+  }, surahInfo(swar, surahId), letterProfile(texts), countCharacters(texts));
 }
 
-// حروف آية واحدة (ayatId المطلق)
-export function analyzeAyahCharacters(ayat, ayahId) {
+// دراسة آية (ayatId المطلق): ترتيبها في السورة وفي القرآن، الحرف الأول والأخير،
+// الكلمات والحروف، الحروف المستخدمة وغير المستخدمة، مع ملخص سورتها
+export function analyzeAyahCharacters(ayat, ayahId, swar) {
   const ayah = ayat.find(a => a.ayatId === ayahId);
   if (!ayah) {
     return null;
   }
+  const surah = analyzeSurahCharacters(ayat, ayah.swarId, swar);
   return Object.assign({
     ayahId: ayahId,
+    quranOrder: ayat.indexOf(ayah) + 1,
     surahId: ayah.swarId,
     surahName: ayah.swarName,
     ayahNum: ayah.ayatNum,
     text: ayah.ayatOText,
-    text28: ayah.ayat28Text
-  }, countCharacters([ayah.ayat28Text]));
+    textN: ayah.ayatNText,
+    text28: ayah.ayat28Text,
+    surah: {
+      surahId: surah.surahId,
+      surahName: surah.surahName,
+      revelationOrder: surah.revelationOrder,
+      surahType: surah.surahType,
+      totalAyahs: surah.totalAyahs,
+      words: surah.words,
+      letters: surah.letters,
+      firstLetter: surah.firstLetter,
+      lastLetter: surah.lastLetter
+    }
+  }, letterProfile([ayah.ayat28Text]), countCharacters([ayah.ayat28Text]));
 }
 
 // تطابق السور: محوران يمين ويسار حول سورة (57 سورة لكل محور)

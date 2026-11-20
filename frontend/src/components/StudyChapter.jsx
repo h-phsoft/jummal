@@ -1,116 +1,54 @@
-import React, { useState, useEffect } from 'react';
-import { apiGet } from '../services/api.js';
-import { useTranslation } from 'react-i18next';
-import { Loader2 } from 'lucide-react';
+// =====================================================
+// دراسة سورة: رقمها وترتيب تنزيلها ونوعها، الحرف الأول والأخير،
+// الآيات والكلمات والحروف، الحروف المستخدمة وغير المستخدمة
+// =====================================================
+import {useState} from 'react';
+import {useTranslation} from 'react-i18next';
+import {useApiData} from '../hooks/useApiData.js';
+import {apiGet} from '../services/api.js';
+import LoadingState from './stats/LoadingState.jsx';
+import {InfoGrid, LettersUsage} from './stats/StudyDetails.jsx';
 
 export default function StudyChapter() {
-  const { t } = useTranslation();
-  const [swarList, setSwarList] = useState([]);
-  const [selectedSurah, setSelectedSurah] = useState('');
+  const {t} = useTranslation();
+  const swar = useApiData('/api/swar');
+  const [surahId, setSurahId] = useState('');
   const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [analyzing, setAnalyzing] = useState(false);
 
-  useEffect(() => {
-    apiGet('/api/swar')
-      .then(data => {
-        setSwarList(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error("Failed to load swar", err);
-        setLoading(false);
-      });
-  }, []);
+  if (swar.loading || swar.error) {
+    return <LoadingState error={swar.error} />;
+  }
 
-  const handleAnalyze = async () => {
-    if (!selectedSurah) return;
-    
-    setAnalyzing(true);
-    try {
-      const data = await apiGet(`/api/analysis/characters/surah/${selectedSurah}`);
-      setResult(data);
-    } catch (err) {
-      console.error(err);
-    }
-    setAnalyzing(false);
+  const choose = async (value) => {
+    setSurahId(value);
+    setResult(value ? await apiGet(`/api/analysis/characters/surah/${value}`) : null);
   };
 
-  if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}><Loader2 className="animate-spin" size={32} color="var(--accent-primary)" /></div>;
-
   return (
-    <div className="glass-card">
-      <h2 style={{ fontSize: '1.75rem', marginBottom: '1.5rem', color: 'var(--text-primary)' }}>{t('menu_study_chapter')}</h2>
-      
-      <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
-        <select 
-          value={selectedSurah} 
-          onChange={e => setSelectedSurah(e.target.value)}
-          style={{ 
-            padding: '0.75rem', 
-            borderRadius: '8px', 
-            border: '1px solid var(--border-medium)',
-            background: 'var(--bg-secondary)',
-            color: 'var(--text-primary)',
-            outline: 'none',
-            flex: 1
-          }}
-        >
-          <option value="">{t('Please Select Chapter', 'Please Select Chapter')}</option>
-          {swarList.map(surah => (
-            <option key={surah.swarId} value={surah.swarId}>
-              {surah.swarName} - {surah.swarId}
-            </option>
-          ))}
+    <div className="tool-page">
+      <div className="tool-card">
+        <h2 className="tool-title">{t('menu_study_chapter')}</h2>
+        <p className="tool-subtitle" style={{marginBottom: '1rem'}}>{t('study_chapter_desc')}</p>
+        <select className="tool-select" style={{width: '100%'}} value={surahId} onChange={(e) => choose(e.target.value)}>
+          <option value="">{t('Please Select Chapter')}</option>
+          {swar.data.map(s => <option key={s.swarId} value={s.swarId}>{s.swarId} - {s.swarName}</option>)}
         </select>
-        
-        <button 
-          onClick={handleAnalyze} 
-          disabled={!selectedSurah || analyzing}
-          className="btn btn-primary"
-        >
-          {analyzing ? <Loader2 className="animate-spin" size={20} /> : t('Execute', 'Execute')}
-        </button>
       </div>
 
       {result && (
-        <div style={{ background: 'var(--bg-secondary)', padding: '2rem', borderRadius: '12px', border: '1px solid var(--border-medium)' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
-             <div className="stat-box" style={{ textAlign: 'center' }}>
-                <div className="stat-label">Surah</div>
-                <div className="stat-value" style={{ fontSize: '1.5rem', marginTop: '0.5rem' }}>{result.surahName} ({result.surahId})</div>
-             </div>
-             <div className="stat-box" style={{ textAlign: 'center' }}>
-                <div className="stat-label">Ayahs</div>
-                <div className="stat-value" style={{ fontSize: '1.5rem', marginTop: '0.5rem' }}>{result.totalAyahs}</div>
-             </div>
-             <div className="stat-box" style={{ textAlign: 'center' }}>
-                <div className="stat-label">Words</div>
-                <div className="stat-value" style={{ fontSize: '1.5rem', marginTop: '0.5rem' }}>{result.totalWords}</div>
-             </div>
-             <div className="stat-box" style={{ textAlign: 'center' }}>
-                <div className="stat-label">Characters</div>
-                <div className="stat-value" style={{ fontSize: '1.5rem', marginTop: '0.5rem' }}>{result.totalChars}</div>
-             </div>
-          </div>
-
-          <h3 style={{ marginBottom: '1rem', borderBottom: '1px solid var(--border-light)', paddingBottom: '0.5rem' }}>Character Frequency</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '1rem' }}>
-            {result.charCounts.map(item => (
-              <div key={item.char} style={{ 
-                background: 'var(--glass-bg)', 
-                padding: '1rem', 
-                borderRadius: '8px', 
-                border: '1px solid var(--border-light)',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-              }}>
-                <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--accent-primary)' }}>{item.char}</span>
-                <span style={{ fontWeight: 600 }}>{item.count}</span>
-              </div>
-            ))}
-          </div>
+        <div className="tool-card">
+          <h3 className="tool-section-title" style={{textAlign: 'center', fontSize: '1.6rem'}}>{t('surah_title', {name: result.surahName})}</h3>
+          <InfoGrid items={[
+            {label: t('col_surah_no'), value: result.surahId, isNumber: true},
+            {label: t('revelation_order'), value: result.revelationOrder, isNumber: true},
+            {label: t('surah_type'), value: result.surahType},
+            {label: t('first_letter'), value: result.firstLetter},
+            {label: t('last_letter'), value: result.lastLetter},
+            {label: t('st_verses'), value: result.totalAyahs, isNumber: true},
+            {label: t('st_words'), value: result.words, isNumber: true},
+            {label: t('st_letters'), value: result.letters, isNumber: true}
+          ]} />
+          <LettersUsage profile={result} />
         </div>
       )}
     </div>

@@ -40,8 +40,36 @@
   --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* النمط الداكن: باختيار المستخدم (data-theme) أو حسب نظام الجهاز إن لم يختر */
+:root[data-theme="dark"] {
+  --bg-primary: #0b0f19;
+  --bg-secondary: #111827;
+  --bg-tertiary: #1f2937;
+  
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-tertiary: #94a3b8;
+  
+  --accent-primary: #38bdf8;
+  --accent-secondary: #7dd3fc;
+  --accent-tertiary: #0ea5e9;
+  
+  --gold-accent: #fcd34d;
+  
+  --border-light: rgba(255, 255, 255, 0.08);
+  --border-medium: rgba(255, 255, 255, 0.15);
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  
+  --glass-bg: rgba(17, 24, 39, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  color-scheme: dark;
+}
+
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg-primary: #0b0f19;
     --bg-secondary: #111827;
     --bg-tertiary: #1f2937;
@@ -65,7 +93,12 @@
     
     --glass-bg: rgba(17, 24, 39, 0.7);
     --glass-border: rgba(255, 255, 255, 0.08);
+    color-scheme: dark;
   }
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
 }
 
 * {

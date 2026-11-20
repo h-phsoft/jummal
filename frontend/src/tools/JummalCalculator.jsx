@@ -104,7 +104,7 @@ export default function JummalCalculator({onResult, showTitle = true}) {
           <h3 className="tool-section-title" style={{margin: 0}}>{t('history')}</h3>
           <div className="tool-row">
             <button type="button" className="btn btn-secondary btn-sm" onClick={exportHistory} disabled={history.items.length === 0}>
-              <Download size={14} style={{marginInlineEnd: 4}} /> CSV
+              <Download size={14} style={{marginInlineEnd: 4}} /> {t('export_table')}
             </button>
             <button
               type="button"

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { apiGet } from '../services/api.js';
+import React, { useState } from 'react';
+import { useApiData } from '../hooks/useApiData.js';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Sidebar from '../components/Sidebar';
@@ -22,50 +22,29 @@ import SymmetryCircle from '../components/SymmetryCircle';
 import QuranCharsChart from '../components/QuranCharsChart';
 import ChapterVersesChart from '../components/ChapterVersesChart';
 
+// لوحة البداية: أرقام حقيقية محسوبة من ملفات البيانات
 function DashboardStats() {
-  const [stats, setStats] = useState({
-    surahs: 0,
-    loading: true,
-    error: null
-  });
-
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const data = await apiGet('/api/swar');
-        
-        setStats({
-          surahs: data.length,
-          loading: false,
-          error: null
-        });
-      } catch (err) {
-        setStats(prev => ({ ...prev, loading: false, error: err.message }));
-      }
-    };
-    
-    fetchStats();
-  }, []);
+  const { t } = useTranslation();
+  const { data } = useApiData('/api/stats/chapters');
+  const value = (n) => (data ? n.toLocaleString('en-US') : '...');
+  const items = [
+    { label: t('dash_surahs'), value: data ? value(data.rows.length) : '...' },
+    { label: t('dash_verses'), value: data ? value(data.totals.Vs) : '...' },
+    { label: t('dash_words'), value: data ? value(data.totals.Ws) : '...' },
+    { label: t('dash_letters'), value: data ? value(data.totals.Cs) : '...' }
+  ];
 
   return (
     <>
-      <section style={{ display: 'flex', gap: '4rem', paddingBottom: '2rem', borderBottom: '1px solid var(--border-light)' }}>
-        <div className="stat-box" style={{ textAlign: 'left' }}>
-          <div className="stat-value">
-            {stats.loading ? '...' : (stats.error ? 'Error' : stats.surahs)}
+      <section style={{ display: 'flex', flexWrap: 'wrap', gap: '2.5rem', paddingBottom: '2rem', borderBottom: '1px solid var(--border-light)' }}>
+        {items.map(item => (
+          <div key={item.label} className="stat-box">
+            <div className="stat-value">{item.value}</div>
+            <div className="stat-label" style={{ textTransform: 'none' }}>{item.label}</div>
           </div>
-          <div className="stat-label">Surahs (Live API)</div>
-        </div>
-        <div className="stat-box" style={{ textAlign: 'left' }}>
-          <div className="stat-value">6,236</div>
-          <div className="stat-label">Ayahs (Indexed)</div>
-        </div>
-        <div className="stat-box" style={{ textAlign: 'left' }}>
-          <div className="stat-value">118k+</div>
-          <div className="stat-label">Words (Indexed)</div>
-        </div>
+        ))}
       </section>
-      
+
       <section style={{ marginTop: '2rem' }}>
         <SurahAnalytics />
       </section>
