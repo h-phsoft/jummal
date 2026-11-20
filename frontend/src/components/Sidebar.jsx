@@ -15,12 +15,12 @@ export default function Sidebar({ isOpen, setIsOpen }) {
     {
       title: t('studies'),
       items: [
-        { name: t('menu_symmetric_chapters'), icon: <GitCommit size={18} />, path: '/workspace/symmetric-chapters' },
-        { name: t('menu_symmetric_verses'), icon: <GitCommit size={18} />, path: '/workspace/symmetric-verses' },
-        { name: t('menu_symmetric_words'), icon: <GitCommit size={18} />, path: '/workspace/symmetric-words' },
         { name: t('menu_study_chapter'), icon: <Search size={18} />, path: '/workspace/study-chapter' },
         { name: t('menu_study_verse'), icon: <Search size={18} />, path: '/workspace/study-verse' },
         { name: t('menu_study_char'), icon: <Type size={18} />, path: '/workspace/study-char' },
+        { name: t('menu_symmetric_chapters'), icon: <GitCommit size={18} />, path: '/workspace/symmetric-chapters' },
+        { name: t('menu_symmetric_verses'), icon: <GitCommit size={18} />, path: '/workspace/symmetric-verses' },
+        { name: t('menu_symmetric_words'), icon: <GitCommit size={18} />, path: '/workspace/symmetric-words' },
       ]
     },
     {

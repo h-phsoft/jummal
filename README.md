@@ -28,8 +28,8 @@ npm run dev          # تشغيل الواجهة للتطوير
 npm test             # اختبار الحسابات والبيانات
 npm run build        # بناء الموقع في frontend/dist
 npm run desktop      # تشغيل برنامج سطح المكتب
-npm run build:exe    # بناء ملف exe محمول في desktop/release
-npm run package:cpanel  # حزمة zip للرفع على cPanel في release/
+npm run build:exe    # بناء ملف exe محمول في desktop/release (أو build-exe.bat)
+npm run package:cpanel  # حزمة zip للرفع على cPanel في release/ (أو package-cpanel.bat)
 ```
 
 ## النشر
