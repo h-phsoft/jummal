@@ -765,3 +765,72 @@ input.form-control:focus {
   font-weight: bold;
   padding: 2px 6px;
 }
+
+/* === قائمة إجراءات الأرقام === */
+.number-cell {
+  position: relative;
+  cursor: context-menu;
+}
+.number-actions-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-inline-start: 4px;
+  padding: 0;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background: #fff;
+  color: #495057;
+  font-size: 0.75rem;
+  vertical-align: middle;
+  visibility: hidden;
+  cursor: pointer;
+}
+.number-cell:hover .number-actions-btn,
+.number-actions-btn:focus-visible {
+  visibility: visible;
+}
+.number-actions-btn:hover {
+  background: #0d6efd;
+  border-color: #0d6efd;
+  color: #fff;
+}
+.number-actions-menu {
+  position: fixed;
+  z-index: 2000;
+  display: none;
+  min-width: 220px;
+  padding: 4px 0;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+  text-align: right;
+}
+.number-actions-menu.show {
+  display: block;
+}
+.number-actions-title {
+  padding: 4px 12px 6px;
+  border-bottom: 1px solid #f1f3f5;
+  color: #198754;
+  font-weight: bold;
+  text-align: center;
+}
+.number-actions-item {
+  display: block;
+  width: 100%;
+  padding: 7px 12px;
+  border: 0;
+  background: transparent;
+  color: #212529;
+  text-align: right;
+  cursor: pointer;
+}
+.number-actions-item:hover,
+.number-actions-item:focus-visible {
+  background: #e7f1ff;
+  color: #0d6efd;
+}

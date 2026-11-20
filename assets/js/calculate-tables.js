@@ -284,6 +284,9 @@ $(document).ready(function() {
   // تحميل السجل عند البدء وتوليد خانات الاختيار
   updateHistoryDisplay();
   renderTableCheckboxes();
+
+  // قائمة خيارات الأرقام في جدول النتائج
+  initNumberActions('#resultTableBody');
 });
 
 $('#clearAllBtn').on('click', clearAllHistory);
@@ -358,10 +361,10 @@ $('#calculateBtn').on('click', function () {
   // إضافة صفوف النتائج
   tbody.empty();
   results.forEach(r => {
-    let rowHTML = `<tr><td><strong>${r.name}</strong></td><td>${r.totalValue.toLocaleString()}</td>`;
+    let rowHTML = `<tr><td><strong>${r.name}</strong></td><td class="number-cell" data-number="${r.totalValue}">${numberCellContent(r.totalValue)}</td>`;
     
     r.wordValues.forEach(val => {
-      rowHTML += `<td class="result-word-col">${val.toLocaleString()}</td>`;
+      rowHTML += `<td class="result-word-col number-cell" data-number="${val}">${numberCellContent(val)}</td>`;
     });
     
     rowHTML += `</tr>`;
