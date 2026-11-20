@@ -24,45 +24,82 @@ const WEFEQ_ORDERS = {
   nonagon: 9
 };
 
-// مواضع الخانات الخاصة في الوفق المثلث
-const TRIANGLE_POSITIONS = {
-  key: {row: 0, col: 1, name: "المفتاح"},
-  ghalaq: {row: 1, col: 2, name: "المغلاق"},
-  middle: {row: 1, col: 1, name: "الوسط"},
-  fractionFix: {row: 1, col: 2, name: "جبر الكسر"}
+// النماذج الأساسية لكل الأوفاق (مجموع كل صف وعمود وقطر = الثابت السحري)
+// في كل نموذج تقع الأرقام الأخيرة (من n²-n+1 إلى n²) مرة واحدة
+// في كل صف وكل عمود وكل قطر، فإضافة جبر الكسر إليها تُبقي الوفق كاملاً
+const WEFEQ_BASES = {
+  triangle: [
+    [8, 1, 6],
+    [3, 5, 7],
+    [4, 9, 2]
+  ],
+  square: [
+    [1, 14, 11, 8],
+    [12, 7, 2, 13],
+    [6, 9, 16, 3],
+    [15, 4, 5, 10]
+  ],
+  pentagon: [
+    [25, 6, 17, 3, 14],
+    [2, 13, 24, 10, 16],
+    [9, 20, 1, 12, 23],
+    [11, 22, 8, 19, 5],
+    [18, 4, 15, 21, 7]
+  ],
+  hexagon: [
+    [31, 22, 24, 13, 3, 18],
+    [26, 2, 11, 32, 10, 30],
+    [1, 33, 29, 14, 27, 7],
+    [9, 21, 34, 20, 12, 15],
+    [25, 16, 8, 4, 23, 35],
+    [19, 17, 5, 28, 36, 6]
+  ],
+  heptagon: [
+    [41, 7, 15, 30, 45, 11, 26],
+    [43, 9, 24, 39, 5, 20, 35],
+    [3, 18, 33, 48, 14, 22, 37],
+    [12, 27, 42, 1, 16, 31, 46],
+    [21, 29, 44, 10, 25, 40, 6],
+    [23, 38, 4, 19, 34, 49, 8],
+    [32, 47, 13, 28, 36, 2, 17]
+  ],
+  octagon: [
+    [1, 10, 19, 28, 37, 46, 55, 64],
+    [20, 27, 2, 9, 56, 63, 38, 45],
+    [39, 48, 53, 62, 3, 12, 17, 26],
+    [54, 61, 40, 47, 18, 25, 4, 11],
+    [32, 23, 14, 5, 60, 51, 42, 33],
+    [13, 6, 31, 24, 41, 34, 59, 52],
+    [58, 49, 44, 35, 30, 21, 16, 7],
+    [43, 36, 57, 50, 15, 8, 29, 22]
+  ],
+  nonagon: [
+    [42, 62, 72, 79, 32, 12, 19, 2, 49],
+    [4, 54, 34, 44, 24, 55, 65, 75, 14],
+    [35, 73, 56, 66, 52, 5, 15, 22, 45],
+    [57, 23, 6, 13, 74, 36, 43, 53, 64],
+    [11, 31, 41, 51, 1, 71, 81, 61, 21],
+    [46, 69, 76, 59, 39, 25, 8, 18, 29],
+    [77, 16, 26, 9, 67, 47, 30, 37, 60],
+    [27, 38, 48, 28, 17, 78, 58, 68, 7],
+    [70, 3, 10, 20, 63, 40, 50, 33, 80]
+  ]
 };
 
-// ترتيب ملء الوفق المثلث (من 2 إلى 9 بعد المفتاح)
-const TRIANGLE_FILL_ORDER = [
-  [2, 2], // → 2
-  [1, 0], // → 3
-  [2, 0], // → 4
-  [1, 1], // → 5
-  [0, 0], // → 6
-  [1, 2], // → 7 ← جبر الكسر
-  [0, 2], // → 8
-  [2, 1]  // → 9
-];
+// باقي قسمة لا يكون سالباً (للأرقام الأصغر من الثابت السحري في المثلث)
+function positiveMod(a, n) {
+  return ((a % n) + n) % n;
+}
 
-// النموذج الأساسي للمربع 4x4 (مقلوب ليبدأ من الأسفل)
-const SQUARE_BASE = [
-  [1, 14, 11, 8],
-  [12, 7, 2, 13],
-  [6, 9, 16, 3],
-  [15, 4, 5, 10]
-];
-
-// النموذج الأساسي للمخمس 5x5
-const PENTAGON_BASE = [
-  [11, 18, 25, 2, 9],
-  [10, 12, 19, 21, 3],
-  [4, 6, 13, 20, 22],
-  [23, 5, 7, 14, 16],
-  [17, 24, 1, 8, 15]
-];
-
-function createEmptySquare(n) {
-  return Array(n).fill().map(() => Array(n).fill(0));
+// موضع قيمة معينة في نموذج أساسي
+function findCellOfValue(square, value) {
+  for (let i = 0; i < square.length; i++) {
+    const j = square[i].indexOf(value);
+    if (j !== -1) {
+      return {row: i, col: j};
+    }
+  }
+  return null;
 }
 
 // القيم المشتقة من الوفق (المفتاح، المغلاق، المساحة، الضابط...)
@@ -89,140 +126,42 @@ function computeWefeqStats(square, inputNumber) {
   };
 }
 
-// تجميع نتيجة الوفق مع قيمه المشتقة
-function buildWefeqResult(square, inputNumber, fraction, extra) {
-  return Object.assign({square: square, fraction: fraction}, computeWefeqStats(square, inputNumber), extra || {});
-}
-
 // جبر الكسر للوفق المثلث: الباقي من قسمة (الرقم - 12) على 3
 function triangleFraction(inputNumber) {
-  return (inputNumber - 12) % 3;
+  return positiveMod(inputNumber - 12, 3);
 }
 
-// الوفق المثلث 3x3
-function generateTriangleWefeq(inputNumber) {
-  const base = Math.floor((inputNumber - 12) / 3);
-  const remainder = triangleFraction(inputNumber);
-  const square = createEmptySquare(3);
-  square[TRIANGLE_POSITIONS.key.row][TRIANGLE_POSITIONS.key.col] = base;
-
-  let currentValue = base;
-  TRIANGLE_FILL_ORDER.forEach(([row, col]) => {
-    currentValue += 1;
-    const isFractionCell = row === TRIANGLE_POSITIONS.fractionFix.row && col === TRIANGLE_POSITIONS.fractionFix.col;
-    if (isFractionCell && remainder > 0) {
-      currentValue += remainder;
-    }
-    square[row][col] = currentValue;
-  });
-
-  return buildWefeqResult(square, inputNumber, remainder, {positions: TRIANGLE_POSITIONS});
-}
-
-// الوفق المربع 4x4
-function generateSquareWefeq(inputNumber) {
-  const diff = inputNumber - WEFEQ_MAGIC_CONSTANTS.square;
-  const addPerCell = Math.floor(diff / 4);
-  const remainder = diff % 4;
-  const square = SQUARE_BASE.map(row => row.map(value => value + addPerCell));
-
-  // جبر الكسر في الصف الأول، العمود الثالث
-  if (remainder > 0) {
-    square[0][2] += remainder;
+// =====================================================
+// طريقة التعمير الواحدة لكل الأشكال:
+//   1) الفرق = الرقم - الثابت السحري
+//   2) كل خانة = قيمتها في النموذج + (الفرق ÷ n بلا كسر)
+//   3) جبر الكسر (باقي القسمة) يُضاف إلى الأرقام من n²-n+1 إلى n²
+// =====================================================
+function generateWefeq(inputNumber, shape) {
+  const base = WEFEQ_BASES[shape];
+  if (!base) {
+    return null;
   }
-
-  return buildWefeqResult(square, inputNumber, remainder);
-}
-
-// الوفق المخمس 5x5
-function generatePentagonWefeq(inputNumber) {
-  const n = 5;
-  const diff = inputNumber - WEFEQ_MAGIC_CONSTANTS.pentagon;
+  const n = base.length;
+  const diff = inputNumber - WEFEQ_MAGIC_CONSTANTS[shape];
   const addPerCell = Math.floor(diff / n);
-  const remainder = diff % n;
-  const square = createEmptySquare(n);
+  const remainder = positiveMod(diff, n);
+  const fractionStart = n * n - n + 1;
 
-  // عكس الصفوف ليبدأ الترتيب من الأسفل
-  for (let i = 0; i < n; i++) {
-    for (let j = 0; j < n; j++) {
-      square[i][j] = PENTAGON_BASE[n - 1 - i][j] + addPerCell;
-    }
-  }
+  const square = base.map(row => row.map(value => {
+    const fraction = value >= fractionStart ? remainder : 0;
+    return value + addPerCell + fraction;
+  }));
 
-  // جبر الكسر في الصف الأول، العمود الأخير
-  if (remainder > 0) {
-    square[0][n - 1] += remainder;
-  }
-
-  return buildWefeqResult(square, inputNumber, remainder);
+  return Object.assign(
+    {square: square, fraction: remainder, fractionFix: findCellOfValue(base, fractionStart)},
+    computeWefeqStats(square, inputNumber)
+  );
 }
 
-// ترتيب الملء بالطريقة السيامية للأوفاق الفردية
-function generateSiameseFillOrder(n) {
-  const order = [];
-  const grid = Array(n).fill().map(() => Array(n).fill(false));
-  let row = 0;
-  let col = Math.floor(n / 2);
-
-  for (let i = 0; i < n * n; i++) {
-    order.push([row, col]);
-    grid[row][col] = true;
-    const nextRow = (row - 1 + n) % n;
-    const nextCol = (col + 1) % n;
-    if (grid[nextRow][nextCol]) {
-      row = (row + 1) % n;
-    } else {
-      row = nextRow;
-      col = nextCol;
-    }
-  }
-
-  return order;
-}
-
-// الأوفاق الفردية (7x7، 9x9) بالطريقة السيامية
-function generateOddWefeq(inputNumber, n) {
-  const magicConstant = n * (n * n + 1) / 2;
-  const diff = inputNumber - magicConstant;
-  const base = Math.floor(diff / n);
-  const remainder = diff % n;
-  const fillOrder = generateSiameseFillOrder(n);
-  const square = createEmptySquare(n);
-
-  fillOrder.forEach(([row, col], index) => {
-    // عكس الصف ليبدأ من الأسفل
-    let value = (index + 1) + base;
-    // جبر الكسر في آخر خانة
-    if (remainder > 0 && index === fillOrder.length - 1) {
-      value += remainder;
-    }
-    square[n - 1 - row][col] = value;
-  });
-
-  return buildWefeqResult(square, inputNumber, remainder);
-}
-
-// الأوفاق الزوجية (6x6، 8x8): من الأسفل للأعلى ومن اليسار لليمين
-function generateEvenWefeq(inputNumber, n) {
-  const magicConstant = n * (n * n + 1) / 2;
-  const diff = inputNumber - magicConstant;
-  const base = Math.floor(diff / n);
-  const remainder = diff % n;
-  const square = createEmptySquare(n);
-
-  for (let i = 0; i < n; i++) {
-    for (let j = 0; j < n; j++) {
-      const rowFromBottom = n - 1 - i;
-      square[i][j] = (rowFromBottom * n + j + 1) + base;
-    }
-  }
-
-  // جبر الكسر في الصف الأول، العمود الأخير
-  if (remainder > 0) {
-    square[0][n - 1] += remainder;
-  }
-
-  return buildWefeqResult(square, inputNumber, remainder);
+// الوفق المثلث (تستدعيه المنصة الموحدة)
+function generateTriangleWefeq(inputNumber) {
+  return generateWefeq(inputNumber, 'triangle');
 }
 
 // دراسة الرقم: هل يمكن تعميره في الشكل؟ وهل يحتاج جبر كسر؟
@@ -246,35 +185,10 @@ function studyWefeqNumber(inputNumber, shape) {
   };
 }
 
-// توليد الوفق حسب الشكل
-function generateWefeq(inputNumber, shape) {
-  switch (shape) {
-    case 'triangle':
-      return generateTriangleWefeq(inputNumber);
-    case 'square':
-      return generateSquareWefeq(inputNumber);
-    case 'pentagon':
-      return generatePentagonWefeq(inputNumber);
-    case 'hexagon':
-      return generateEvenWefeq(inputNumber, 6);
-    case 'heptagon':
-      return generateOddWefeq(inputNumber, 7);
-    case 'octagon':
-      return generateEvenWefeq(inputNumber, 8);
-    case 'nonagon':
-      return generateOddWefeq(inputNumber, 9);
-    default:
-      return null;
-  }
-}
-
 // شرح جبر الكسر حسب الشكل
 function wefeqFractionExplanation(shape) {
   if (shape === 'triangle') {
     return 'الباقي من قسمة (الرقم - 12) على 3';
-  }
-  if (shape === 'square') {
-    return 'الباقي من قسمة (الأساس - 30) على 4';
   }
   return `الباقي من قسمة (الرقم - ${WEFEQ_MAGIC_CONSTANTS[shape]}) على ${WEFEQ_ORDERS[shape]}`;
 }
@@ -296,30 +210,11 @@ function buildWefeqInfoRows(result, shape) {
   ];
 }
 
-// كلاس تلوين الخانة (جبر الكسر، المفتاح، المغلاق، الوسط)
+// كلاس تلوين الخانة: لا يُلوَّن إلا خانة جبر الكسر، وفقط عند وجود كسر
 function wefeqCellClass(result, shape, i, j) {
-  const n = result.square.length;
-  const val = result.square[i][j];
-
-  if (result.fraction > 0) {
-    if (shape === 'triangle') {
-      const pos = result.positions.fractionFix;
-      return (i === pos.row && j === pos.col) ? 'fraction-fix' : '';
-    }
-    if (shape === 'square') {
-      return (i === 1 && j === 2) ? 'fraction-fix' : '';
-    }
-    return (i === n - 1 && j === n - 1) ? 'fraction-fix' : '';
-  }
-
-  if (val === result.keyVal) {
-    return 'key';
-  }
-  if (val === result.ghalaqVal) {
-    return 'ghalaq';
-  }
-  if (shape === 'triangle' && i === result.positions.middle.row && j === result.positions.middle.col) {
-    return 'middle';
+  const pos = result.fractionFix;
+  if (result.fraction > 0 && pos && i === pos.row && j === pos.col) {
+    return 'fraction-fix';
   }
   return '';
 }

@@ -834,3 +834,18 @@ input.form-control:focus {
   background: #e7f1ff;
   color: #0d6efd;
 }
+
+/* زر خيارات الرقم داخل خانات الوفق: يطفو فوق الزاوية ولا يأخذ مساحة */
+.magic-cell.number-cell {
+  position: relative;
+  min-width: 0;
+}
+.magic-cell .number-actions-btn {
+  position: absolute;
+  top: 2px;
+  inset-inline-end: 2px;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  font-size: 0.65rem;
+}
