@@ -30699,15 +30699,6 @@ const qWordsData = [
     "ayqagh": 3
     },
   {
-  "id": 3868,
-    "ntext": "بَغْيًا",
-    "otext": "بغيا",
-    "text28": "بيا",
-    "jummal": 13,
-    "abjad": 13,
-    "ayqagh": 4
-    },
-  {
   "id": 3870,
     "ntext": "بَيَانَهُ",
     "otext": "بيانه",
@@ -112885,15 +112876,6 @@ const qWordsData = [
     "jummal": 224,
     "abjad": 44,
     "ayqagh": 17
-    },
-  {
-  "id": 11618,
-    "ntext": "وَزِينَةٌ",
-    "otext": "وزينة",
-    "text28": "وزينه",
-    "jummal": 78,
-    "abjad": 42,
-    "ayqagh": 24
     },
   {
   "id": 11619,
