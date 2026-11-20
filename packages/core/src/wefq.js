@@ -126,9 +126,9 @@ function computeWefeqStats(square, inputNumber) {
   };
 }
 
-// جبر الكسر للوفق المثلث: الباقي من قسمة (الرقم - 12) على 3
+// جبر الكسر للوفق المثلث: الباقي من قسمة (الرقم - 15) على 3
 function triangleFraction(inputNumber) {
-  return positiveMod(inputNumber - 12, 3);
+  return positiveMod(inputNumber - WEFEQ_MAGIC_CONSTANTS.triangle, 3);
 }
 
 // =====================================================
@@ -187,9 +187,6 @@ function studyWefeqNumber(inputNumber, shape) {
 
 // شرح جبر الكسر حسب الشكل
 function wefeqFractionExplanation(shape) {
-  if (shape === 'triangle') {
-    return 'الباقي من قسمة (الرقم - 12) على 3';
-  }
   return `الباقي من قسمة (الرقم - ${WEFEQ_MAGIC_CONSTANTS[shape]}) على ${WEFEQ_ORDERS[shape]}`;
 }
 

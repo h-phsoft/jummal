@@ -9,6 +9,11 @@ function App() {
   const { t, i18n } = useTranslation();
   const location = useLocation();
 
+  // عنوان النافذة/التبويب باسم البرنامج حسب اللغة
+  useEffect(() => {
+    document.title = t('app_name');
+  }, [t, i18n.language]);
+
   const toggleLanguage = () => {
     const newLang = i18n.language === 'en' ? 'ar' : 'en';
     i18n.changeLanguage(newLang);
@@ -21,11 +26,15 @@ function App() {
       {/* Navigation Bar */}
       <nav style={{ padding: '1rem 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-light)', background: 'var(--glass-bg)', backdropFilter: 'blur(10px)', position: 'sticky', top: 0, zIndex: 100 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div style={{ width: '40px', height: '40px', background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-tertiary))', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold', fontSize: '1.2rem', boxShadow: 'var(--shadow-glow)' }}>
-            PQ
-          </div>
-          <Link to="/" style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.25rem', letterSpacing: '-0.02em', textDecoration: 'none', color: 'var(--text-primary)' }}>
-            PhsQuran
+          <img
+            src={`${import.meta.env.BASE_URL}pwa-192x192.png`}
+            alt=""
+            width={40}
+            height={40}
+            style={{ borderRadius: '10px', boxShadow: 'var(--shadow-glow)' }}
+          />
+          <Link to="/" style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.2rem', textDecoration: 'none', color: 'var(--text-primary)' }}>
+            {t('app_name')}
           </Link>
         </div>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
@@ -56,7 +65,7 @@ function App() {
       
       {/* Footer */}
       <footer style={{ padding: '1.5rem', textAlign: 'center', color: 'var(--text-tertiary)', borderTop: '1px solid var(--border-light)', marginTop: 'auto', background: 'var(--bg-secondary)' }}>
-        <p>&copy; {new Date().getFullYear()} PhsQuran Platform. {t('All rights reserved', 'All rights reserved.')}</p>
+        <p>&copy; {new Date().getFullYear()} {t('app_name')}. {t('All rights reserved', 'All rights reserved.')}</p>
       </footer>
     </div>
   );

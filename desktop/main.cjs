@@ -44,7 +44,7 @@ function createWindow(url = `${SCHEME}://${HOST}/index.html`) {
     height: 860,
     minWidth: 900,
     minHeight: 600,
-    title: 'جمّل',
+    title: 'دراسات عددية في القرآن الكريم',
     icon: path.join(__dirname, 'icon.png'),
     autoHideMenuBar: true,
     webPreferences: {

@@ -121,8 +121,21 @@ test('data integrity: counts, stored word values, 28-letter text', () => {
     const t = core.calculateTriple(w.text28);
     assert.deepEqual([t.jummal, t.abjadi, t.iqghy], [w.jummal, w.abjad, w.ayqagh], w.text28);
   });
-  const mismatch = ayat.filter(a => core.cleanArabicText(a.ayatOText) !== a.ayat28Text).map(a => `${a.swarId}:${a.ayatNum}`);
-  assert.deepEqual(mismatch, ['40:13']);
+  const ref = (a) => `${a.swarId}:${a.ayatNum}`;
+  // الصيغ العثمانية الثلاث متطابقة: الحروف الـ 28 = تنقية النص بدون تشكيل
+  assert.deepEqual(ayat.filter(a => core.cleanArabicText(a.ayatOText) !== a.ayat28Text).map(ref), []);
+  // والنص بدون تشكيل = النص المشكول بعد حذف التشكيل
+  const marks = /[ً-ٰٟۖ-ۭـ]/g;
+  assert.deepEqual(ayat.filter(a => a.ayatNText.replace(marks, '') !== a.ayatOText).map(ref), []);
+  // لا حروف خفية ولا رموز غريبة، ولا مسافات زائدة في أي صيغة
+  const fields = ['ayatNText', 'ayatOText', 'ayat28Text', 'ayatRead', 'ayatSearch'];
+  ayat.forEach(a => fields.forEach(f => {
+    assert.ok(!/[​-‏‪-‮ ¨﻿]/.test(a[f]), `${ref(a)} ${f} hidden char`);
+    assert.ok(!/^\s|\s$|\s{2,}/.test(a[f]), `${ref(a)} ${f} spaces`);
+  }));
+  // كل كلمة مشكولة في القائمة موجودة في النص المشكول
+  const nWords = new Set(ayat.flatMap(a => a.ayatNText.split(' ')));
+  assert.deepEqual(words.filter(w => !nWords.has(w.ntext)).map(w => w.ntext), []);
   const a319 = ayat.find(a => a.swarId === 3 && a.ayatNum === 19);
   assert.equal(core.calculateTriple(a319.ayat28Text).jummal, 6417);
 });
@@ -176,13 +189,29 @@ test('study letter, mirror index and symmetric verses', () => {
   assert.equal(core.mirrorIndex(5, 5, 114), 5);
   assert.equal(core.mirrorIndex(0, 57, 114), 57);
 
+  // الفاتحة (7 آيات، فردي): المحور 1 وحده، ثم 2↔7، 3↔6، 4↔5
   const fatiha = core.symmetricVerses(ayat, 1, 1);
-  assert.equal(fatiha.rightArray.length + fatiha.leftArray.length, 7);
-  assert.deepEqual(fatiha.rightArray.map(a => a.num), [1, 2, 3, 4]);
-  assert.deepEqual(fatiha.leftArray.map(a => a.num), [7, 6, 5]);
+  assert.equal(fatiha.axis.num, 1);
+  assert.deepEqual(fatiha.pairs.map(p => [p.right.num, p.left.num]), [[2, 7], [3, 6], [4, 5]]);
+  assert.equal(fatiha.opposite, null);
+  // الإخلاص (4 آيات، زوجي): المحور 1، ثم 2↔4، والمقابلة 3 وحدها
+  const ikhlas = core.symmetricVerses(ayat, 112, 1);
+  assert.deepEqual(ikhlas.pairs.map(p => [p.right.num, p.left.num]), [[2, 4]]);
+  assert.equal(ikhlas.opposite.num, 3);
+  // البقرة بمحور 10: 11↔9 أولاً، وكل الآيات مغطاة مرة واحدة
   const baqarah = core.symmetricVerses(ayat, 2, 10);
-  assert.equal(baqarah.rightArray[0].num, 10);
-  assert.equal(baqarah.leftArray[0].num, 9);
-  assert.equal(baqarah.rightArray.length + baqarah.leftArray.length, 286);
+  assert.deepEqual([baqarah.pairs[0].right.num, baqarah.pairs[0].left.num], [11, 9]);
+  const covered = [baqarah.axis.num, baqarah.opposite.num, ...baqarah.pairs.flatMap(p => [p.right.num, p.left.num])];
+  assert.equal(new Set(covered).size, 286);
   assert.equal(core.symmetricVerses(ayat, 1, 99), null);
+});
+
+test('triangle minimum is 15 everywhere and its fraction is unchanged', () => {
+  assert.equal(core.WEFEQ_MAGIC_CONSTANTS.triangle, 15);
+  assert.equal(core.studyWefeqNumber(14, 'triangle').possible, false);
+  assert.equal(core.studyWefeqNumber(15, 'triangle').possible, true);
+  for (let n = 15; n <= 500; n++) {
+    assert.equal(core.triangleFraction(n), (n - 12) % 3);
+  }
+  assert.equal(core.wefeqFractionExplanation('triangle'), 'الباقي من قسمة (الرقم - 15) على 3');
 });

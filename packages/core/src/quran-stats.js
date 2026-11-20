@@ -190,35 +190,38 @@ export function mirrorIndex(start, i, total) {
   return (((2 * start - i) % total) + total) % total;
 }
 
-// تطابق الآيات داخل سورة: محوران يبدآن من آية المحور (مثل تطابق السور)
-// اليمين: من آية المحور صعوداً، اليسار: من الآية التي قبلها نزولاً (مع الالتفاف)
+// تطابق الآيات داخل سورة (بنفس منطق تطابق السور): الآيات على دائرة،
+// آية المحور وحدها، ثم كل آية مع نظيرتها على الجانب الآخر من المحور:
+// (المحور+1 مع المحور-1)، (المحور+2 مع المحور-2)... مع الالتفاف حول السورة
+// وإن كان عدد الآيات زوجياً فالآية المقابلة للمحور وحدها في الطرف الآخر
 export function symmetricVerses(ayat, surahId, startAyah) {
   const list = ayat.filter(a => a.swarId === surahId);
   const n = list.length;
   if (n === 0 || startAyah < 1 || startAyah > n) {
     return null;
   }
-  const info = (a) => ({
-    num: a.ayatNum,
-    text: a.ayat28Text,
-    words: wordCount(a.ayat28Text),
-    letters: lettersOf(a.ayat28Text).length
-  });
-  const half = Math.ceil(n / 2);
-  const rightArray = [];
-  const leftArray = [];
-  for (let k = 0; k < half; k++) {
-    rightArray.push(info(list[(startAyah - 1 + k) % n]));
-    if (rightArray.length + leftArray.length < n) {
-      leftArray.push(info(list[(((startAyah - 2 - k) % n) + n) % n]));
-    }
+  const info = (index) => {
+    const a = list[index];
+    return {
+      num: a.ayatNum,
+      text: a.ayat28Text,
+      words: wordCount(a.ayat28Text),
+      letters: lettersOf(a.ayat28Text).length
+    };
+  };
+  const axis = startAyah - 1;
+  const pairs = [];
+  for (let k = 1; k <= Math.floor((n - 1) / 2); k++) {
+    const right = (axis + k) % n;
+    pairs.push({right: info(right), left: info(mirrorIndex(axis, right, n))});
   }
   return {
     surahId: surahId,
     surahName: list[0].swarName,
     totalAyahs: n,
     startAyah: startAyah,
-    rightArray: rightArray,
-    leftArray: leftArray
+    axis: info(axis),
+    pairs: pairs,
+    opposite: n % 2 === 0 ? info((axis + n / 2) % n) : null
   };
 }

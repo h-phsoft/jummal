@@ -2,7 +2,7 @@
   "name": "desktop",
   "version": "1.0.0",
   "private": true,
-  "description": "جمّل - برنامج سطح المكتب (يعمل دون إنترنت)",
+  "description": "دراسات عددية في القرآن الكريم - برنامج سطح المكتب (يعمل دون إنترنت)",
   "author": "PhSoft",
   "main": "main.cjs",
   "scripts": {
@@ -15,7 +15,7 @@
   },
   "build": {
     "appId": "me.phsoft.jummal",
-    "productName": "Jummal",
+    "productName": "Quran Numerical Studies",
     "directories": {
       "output": "release"
     },
@@ -36,7 +36,7 @@
       "icon": "icon.png"
     },
     "portable": {
-      "artifactName": "Jummal-${version}-portable.exe"
+      "artifactName": "Quran-Numerical-Studies-${version}-portable.exe"
     },
     "electronVersion": "45.4.1"
   }

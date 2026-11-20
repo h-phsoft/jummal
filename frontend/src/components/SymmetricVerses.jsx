@@ -29,7 +29,14 @@ export default function SymmetricVerses() {
     setResult(await apiGet(`/api/analysis/symmetric-verses/${surah.swarId}/${startAyah}`));
   };
 
-  const pairs = result ? result.rightArray.map((right, i) => ({right: right, left: result.leftArray[i] || null})) : [];
+  // صف لآية وحدها (المحور أو المقابلة له) يمتد عبر الجدول
+  const singleRow = (verse, label) => (
+    <tr style={{background: 'var(--bg-tertiary)'}}>
+      <td colSpan={8} title={verse.text}>
+        <strong>{label}: {t('col_ayah')} {verse.num}</strong> · {verse.words} {t('st_words')} · {verse.letters} {t('st_letters')}
+      </td>
+    </tr>
+  );
 
   return (
     <div className="tool-page">
@@ -88,18 +95,20 @@ export default function SymmetricVerses() {
                 </tr>
               </thead>
               <tbody>
-                {pairs.map(({right, left}) => (
+                {singleRow(result.axis, t('axis_verse'))}
+                {result.pairs.map(({right, left}) => (
                   <tr key={right.num}>
                     <td title={right.text}><strong>{right.num}</strong></td>
                     <td>{right.words}</td>
                     <td>{right.letters}</td>
-                    <td className="cell-match"><NumberValue value={right.words + (left ? left.words : 0)} /></td>
-                    <td className="cell-match"><NumberValue value={right.letters + (left ? left.letters : 0)} /></td>
-                    <td>{left ? left.letters : ''}</td>
-                    <td>{left ? left.words : ''}</td>
-                    <td title={left ? left.text : ''}><strong>{left ? left.num : '—'}</strong></td>
+                    <td className="cell-match"><NumberValue value={right.words + left.words} /></td>
+                    <td className="cell-match"><NumberValue value={right.letters + left.letters} /></td>
+                    <td>{left.letters}</td>
+                    <td>{left.words}</td>
+                    <td title={left.text}><strong>{left.num}</strong></td>
                   </tr>
                 ))}
+                {result.opposite && singleRow(result.opposite, t('opposite_verse'))}
               </tbody>
             </table>
           </div>

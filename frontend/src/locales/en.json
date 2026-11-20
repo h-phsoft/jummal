@@ -170,7 +170,7 @@
   "chapter_verses_desc": "Total verses {{verses}}, total words {{words}} (conjunction waw counted as a word)",
   "verses_per_surah": "Verses per surah",
   "words_per_surah": "Words per surah",
-  "symmetric_verses_desc": "Choose a surah and an axis verse: verses are laid out on two facing axes, with word and letter totals for each pair",
+  "symmetric_verses_desc": "Choose a surah and an axis verse: the verses are placed on a circle and each verse faces its mirror on the other side of the axis (axis+1 with axis-1, and so on), with word and letter totals for each pair",
   "axis_ayah": "Axis: verse {{n}}",
   "symmetric_verses_title": "Surah {{surah}}, axis verse {{ayah}} of {{total}}",
   "right_axis": "Right axis",
@@ -197,5 +197,8 @@
   "Surah": "Surah",
   "Total": "Total",
   "Word 1": "Word 1",
-  "Word 2": "Word 2"
+  "Word 2": "Word 2",
+  "app_name": "Numerical Studies in the Holy Quran",
+  "axis_verse": "Axis verse",
+  "opposite_verse": "Verse opposite the axis"
 }

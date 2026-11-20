@@ -15,8 +15,8 @@ export default defineConfig({
       injectRegister: false,
       includeAssets: ['favicon.png', 'apple-touch-icon.png'],
       manifest: {
-        name: 'جمّل - منصة الدراسة العددية للقرآن',
-        short_name: 'جمّل',
+        name: 'دراسات عددية في القرآن الكريم',
+        short_name: 'دراسات عددية',
         description: 'حساب الجمّل والجداول والأوفاق ودراسة الأرقام والقرآن الكريم، يعمل دون إنترنت',
         lang: 'ar',
         dir: 'rtl',

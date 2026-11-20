@@ -3,13 +3,14 @@
 // =====================================================
 import {useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
-import {findWordsByValue, generateTriangleWefeq, triangleFraction} from '@jummal/core';
+import {findWordsByValue, generateTriangleWefeq, triangleFraction, WEFEQ_MAGIC_CONSTANTS} from '@jummal/core';
 import {loadWords} from '../services/data.js';
 import JummalCalculator from './JummalCalculator.jsx';
 import WefqView from './components/WefqView.jsx';
 import WordSearchTable from './components/WordSearchTable.jsx';
 
-const TRIANGLE_MIN = 12;
+// الحد الأدنى للمثلث من النواة (15) مثل صفحة عالم الأوفاق
+const TRIANGLE_MIN = WEFEQ_MAGIC_CONSTANTS.triangle;
 const SEARCH_TYPES = ['jummal', 'abjad', 'ayqagh'];
 
 export default function UnifiedPlatform() {
