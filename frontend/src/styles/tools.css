@@ -1,0 +1,565 @@
+/* =====================================================
+   أدوات الجمّل داخل مساحة العمل (بنفس نظام تصميم PhsQuran)
+   ===================================================== */
+
+.tool-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  animation: fadeIn 0.4s var(--transition-normal);
+}
+
+.tool-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-md);
+}
+
+.tool-title {
+  font-size: 1.6rem;
+  margin-bottom: 0.25rem;
+}
+
+.tool-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.tool-section-title {
+  font-size: 1.15rem;
+  margin-bottom: 0.75rem;
+}
+
+.tool-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.tool-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.tool-input,
+.tool-textarea,
+.tool-select {
+  padding: 0.7rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-medium);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.tool-input:focus,
+.tool-textarea:focus,
+.tool-select:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+}
+
+.tool-textarea {
+  width: 100%;
+  min-height: 90px;
+  resize: vertical;
+  text-align: center;
+  line-height: 1.8;
+}
+
+.tool-input.number {
+  width: 180px;
+  text-align: center;
+}
+
+.tool-hint {
+  color: var(--text-tertiary);
+  font-size: 0.85rem;
+}
+
+.btn-sm {
+  padding: 0.4rem 0.9rem;
+  font-size: 0.875rem;
+}
+
+.btn-danger {
+  background: transparent;
+  color: #dc2626;
+  border: 1px solid rgba(220, 38, 38, 0.4);
+}
+
+.btn-danger:hover {
+  background: rgba(220, 38, 38, 0.08);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* النتيجة الرئيسية */
+.result-banner {
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--accent-primary);
+  padding: 0.5rem 0;
+}
+
+.result-banner.error {
+  font-size: 1.05rem;
+  color: #dc2626;
+}
+
+/* الجداول */
+.table-wrap {
+  overflow: auto;
+  border-radius: 12px;
+  border: 1px solid var(--border-light);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.data-table th,
+.data-table td {
+  padding: 0.55rem 0.75rem;
+  border-bottom: 1px solid var(--border-light);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.data-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-weight: 600;
+  z-index: 1;
+}
+
+.data-table tbody tr:hover {
+  background: var(--bg-secondary);
+}
+
+.data-table td.text-cell {
+  white-space: normal;
+  text-align: right;
+  min-width: 140px;
+}
+
+.data-table tr.clickable {
+  cursor: pointer;
+}
+
+.cell-match {
+  background: rgba(14, 165, 233, 0.15);
+  font-weight: 700;
+  color: var(--accent-tertiary);
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--text-tertiary);
+  padding: 1.5rem;
+}
+
+/* إحصاءات الأحرف */
+.stats-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-light);
+}
+
+.badge.primary {
+  background: rgba(14, 165, 233, 0.15);
+  color: var(--accent-tertiary);
+}
+
+.badge.success {
+  background: rgba(22, 163, 74, 0.15);
+  color: #15803d;
+}
+
+.letters-used {
+  text-align: center;
+  font-size: 1.2rem;
+  letter-spacing: 3px;
+  color: var(--accent-primary);
+  margin-bottom: 0.75rem;
+}
+
+.letter-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+}
+
+.letter-chip {
+  min-width: 44px;
+  border: 1px solid var(--border-medium);
+  border-radius: 8px;
+  overflow: hidden;
+  text-align: center;
+  background: var(--bg-primary);
+}
+
+.letter-chip .letter {
+  font-size: 1.15rem;
+  font-weight: 700;
+  background: var(--bg-tertiary);
+  padding: 2px 6px;
+}
+
+.letter-chip .count {
+  color: #15803d;
+  font-weight: 700;
+  padding: 2px 6px;
+}
+
+/* الرقم مع قائمة الخيارات */
+.num {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  position: relative;
+  cursor: context-menu;
+}
+
+.num-btn {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid var(--border-medium);
+  border-radius: 4px;
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.num:hover .num-btn,
+.num-btn:focus-visible {
+  opacity: 1;
+}
+
+.num-btn:hover {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: white;
+}
+
+.num-menu {
+  position: fixed;
+  z-index: 2000;
+  min-width: 230px;
+  padding: 4px 0;
+  border-radius: 10px;
+  border: 1px solid var(--border-medium);
+  background: var(--bg-primary);
+  box-shadow: var(--shadow-lg);
+  text-align: start;
+}
+
+.num-menu-title {
+  text-align: center;
+  font-weight: 700;
+  color: var(--accent-primary);
+  padding: 4px 12px 6px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.num-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 0.9rem;
+  border: 0;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-align: start;
+}
+
+.num-menu-item:hover,
+.num-menu-item:focus-visible {
+  background: var(--bg-tertiary);
+  color: var(--accent-primary);
+}
+
+/* الأوفاق */
+.shape-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.shape-btn {
+  min-width: 78px;
+  padding: 0.55rem 0.9rem;
+  border-radius: 10px;
+  border: 2px solid var(--border-medium);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.shape-btn.success {
+  border-color: #16a34a;
+  color: #15803d;
+}
+
+.shape-btn.warning {
+  border-color: #f97316;
+  color: #c2410c;
+}
+
+.shape-btn.danger {
+  border-color: #dc2626;
+  color: #b91c1c;
+}
+
+.shape-btn.active {
+  background: var(--accent-primary);
+  border-color: var(--accent-tertiary);
+  color: white;
+}
+
+.magic-grid {
+  display: grid;
+  gap: 6px;
+  max-width: 460px;
+  margin: 1rem auto;
+  direction: ltr;
+}
+
+.magic-cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  border: 2px solid var(--accent-primary);
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  min-width: 0;
+  position: relative;
+}
+
+.magic-grid.dense .magic-cell {
+  font-size: 0.85rem;
+}
+
+.magic-cell .num-btn {
+  position: absolute;
+  top: 2px;
+  inset-inline-end: 2px;
+  width: 15px;
+  height: 15px;
+}
+
+.magic-cell.fraction-fix {
+  background: rgba(156, 39, 176, 0.15);
+  border-color: #9c27b0;
+  color: #7b1fa2;
+}
+
+.fraction-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* الجداول المخصصة: قائمة الاختيار */
+.tables-picker {
+  max-height: 340px;
+  overflow: auto;
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  padding: 0.5rem;
+}
+
+.tables-picker label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.4rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.tables-picker label:hover {
+  background: var(--bg-secondary);
+}
+
+/* نافذة اختيار الآيات */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  z-index: 1500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal {
+  width: min(900px, 100%);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background: var(--bg-primary);
+  border-radius: 16px;
+  border: 1px solid var(--border-medium);
+  box-shadow: var(--shadow-lg);
+  padding: 1.25rem;
+}
+
+.modal .table-wrap {
+  flex: 1;
+  min-height: 200px;
+}
+
+.data-table tr.selected {
+  background: rgba(14, 165, 233, 0.18);
+}
+
+/* شجرة تحليل الرقم */
+.number-tree-wrap {
+  overflow: auto;
+  direction: ltr;
+  text-align: center;
+  padding: 0.5rem 0;
+}
+
+.number-tree {
+  display: inline-block;
+  transform-origin: top center;
+}
+
+.number-tree ul {
+  padding-top: 18px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  padding-inline-start: 0;
+}
+
+.number-tree li {
+  list-style: none;
+  position: relative;
+  padding: 18px 3px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.number-tree li::before,
+.number-tree li::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 18px;
+  border-top: 2px solid var(--text-tertiary);
+}
+
+.number-tree li::before {
+  right: 50%;
+  border-right: 2px solid var(--text-tertiary);
+}
+
+.number-tree li::after {
+  left: 50%;
+}
+
+.number-tree li:first-child::before,
+.number-tree li:last-child::after {
+  border-top: none;
+}
+
+.number-tree li:only-child::before,
+.number-tree li:only-child::after {
+  display: none;
+}
+
+.number-tree li:only-child {
+  padding-top: 0;
+}
+
+.number-tree ul ul::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  height: 18px;
+  border-left: 2px solid var(--text-tertiary);
+}
+
+.number-tree .node {
+  border: 2px solid var(--text-secondary);
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-weight: 700;
+  background: var(--bg-primary);
+  min-width: 36px;
+}
+
+.study-table th {
+  text-align: start;
+  width: 38%;
+  color: var(--text-secondary);
+  white-space: normal;
+}
+
+.study-table td {
+  text-align: start;
+  white-space: normal;
+}

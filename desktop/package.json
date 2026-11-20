@@ -1,0 +1,43 @@
+{
+  "name": "desktop",
+  "version": "1.0.0",
+  "private": true,
+  "description": "جمّل - برنامج سطح المكتب (يعمل دون إنترنت)",
+  "author": "PhSoft",
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win portable"
+  },
+  "devDependencies": {
+    "electron": "45.4.1",
+    "electron-builder": "^26.18.0"
+  },
+  "build": {
+    "appId": "me.phsoft.jummal",
+    "productName": "Jummal",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "main.cjs",
+      {
+        "from": "../frontend/dist",
+        "to": "app",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "win": {
+      "target": [
+        "portable"
+      ],
+      "icon": "icon.png"
+    },
+    "portable": {
+      "artifactName": "Jummal-${version}-portable.exe"
+    },
+    "electronVersion": "45.4.1"
+  }
+}

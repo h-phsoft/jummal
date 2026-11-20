@@ -1,0 +1,24 @@
+{
+  "name": "jummal-quran",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Jummal + PhsQuran: numerical study of the Quran. Works offline, files only, no database.",
+  "workspaces": [
+    "packages/*",
+    "frontend",
+    "backend",
+    "desktop"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w frontend",
+    "build": "npm run build -w frontend",
+    "preview": "npm run preview -w frontend",
+    "test": "npm test -w @jummal/core",
+    "server": "npm start -w backend",
+    "desktop": "npm run build && npm start -w desktop",
+    "build:exe": "npm run build && npm run dist -w desktop"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

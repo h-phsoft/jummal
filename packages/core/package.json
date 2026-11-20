@@ -1,0 +1,14 @@
+{
+  "name": "@jummal/core",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Shared Jummal / Quran calculations for browser and Node (no database)",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "scripts": {
+    "test": "node --test \"test/*.test.js\""
+  }
+}

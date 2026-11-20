@@ -1,0 +1,224 @@
+// =====================================================
+// إحصاءات الحروف والسور والآيات (بديل ملفات PhsQuran المحسوبة مسبقاً)
+// كلها من ayat28Text حسب قاعدة الدراسة، والبيانات تُمرَّر معاملاً
+// =====================================================
+import {BASE_LETTERS} from './letters.js';
+
+const LETTER_INDEX = new Map(BASE_LETTERS.map((letter, i) => [letter, i]));
+
+function lettersOf(text) {
+  return (text || '').replace(/\s+/g, '');
+}
+
+function firstLetter(text) {
+  const letters = lettersOf(text);
+  return letters ? letters[0] : '';
+}
+
+function lastLetter(text) {
+  const letters = lettersOf(text);
+  return letters ? letters[letters.length - 1] : '';
+}
+
+function wordCount(text) {
+  return (text || '').trim().split(/\s+/).filter(Boolean).length;
+}
+
+// عدّ الحروف الـ 28 في نص
+function countLetters(text) {
+  const counts = new Array(BASE_LETTERS.length).fill(0);
+  for (const char of lettersOf(text)) {
+    const idx = LETTER_INDEX.get(char);
+    if (idx !== undefined) {
+      counts[idx]++;
+    }
+  }
+  return counts;
+}
+
+function groupBySurah(ayat) {
+  const groups = new Map();
+  ayat.forEach(a => {
+    if (!groups.has(a.swarId)) {
+      groups.set(a.swarId, []);
+    }
+    groups.get(a.swarId).push(a);
+  });
+  return groups;
+}
+
+// إحصاءات كل سورة: الحرف الأول والأخير، ترتيب التنزيل، الآيات، الكلمات، الحروف، تكرار كل حرف
+export function chapterStats(swar, ayat) {
+  const groups = groupBySurah(ayat);
+  const totals = {Vs: 0, Ws: 0, Cs: 0, letters: new Array(BASE_LETTERS.length).fill(0)};
+
+  const rows = swar.map(s => {
+    const list = groups.get(s.swarId) || [];
+    const letters = new Array(BASE_LETTERS.length).fill(0);
+    let words = 0;
+    list.forEach(a => {
+      countLetters(a.ayat28Text).forEach((c, i) => {
+        letters[i] += c;
+      });
+      words += wordCount(a.ayat28Text);
+    });
+    const cs = letters.reduce((x, y) => x + y, 0);
+    totals.Vs += list.length;
+    totals.Ws += words;
+    totals.Cs += cs;
+    letters.forEach((c, i) => {
+      totals.letters[i] += c;
+    });
+    return {
+      CpNo: s.swarId,
+      CpName: s.swarName,
+      FC: list.length ? firstLetter(list[0].ayat28Text) : '',
+      LC: list.length ? lastLetter(list[list.length - 1].ayat28Text) : '',
+      TO: s.swarOrd,
+      type: s.sTypeRem,
+      Vs: list.length,
+      Ws: words,
+      Cs: cs,
+      letters: letters,
+      usedLetters: letters.filter(c => c > 0).length
+    };
+  });
+
+  return {letters: BASE_LETTERS, rows: rows, totals: totals};
+}
+
+// إحصاءات كل حرف: التكرار، السور والآيات التي بدأت/انتهت به، الآيات التي فيها/ليس فيها
+export function letterStats(swar, ayat) {
+  const groups = groupBySurah(ayat);
+  const rows = BASE_LETTERS.map((char, i) => ({
+    ChNo: i + 1,
+    Char: char,
+    Count: 0,
+    FCs: 0,
+    LCs: 0,
+    FLCs: 0,
+    FVs: 0,
+    LVs: 0,
+    FLVs: 0,
+    versesWith: 0,
+    versesWithout: 0,
+    chaptersWith: 0
+  }));
+
+  ayat.forEach(a => {
+    const counts = countLetters(a.ayat28Text);
+    const first = LETTER_INDEX.get(firstLetter(a.ayat28Text));
+    const last = LETTER_INDEX.get(lastLetter(a.ayat28Text));
+    counts.forEach((c, i) => {
+      rows[i].Count += c;
+      if (c > 0) {
+        rows[i].versesWith++;
+      } else {
+        rows[i].versesWithout++;
+      }
+    });
+    if (first !== undefined) {
+      rows[first].FVs++;
+    }
+    if (last !== undefined) {
+      rows[last].LVs++;
+    }
+    if (first !== undefined && first === last) {
+      rows[first].FLVs++;
+    }
+  });
+
+  swar.forEach(s => {
+    const list = groups.get(s.swarId) || [];
+    if (list.length === 0) {
+      return;
+    }
+    const first = LETTER_INDEX.get(firstLetter(list[0].ayat28Text));
+    const last = LETTER_INDEX.get(lastLetter(list[list.length - 1].ayat28Text));
+    if (first !== undefined) {
+      rows[first].FCs++;
+    }
+    if (last !== undefined) {
+      rows[last].LCs++;
+    }
+    if (first !== undefined && first === last) {
+      rows[first].FLCs++;
+    }
+    const used = new Set();
+    list.forEach(a => countLetters(a.ayat28Text).forEach((c, i) => {
+      if (c > 0) {
+        used.add(i);
+      }
+    }));
+    used.forEach(i => {
+      rows[i].chaptersWith++;
+    });
+  });
+
+  const totals = rows.reduce((t, r) => {
+    ['Count', 'FCs', 'LCs', 'FLCs', 'FVs', 'LVs', 'FLVs'].forEach(k => {
+      t[k] += r[k];
+    });
+    return t;
+  }, {Count: 0, FCs: 0, LCs: 0, FLCs: 0, FVs: 0, LVs: 0, FLVs: 0});
+
+  return {rows: rows, totals: totals};
+}
+
+// دراسة حرف واحد: إحصاءاته + توزيعه على السور
+export function studyLetter(swar, ayat, letter) {
+  const idx = LETTER_INDEX.get(letter);
+  if (idx === undefined) {
+    return null;
+  }
+  const stats = letterStats(swar, ayat).rows[idx];
+  const chapterData = chapterStats(swar, ayat);
+  // نسبة الحرف من كل حروف القرآن، ونسبته من حروف كل سورة
+  return Object.assign({}, stats, {
+    percent: chapterData.totals.Cs ? stats.Count / chapterData.totals.Cs : 0,
+    chapters: chapterData.rows.map(r => ({
+      CpNo: r.CpNo,
+      CpName: r.CpName,
+      count: r.letters[idx],
+      share: r.Cs ? r.letters[idx] / r.Cs : 0
+    }))
+  });
+}
+
+// موضع النظير في التناظر الدائري: نظير i حول المحور start من total عنصراً
+export function mirrorIndex(start, i, total) {
+  return (((2 * start - i) % total) + total) % total;
+}
+
+// تطابق الآيات داخل سورة: محوران يبدآن من آية المحور (مثل تطابق السور)
+// اليمين: من آية المحور صعوداً، اليسار: من الآية التي قبلها نزولاً (مع الالتفاف)
+export function symmetricVerses(ayat, surahId, startAyah) {
+  const list = ayat.filter(a => a.swarId === surahId);
+  const n = list.length;
+  if (n === 0 || startAyah < 1 || startAyah > n) {
+    return null;
+  }
+  const info = (a) => ({
+    num: a.ayatNum,
+    text: a.ayat28Text,
+    words: wordCount(a.ayat28Text),
+    letters: lettersOf(a.ayat28Text).length
+  });
+  const half = Math.ceil(n / 2);
+  const rightArray = [];
+  const leftArray = [];
+  for (let k = 0; k < half; k++) {
+    rightArray.push(info(list[(startAyah - 1 + k) % n]));
+    if (rightArray.length + leftArray.length < n) {
+      leftArray.push(info(list[(((startAyah - 2 - k) % n) + n) % n]));
+    }
+  }
+  return {
+    surahId: surahId,
+    surahName: list[0].swarName,
+    totalAyahs: n,
+    startAyah: startAyah,
+    rightArray: rightArray,
+    leftArray: leftArray
+  };
+}

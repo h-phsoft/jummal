@@ -1,4 +1,4 @@
-name: Deploy to cPanel
+name: Build and Deploy
 
 on:
   push:
@@ -6,11 +6,27 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  # الموقع: اختبار النواة ثم بناء ملفات ثابتة (PWA) ورفعها إلى cPanel
+  site:
     runs-on: ubuntu-latest
     steps:
       - name: 📥 جلب الكود
         uses: actions/checkout@v4
+
+      - name: ⚙️ تجهيز Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: 📦 تثبيت الحزم
+        run: npm ci
+
+      - name: 🧪 اختبار الحسابات
+        run: npm test
+
+      - name: 🏗️ بناء الموقع
+        run: npm run build
 
       - name: 📤 النشر إلى cPanel
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
@@ -19,12 +35,31 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ${{ secrets.FTP_PROTOCOL }}
-          local-dir: ./
+          local-dir: ./frontend/dist/
           server-dir: /public_html/s/jummal/
-          exclude: |
-            .git*
-            .github/**
-            node_modules/**
-            *.log
-            .env
-            *.map
+
+  # برنامج ويندوز: ملف exe محمول يعمل دون إنترنت (يُحمَّل من صفحة التشغيل في GitHub)
+  desktop:
+    runs-on: windows-latest
+    steps:
+      - name: 📥 جلب الكود
+        uses: actions/checkout@v4
+
+      - name: ⚙️ تجهيز Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: 📦 تثبيت الحزم
+        run: npm ci
+
+      - name: 🏗️ بناء البرنامج
+        run: npm run build:exe
+
+      - name: 💾 حفظ ملف exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: Jummal-windows
+          path: desktop/release/*.exe
+          retention-days: 30
