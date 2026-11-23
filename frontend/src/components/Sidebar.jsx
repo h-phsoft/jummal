@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   ChevronLeft, ChevronRight, LayoutDashboard, Search, 
-  BarChart2, Type, Hash, GitCommit, Settings,
+  BarChart2, Type, Hash, GitCommit,
   Calculator, Table2, Grid3x3, Sigma, Layers
 } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 
-export default function Sidebar({ isOpen, setIsOpen }) {
+export default function Sidebar({ isOpen, setIsOpen, overlay, onNavigate }) {
   const { t } = useTranslation();
 
   // ترتيب المجموعات: الدراسات، ثم أدوات الجمّل، ثم الإحصائيات
@@ -48,23 +48,12 @@ export default function Sidebar({ isOpen, setIsOpen }) {
   ];
 
   return (
-    <aside 
-      style={{
-        width: isOpen ? '280px' : '70px',
-        background: 'var(--glass-bg)',
-        backdropFilter: 'blur(10px)',
-        borderRight: '1px solid var(--border-light)',
-        transition: 'width 0.3s ease',
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        position: 'relative',
-        overflowY: 'auto'
-      }}
-    >
+    <aside className={`sidebar ${isOpen ? 'sidebar-open' : 'sidebar-closed'} ${overlay ? 'sidebar-overlay' : ''}`}>
       <div style={{ padding: '1rem', display: 'flex', justifyContent: isOpen ? 'flex-end' : 'center', borderBottom: '1px solid var(--border-light)' }}>
         <button 
           onClick={() => setIsOpen(!isOpen)}
+          aria-label={t('toggle_menu')}
+          title={t('toggle_menu')}
           style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}
         >
           {isOpen ? <ChevronLeft /> : <ChevronRight />}
@@ -82,7 +71,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                 color: 'var(--text-tertiary)',
                 fontWeight: 600,
                 marginBottom: '0.75rem',
-                paddingLeft: '1rem'
+                paddingInlineStart: '1rem'
               }}>
                 {group.title}
               </div>
@@ -93,6 +82,8 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                   <NavLink
                     to={item.path}
                     end={item.path === '/workspace'}
+                    title={isOpen ? undefined : item.name}
+                    onClick={onNavigate}
                     style={({ isActive }) => ({
                       width: '100%',
                       display: 'flex',
@@ -111,7 +102,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                     className={({ isActive }) => isActive ? 'active-nav-link' : 'nav-link'}
                   >
                     <span style={{ color: 'inherit' }}>{item.icon}</span>
-                    {isOpen && <span style={{ fontSize: '0.9rem', textAlign: 'left', whiteSpace: 'nowrap' }}>{item.name}</span>}
+                    {isOpen && <span style={{ fontSize: '0.9rem', textAlign: 'start', whiteSpace: 'nowrap' }}>{item.name}</span>}
                   </NavLink>
                 </li>
               ))}

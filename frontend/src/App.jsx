@@ -33,20 +33,20 @@ function App() {
   return (
     <div className="app-container" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
       {/* Navigation Bar */}
-      <nav style={{ padding: '1rem 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-light)', background: 'var(--glass-bg)', backdropFilter: 'blur(10px)', position: 'sticky', top: 0, zIndex: 100 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+      <nav className="app-nav">
+        <div className="app-brand">
           <img
             src={`${import.meta.env.BASE_URL}pwa-192x192.png`}
             alt=""
             width={40}
             height={40}
-            style={{ borderRadius: '10px', boxShadow: 'var(--shadow-glow)' }}
+            className="app-logo"
           />
-          <Link to="/" style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.2rem', textDecoration: 'none', color: 'var(--text-primary)' }}>
+          <Link to="/" className="app-brand-name">
             {t('app_name')}
           </Link>
         </div>
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+        <div className="app-nav-actions">
           <button
             onClick={toggleTheme}
             className="btn btn-secondary"
@@ -59,14 +59,16 @@ function App() {
           <button
             onClick={toggleLanguage}
             className="btn btn-secondary"
+            title={t('switch_language')}
+            aria-label={t('switch_language')}
             style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
           >
             <Globe size={16} />
-            {t('switch_language')}
+            <span className="hide-narrow">{t('switch_language')}</span>
           </button>
           
           {location.pathname !== '/workspace' && (
-            <Link to="/workspace" className="btn btn-primary" style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', textDecoration: 'none' }}>
+            <Link to="/workspace" className="btn btn-primary" style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', textDecoration: 'none', whiteSpace: 'nowrap' }}>
               {t('open_workspace')}
             </Link>
           )}
@@ -82,7 +84,7 @@ function App() {
       </div>
       
       {/* Footer */}
-      <footer style={{ padding: '1.5rem', textAlign: 'center', color: 'var(--text-tertiary)', borderTop: '1px solid var(--border-light)', marginTop: 'auto', background: 'var(--bg-secondary)' }}>
+      <footer className="app-footer" style={{ padding: '1.5rem', textAlign: 'center', color: 'var(--text-tertiary)', borderTop: '1px solid var(--border-light)', marginTop: 'auto', background: 'var(--bg-secondary)' }}>
         <p>&copy; {new Date().getFullYear()} {t('app_name')}. {t('All rights reserved', 'All rights reserved.')}</p>
       </footer>
     </div>

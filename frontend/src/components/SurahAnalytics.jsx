@@ -62,8 +62,8 @@ export default function SurahAnalytics() {
           <p style={{ color: 'var(--text-secondary)' }}>{t('ayahs_distribution')}</p>
         </div>
         
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <div style={{ position: 'relative' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center', maxWidth: '100%' }}>
+          <div style={{ position: 'relative', flex: '1 1 200px', maxWidth: '250px' }}>
             <Search style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-tertiary)' }} size={18} />
             <input 
               type="text" 
@@ -77,7 +77,7 @@ export default function SurahAnalytics() {
                 background: 'var(--bg-secondary)',
                 color: 'var(--text-primary)',
                 outline: 'none',
-                width: '250px'
+                width: '100%'
               }}
             />
           </div>

@@ -10,7 +10,7 @@
 
 منصة للدراسة العددية للقرآن الكريم، تتكون من مجموعتين من الأدوات:
 
-- **أدوات الجمّل:** حساب الجمّل والأبجد والأيقغ، والجداول المخصصة (35 جدولاً)، والأوفاق (3×3 إلى 9×9)، ودراسة الرقم، والبحث عن رقم في كلمات القرآن، والمنصة الموحدة التي تجمعها.
+- **أدوات الجمّل:** حساب الجمّل والأبجد والأيقغ، والجداول المخصصة (5 جداول)، والأوفاق (3×3 إلى 9×9)، ودراسة الرقم، والبحث عن رقم في كلمات القرآن، والمنصة الموحدة التي تجمعها.
 - **الدراسات والإحصاءات (أصلها مشروع PhsQuran):** تطابق السور والآيات والكلمات، ودراسة سورة وآية وحرف، وإحصاءات الحروف والسور، والرسوم البيانية.
 
 **الاسم:** «دراسات عددية في القرآن الكريم»، وبالإنجليزية «Numerical Studies in the Holy Quran».
@@ -44,7 +44,7 @@ data/                 ← بيانات القرآن: المصدر الوحيد (
 packages/core/        ← @jummal/core: كل الحسابات + الاختبارات
   src/                  letters, tables, wefq, text-stats, word-search,
                         number-study, quran-analysis, quran-stats, data-file
-  test/core.test.js     12 اختباراً (node:test)
+  test/core.test.js     13 اختباراً (node:test)
   test/fixtures/        نتائج وكود قديم لمقارنة النتائج (Q01, Q02, number-study)
 frontend/             ← الواجهة: React 19 + Vite 8 + PWA
   public/               الأيقونات + .htaccess (+ data/*.json مولَّدة، غير محفوظة في git)
@@ -77,10 +77,13 @@ tools/                ← package-cpanel.mjs (حزمة النشر)
 | `data/ayat-data.js` | `qAyatData` | 6,236 آية (نحو 7 ميغابايت) |
 | `data/qwords-data.js` | `qWordsData` | 13,152 كلمة مختلفة بقيمها |
 | `data/swar-data.js` | `qSwarData` | 114 سورة: عدد الآيات، ترتيب التنزيل، مكية/مدنية |
+| `data/letters-data.js` | `qLettersData` | جدول الحروف الـ 28 بالترتيب الأبجدي: الاسم، شمسي/قمري (`chSolar`)، نوراني (`chNurani`)، الطبيعة (`chNature`) |
 
 **صيغة الملف:** `const qAyatData = [ ... ];` بنهايات أسطر CRLF. يقرأ الملفَّ `parseDataFile` في `packages/core/src/data-file.js`، فيأخذ ما بين أول `[` وآخر `]`.
 
-**جداول الحساب الـ 35** (الجمل والأبجد والأيقغ والطبائع وبسط 1 إلى 10) ليست ملف بيانات، بل هي في `packages/core/src/tables.js`.
+**جداول الحساب الخمسة** (الجمل والأبجد والأيقغ وطبائع 4 وطبائع 7) ليست ملف بيانات، بل هي في `packages/core/src/tables.js`. حُذفت جداول البسط بطلب المستخدم.
+
+**جدول الحروف:** النوراني هو الحرف الوارد في الحروف المقطعة أوائل السور (14 حرفاً)، والطبيعة مأخوذة من جدول طبائع 4 (1 ناري، 2 ترابي، 3 هوائي، 4 مائي). يتحقق الاختبار من الأمرين مقابل بيانات القرآن والجدول.
 
 ### 4.2 صيغ نص الآية الخمس
 
@@ -133,13 +136,13 @@ tools/                ← package-cpanel.mjs (حزمة النشر)
 | الملف | أهم ما فيه |
 |---|---|
 | `letters.js` | `BASE_LETTERS`, `SUPPORTED_CHARS`, `CHARS_INDEX`, `JUMMAL/ABJAD/AYQAGH_VALUES`, `cleanArabicText`, `calculateText`, `calculateWords`, `calculateTriple` |
-| `tables.js` | `tablesData` (35 جدولاً × 28 قيمة) |
+| `tables.js` | `tablesData` (5 جداول × 28 قيمة) |
 | `wefq.js` | `WEFEQ_BASES`, `generateWefeq`, `studyWefeqNumber`, `triangleFraction`, `buildWefeqInfoRows`, `wefeqCellClass` |
 | `text-stats.js` | `computeTextStats` (إحصاءات أحرف النص) |
 | `word-search.js` | `findWordsByValue` (رقم ← كلمات القرآن) |
 | `number-study.js` | `studyNumber` (الجوهر، القواسم، الأولية، فيبوناتشي...)، `decompositionCounts` |
 | `quran-analysis.js` | `analyzeSurahCharacters`, `analyzeAyahCharacters` (دراسة سورة/آية)، `symmetricChapters`, `symmetricWords`, `searchAyat` |
-| `quran-stats.js` | `letterProfile`, `chapterStats`, `letterStats`, `studyLetter`, `mirrorIndex`, `symmetricVerses` |
+| `quran-stats.js` | `letterProfile`, `chapterStats`, `letterStats` (مع مجموعات الشمسي/القمري والنوراني والطبائع), `letterClassMap`, `LETTER_NATURES`, `studyLetter`, `mirrorIndex`, `symmetricVerses` |
 | `data-file.js` | `parseDataFile`, `DATA_FILES` |
 
 ### 5.1 الأوفاق
@@ -276,6 +279,7 @@ npm run package:cpanel # حزمة zip للرفع على cPanel في release/
   - لا حروف خفية ولا مسافات زائدة.
 - **تطابق الآيات:** الفاتحة والإخلاص، ويتأكد في البقرة أن كل آية تظهر مرة واحدة.
 - **الحد الأدنى للمثلث:** 15، مع صحة جبر الكسر.
+- **جدول الحروف:** 28 حرفاً بالترتيب، والشمسية صحيحة، والنورانية مستخرجة من الحروف المقطعة، والطبيعة مطابقة لجدول طبائع 4.
 
 ---
 

@@ -16,5 +16,6 @@ export function parseDataFile(content) {
 export const DATA_FILES = {
   swar: 'swar-data.js',
   ayat: 'ayat-data.js',
-  words: 'qwords-data.js'
+  words: 'qwords-data.js',
+  letters: 'letters-data.js'
 };

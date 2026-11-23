@@ -28,7 +28,7 @@ export default function SymmetricWords() {
     <div className="glass-card">
       <h2 style={{ fontSize: '1.75rem', marginBottom: '1.5rem', color: 'var(--text-primary)' }}>{t('menu_symmetric_words', 'Symmetric 2 Words')}</h2>
       
-      <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
         <input 
           type="text"
           value={word1} 
@@ -41,7 +41,8 @@ export default function SymmetricWords() {
             background: 'var(--bg-secondary)',
             color: 'var(--text-primary)',
             outline: 'none',
-            flex: 1
+            flex: '1 1 160px',
+            minWidth: 0
           }}
         />
         
@@ -57,7 +58,8 @@ export default function SymmetricWords() {
             background: 'var(--bg-secondary)',
             color: 'var(--text-primary)',
             outline: 'none',
-            flex: 1
+            flex: '1 1 160px',
+            minWidth: 0
           }}
         />
         

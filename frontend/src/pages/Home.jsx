@@ -20,7 +20,7 @@ export default function Home() {
         </div>
         <h1>{t('welcome_title')}</h1>
         <p>{t('welcome_subtitle')}</p>
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'center' }}>
           <Link to="/workspace" className="btn btn-primary" style={{ padding: '1rem 2rem', fontSize: '1.125rem', textDecoration: 'none' }}>
             {t('start_analyzing')}
           </Link>
@@ -33,7 +33,7 @@ export default function Home() {
       {/* Features Section */}
       <section>
         <div style={{ textAlign: 'center', marginBottom: '3rem', marginTop: '4rem' }}>
-          <h2 style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>{t('features_title')}</h2>
+          <h2 style={{ fontSize: 'clamp(1.6rem, 5vw, 2.5rem)', marginBottom: '1rem' }}>{t('features_title')}</h2>
         </div>
         
         <div className="feature-grid">

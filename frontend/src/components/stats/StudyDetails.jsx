@@ -3,11 +3,13 @@
 // =====================================================
 import {useTranslation} from 'react-i18next';
 import NumberValue from '../../tools/components/NumberValue.jsx';
+import {useApiData} from '../../hooks/useApiData.js';
+import {letterClassName, letterInfoMap} from './letterClass.js';
 
 // items: [{label, value, isNumber}]
 export function InfoGrid({items}) {
   return (
-    <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '0.75rem'}}>
+    <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '0.75rem'}}>
       {items.map(item => (
         <div key={item.label} className="stat-box" style={{background: 'var(--bg-secondary)', borderRadius: 12, padding: '0.75rem'}}>
           <div className="stat-value" style={{fontSize: '1.4rem'}}>
@@ -22,14 +24,16 @@ export function InfoGrid({items}) {
 
 export function LettersUsage({profile}) {
   const {t} = useTranslation();
+  const lettersTable = useApiData('/api/letters');
+  const infoMap = letterInfoMap(lettersTable.data);
   return (
-    <div className="tool-grid-2" style={{marginTop: '1rem'}}>
+    <div style={{marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem'}}>
       <div>
         <h4 className="tool-section-title">{t('used_letters')} ({profile.usedLetters.length})</h4>
-        <div className="letter-counts" style={{justifyContent: 'flex-start'}}>
+        <div className="letters-grid">
           {profile.usedLetters.map(x => (
             <div key={x.char} className="letter-chip">
-              <div className="letter">{x.char}</div>
+              <div className={`letter ${letterClassName(infoMap.get(x.char))}`}>{x.char}</div>
               <div className="count">{x.count.toLocaleString('en-US')}</div>
             </div>
           ))}
@@ -40,10 +44,10 @@ export function LettersUsage({profile}) {
         {profile.unusedLetters.length === 0 ? (
           <p className="tool-hint">{t('all_letters_used')}</p>
         ) : (
-          <div className="letter-counts" style={{justifyContent: 'flex-start'}}>
+          <div className="letters-grid">
             {profile.unusedLetters.map(c => (
               <div key={c} className="letter-chip" style={{opacity: 0.7}}>
-                <div className="letter">{c}</div>
+                <div className={`letter ${letterClassName(infoMap.get(c))}`}>{c}</div>
               </div>
             ))}
           </div>

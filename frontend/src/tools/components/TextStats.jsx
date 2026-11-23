@@ -4,10 +4,14 @@
 import {useMemo} from 'react';
 import {useTranslation} from 'react-i18next';
 import {computeTextStats} from '@jummal/core';
+import {useApiData} from '../../hooks/useApiData.js';
+import {letterClassName, letterInfoMap} from '../../components/stats/letterClass.js';
 
 export default function TextStats({text}) {
   const {t} = useTranslation();
   const stats = useMemo(() => computeTextStats(text || ''), [text]);
+  const lettersTable = useApiData('/api/letters');
+  const infoMap = letterInfoMap(lettersTable.data);
 
   if (stats.total === 0) {
     return null;
@@ -21,10 +25,10 @@ export default function TextStats({text}) {
         <span className="badge success">{t('stats_unique')}: {stats.unique.toLocaleString('en-US')}</span>
       </div>
       <div className="letters-used">{stats.letters.join(' ')}</div>
-      <div className="letter-counts">
+      <div className="letters-grid">
         {stats.letters.map(letter => (
           <div key={letter} className="letter-chip">
-            <div className="letter">{letter}</div>
+            <div className={`letter ${letterClassName(infoMap.get(letter))}`}>{letter}</div>
             <div className="count">{stats.counts[letter]}</div>
           </div>
         ))}

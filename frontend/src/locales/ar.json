@@ -224,5 +224,22 @@
   "all_letters_used": "استُخدمت كل الحروف الـ 28",
   "theme_light": "النمط الفاتح",
   "theme_dark": "النمط الداكن",
-  "switch_language": "الإنجليزية"
+  "switch_language": "الإنجليزية",
+  "letter_solar": "شمسي",
+  "letter_lunar": "قمري",
+  "letter_nurani": "نوراني",
+  "letter_non_nurani": "غير نوراني",
+  "col_letter_name": "اسم الحرف",
+  "col_letter_class": "التصنيف",
+  "group_solar": "تكرار الحروف الشمسية ({{n}} حرفاً)",
+  "group_lunar": "تكرار الحروف القمرية ({{n}} حرفاً)",
+  "group_nurani": "تكرار الحروف النورانية ({{n}} حرفاً)",
+  "group_non_nurani": "تكرار الحروف غير النورانية ({{n}} حرفاً)",
+  "nature_fire": "ناري",
+  "nature_earth": "ترابي",
+  "nature_air": "هوائي",
+  "nature_water": "مائي",
+  "col_letter_nature": "الطبيعة",
+  "group_nature": "حروف {{nature}} ({{n}})",
+  "toggle_menu": "إظهار أو طي القائمة"
 }

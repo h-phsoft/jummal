@@ -3,6 +3,7 @@ import { useApiData } from '../hooks/useApiData.js';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Sidebar from '../components/Sidebar';
+import { NARROW_QUERY, useMediaQuery } from '../hooks/useMediaQuery.js';
 import SurahAnalytics from '../components/SurahAnalytics';
 import SymmetricChapters from '../components/SymmetricChapters';
 import StudyChapter from '../components/StudyChapter';
@@ -36,7 +37,7 @@ function DashboardStats() {
 
   return (
     <>
-      <section style={{ display: 'flex', flexWrap: 'wrap', gap: '2.5rem', paddingBottom: '2rem', borderBottom: '1px solid var(--border-light)' }}>
+      <section className="dash-stats" style={{ display: 'flex', flexWrap: 'wrap', gap: '2.5rem', paddingBottom: '2rem', borderBottom: '1px solid var(--border-light)' }}>
         {items.map(item => (
           <div key={item.label} className="stat-box">
             <div className="stat-value">{item.value}</div>
@@ -53,14 +54,25 @@ function DashboardStats() {
 }
 
 export default function Workspace() {
-  const { t } = useTranslation();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  // على الشاشات الضيقة: القائمة مطوية افتراضياً (أيقونات فقط) وتفتح فوق المحتوى
+  const isNarrow = useMediaQuery(NARROW_QUERY);
+  const [openState, setOpenState] = useState({ wide: true, narrow: false });
+  const isSidebarOpen = isNarrow ? openState.narrow : openState.wide;
+  const setIsSidebarOpen = (value) => setOpenState(s => ({ ...s, [isNarrow ? 'narrow' : 'wide']: value }));
+  const overlay = isNarrow && isSidebarOpen;
 
   return (
-    <div style={{ display: 'flex', flex: 1, height: 'calc(100vh - 73px)', overflow: 'hidden' }}>
-      <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
-      
-      <div style={{ flex: 1, padding: '2rem', overflowY: 'auto' }}>
+    <div className="workspace">
+      {overlay && <div className="sidebar-spacer" />}
+      {overlay && <div className="sidebar-backdrop" onClick={() => setIsSidebarOpen(false)} />}
+      <Sidebar
+        isOpen={isSidebarOpen}
+        setIsOpen={setIsSidebarOpen}
+        overlay={overlay}
+        onNavigate={() => { if (isNarrow) { setIsSidebarOpen(false); } }}
+      />
+
+      <div className="workspace-main">
         <Routes>
           <Route path="/" element={<DashboardStats />} />
           <Route path="/symmetric-chapters" element={<SymmetricChapters />} />

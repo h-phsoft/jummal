@@ -224,5 +224,22 @@
   "all_letters_used": "All 28 letters are used",
   "theme_light": "Light theme",
   "theme_dark": "Dark theme",
-  "switch_language": "العربية"
+  "switch_language": "العربية",
+  "letter_solar": "Solar",
+  "letter_lunar": "Lunar",
+  "letter_nurani": "Nurani",
+  "letter_non_nurani": "Non-nurani",
+  "col_letter_name": "Letter name",
+  "col_letter_class": "Class",
+  "group_solar": "Solar letters occurrences ({{n}} letters)",
+  "group_lunar": "Lunar letters occurrences ({{n}} letters)",
+  "group_nurani": "Nurani letters occurrences ({{n}} letters)",
+  "group_non_nurani": "Non-nurani letters occurrences ({{n}} letters)",
+  "nature_fire": "Fire",
+  "nature_earth": "Earth",
+  "nature_air": "Air",
+  "nature_water": "Water",
+  "col_letter_nature": "Nature",
+  "group_nature": "{{nature}} letters ({{n}})",
+  "toggle_menu": "Show or collapse the menu"
 }

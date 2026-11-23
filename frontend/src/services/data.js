@@ -26,3 +26,4 @@ export function loadData(name) {
 export const loadSwar = () => loadData('swar');
 export const loadAyat = () => loadData('ayat');
 export const loadWords = () => loadData('words');
+export const loadLetters = () => loadData('letters');

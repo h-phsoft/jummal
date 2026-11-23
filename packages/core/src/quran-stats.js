@@ -108,12 +108,26 @@ export function chapterStats(swar, ayat) {
   return {letters: BASE_LETTERS, rows: rows, totals: totals};
 }
 
+// تصنيف الحروف من ملف البيانات data/letters-data.js (اسم الحرف، شمسي/قمري، نوراني، الطبيعة)
+export function letterClassMap(letters) {
+  return new Map((letters || []).map(l => [l.chChar, {name: l.chName, solar: l.chSolar, nurani: l.chNurani, nature: l.chNature}]));
+}
+
+// الطبائع الأربع بترتيب جدول طبائع 4 (1 ناري، 2 ترابي، 3 هوائي، 4 مائي)
+export const LETTER_NATURES = ['ناري', 'ترابي', 'هوائي', 'مائي'];
+
 // إحصاءات كل حرف: التكرار، السور والآيات التي بدأت/انتهت به، الآيات التي فيها/ليس فيها
-export function letterStats(swar, ayat) {
+// letters (اختياري): جدول الحروف من البيانات ليُضاف اسم الحرف وتصنيفه
+export function letterStats(swar, ayat, letters) {
+  const classes = letterClassMap(letters);
   const groups = groupBySurah(ayat);
   const rows = BASE_LETTERS.map((char, i) => ({
     ChNo: i + 1,
     Char: char,
+    name: classes.has(char) ? classes.get(char).name : null,
+    solar: classes.has(char) ? classes.get(char).solar : null,
+    nurani: classes.has(char) ? classes.get(char).nurani : null,
+    nature: classes.has(char) ? classes.get(char).nature : null,
     Count: 0,
     FCs: 0,
     LCs: 0,
@@ -183,16 +197,30 @@ export function letterStats(swar, ayat) {
     return t;
   }, {Count: 0, FCs: 0, LCs: 0, FLCs: 0, FVs: 0, LVs: 0, FLVs: 0});
 
-  return {rows: rows, totals: totals};
+  // مجموع تكرار كل صنف (إن مُرِّر جدول الحروف)
+  const sumWhere = (test) => rows.filter(test).reduce((s, r) => s + r.Count, 0);
+  const classGroups = classes.size === 0 ? null : {
+    solar: {letters: rows.filter(r => r.solar).length, count: sumWhere(r => r.solar)},
+    lunar: {letters: rows.filter(r => r.solar === false).length, count: sumWhere(r => r.solar === false)},
+    nurani: {letters: rows.filter(r => r.nurani).length, count: sumWhere(r => r.nurani)},
+    nonNurani: {letters: rows.filter(r => r.nurani === false).length, count: sumWhere(r => r.nurani === false)},
+    natures: LETTER_NATURES.map(nature => ({
+      nature: nature,
+      letters: rows.filter(r => r.nature === nature).length,
+      count: sumWhere(r => r.nature === nature)
+    }))
+  };
+
+  return {rows: rows, totals: totals, groups: classGroups};
 }
 
 // دراسة حرف واحد: إحصاءاته + توزيعه على السور
-export function studyLetter(swar, ayat, letter) {
+export function studyLetter(swar, ayat, letter, letters) {
   const idx = LETTER_INDEX.get(letter);
   if (idx === undefined) {
     return null;
   }
-  const stats = letterStats(swar, ayat).rows[idx];
+  const stats = letterStats(swar, ayat, letters).rows[idx];
   const chapterData = chapterStats(swar, ayat);
   // نسبة الحرف من كل حروف القرآن، ونسبته من حروف كل سورة
   return Object.assign({}, stats, {

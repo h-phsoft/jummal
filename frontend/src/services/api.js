@@ -3,7 +3,7 @@
 // من @jummal/core وملفات البيانات، فلا حاجة لخادم ولا لقاعدة بيانات
 // =====================================================
 import * as core from '@jummal/core';
-import {loadSwar, loadAyat, loadWords} from './data.js';
+import {loadSwar, loadAyat, loadWords, loadLetters} from './data.js';
 
 const toInt = (value) => parseInt(value, 10);
 
@@ -16,7 +16,7 @@ function once(key, compute) {
   return memo.get(key);
 }
 const loadChapterStats = () => once('chapters', async () => core.chapterStats(await loadSwar(), await loadAyat()));
-const loadLetterStats = () => once('letters', async () => core.letterStats(await loadSwar(), await loadAyat()));
+const loadLetterStats = () => once('letters', async () => core.letterStats(await loadSwar(), await loadAyat(), await loadLetters()));
 
 // كل مسار: نمط + دالة تُرجع النتيجة
 const routes = [
@@ -37,8 +37,9 @@ const routes = [
     await loadAyat(), q.get('word1') || '', q.get('word2') || '', q.get('tashkil') === 'true'
   )],
   [/^\/api\/stats\/chapters$/, async () => loadChapterStats()],
+  [/^\/api\/letters$/, async () => loadLetters()],
   [/^\/api\/stats\/letters$/, async () => loadLetterStats()],
-  [/^\/api\/analysis\/letter$/, async (m, q) => core.studyLetter(await loadSwar(), await loadAyat(), q.get('char') || '')],
+  [/^\/api\/analysis\/letter$/, async (m, q) => core.studyLetter(await loadSwar(), await loadAyat(), q.get('char') || '', await loadLetters())],
   [/^\/api\/analysis\/symmetric-verses\/(\d+)\/(\d+)$/, async (m) => core.symmetricVerses(await loadAyat(), toInt(m[1]), toInt(m[2]))],
   [/^\/api\/words\/search$/, async (m, q) => {
     const types = (q.get('types') || 'jummal').split(',');

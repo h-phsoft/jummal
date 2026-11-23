@@ -8,6 +8,8 @@ import {Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis
 import {useApiData} from '../hooks/useApiData.js';
 import LoadingState from './stats/LoadingState.jsx';
 import NumberValue from '../tools/components/NumberValue.jsx';
+import {LetterBadges, LettersLegend} from './stats/LetterClass.jsx';
+import {letterClassName, letterInfoMap} from './stats/letterClass.js';
 
 const FIELDS = ['Count', 'versesWith', 'versesWithout', 'chaptersWith', 'FCs', 'LCs', 'FLCs', 'FVs', 'LVs', 'FLVs'];
 
@@ -15,6 +17,8 @@ export default function StudyCharacter() {
   const {t} = useTranslation();
   const [letter, setLetter] = useState('');
   const {data, loading, error} = useApiData(letter ? `/api/analysis/letter?char=${encodeURIComponent(letter)}` : null);
+  const lettersTable = useApiData('/api/letters');
+  const infoMap = letterInfoMap(lettersTable.data);
 
   const top = data ? data.chapters.slice().sort((a, b) => b.count - a.count).slice(0, 10) : [];
 
@@ -23,18 +27,21 @@ export default function StudyCharacter() {
       <div className="tool-card">
         <h2 className="tool-title">{t('menu_study_char')}</h2>
         <p className="tool-subtitle" style={{marginBottom: '1rem'}}>{t('study_char_desc')}</p>
-        <div className="shape-buttons">
+        <div className="letters-grid">
           {BASE_LETTERS.map(l => (
             <button
               key={l}
               type="button"
-              className={`shape-btn ${letter === l ? 'active' : ''}`}
-              style={{minWidth: 48, fontSize: '1.2rem'}}
+              className={`shape-btn ${letterClassName(infoMap.get(l))} ${letter === l ? 'active' : ''}`}
+              title={infoMap.get(l) ? infoMap.get(l).name : l}
               onClick={() => setLetter(l)}
             >
               {l}
             </button>
           ))}
+        </div>
+        <div style={{marginTop: '0.75rem'}}>
+          <LettersLegend />
         </div>
       </div>
 
@@ -43,11 +50,17 @@ export default function StudyCharacter() {
       {letter && data && !loading && (
         <>
           <div className="tool-card">
-            <h3 className="tool-section-title" style={{textAlign: 'center', fontSize: '2rem'}}>{data.Char}</h3>
+            <h3 className="tool-section-title" style={{textAlign: 'center', fontSize: '2rem'}}>
+              <span className={letterClassName(data)} style={{padding: '0 10px'}}>{data.Char}</span>
+              {data.name && <span style={{fontSize: '1.2rem', marginInlineStart: 8}}>({data.name})</span>}
+            </h3>
+            <div style={{marginBottom: '0.5rem'}}>
+              <LetterBadges info={data} />
+            </div>
             <p className="tool-hint" style={{textAlign: 'center', marginBottom: '1rem'}}>
               {t('letter_rank', {rank: data.ChNo})} · {t('letter_percent', {percent: (data.percent * 100).toFixed(2)})}
             </p>
-            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '1rem'}}>
+            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem'}}>
               {FIELDS.map(f => (
                 <div key={f} className="stat-box" style={{background: 'var(--bg-secondary)', borderRadius: 12, padding: '0.75rem'}}>
                   <div className="stat-value" style={{fontSize: '1.5rem'}}><NumberValue value={data[f]} /></div>

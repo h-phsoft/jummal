@@ -42,8 +42,8 @@ test('letters: known values and 28-letter normalisation', () => {
   assert.equal(core.calculateTriple(core.cleanArabicText('قل هو الله أحد')).jummal, 220);
 });
 
-test('tables: 35 tables of 28 values, first three are the base tables', () => {
-  assert.equal(core.tablesData.length, 35);
+test('tables: 5 tables of 28 values, first three are the base tables', () => {
+  assert.deepEqual(core.tablesData.map(t => t.name), ['الجمل', 'الأبجد', 'الأيقغ', 'طبائع 4', 'طبائع 7']);
   core.tablesData.forEach(t => assert.equal(t.values.length, 28, t.name));
   assert.deepEqual(core.tablesData[0].values, core.JUMMAL_VALUES);
   assert.equal(core.calculateWords('محمد علي', core.tablesData[0].values).total, 202);
@@ -236,4 +236,38 @@ test('surah and verse studies match the legacy PhsQuran study pages', () => {
   assert.equal(v.firstLetter, 'ا');
   assert.equal(v.words + 0, v.totalWords);
   assert.equal(v.usedLetters.reduce((a, b) => a + b.count, 0), v.letters);
+});
+
+test('letters data file: 28 letters, solar/lunar and nurani match the Quran data', () => {
+  const lettersData = readData(core.DATA_FILES.letters);
+  assert.deepEqual(lettersData.map(l => l.chChar), core.BASE_LETTERS);
+  assert.deepEqual(lettersData.map(l => l.chNo), core.BASE_LETTERS.map((c, i) => i + 1));
+  lettersData.forEach(l => assert.ok(l.chName && typeof l.chSolar === 'boolean' && typeof l.chNurani === 'boolean', l.chChar));
+
+  // الشمسية 14 والقمرية 14
+  const solar = lettersData.filter(l => l.chSolar).map(l => l.chChar).sort();
+  assert.deepEqual(solar, ['ت', 'ث', 'د', 'ذ', 'ر', 'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ل', 'ن'].sort());
+
+  // النورانية = حروف الحروف المقطعة في أوائل السور الـ 29 (من بيانات الآيات نفسها)
+  const muqattaat = [2, 3, 7, 10, 11, 12, 13, 14, 15, 19, 20, 26, 27, 28, 29, 30, 31, 32, 36, 38, 40, 41, 42, 43, 44, 45, 46, 50, 68];
+  const openings = muqattaat.map(id => ayat.find(a => a.swarId === id && a.ayatNum === 1).ayat28Text.split(' ')[0]);
+  openings.push(ayat.find(a => a.swarId === 42 && a.ayatNum === 2).ayat28Text);
+  const fromQuran = [...new Set(openings.join('').split(''))].sort();
+  assert.equal(fromQuran.length, 14);
+  assert.deepEqual(lettersData.filter(l => l.chNurani).map(l => l.chChar).sort(), fromQuran);
+
+  // إحصاءات الحروف بالتصنيف
+  const ls = core.letterStats(swar, ayat, lettersData);
+  assert.equal(ls.rows[0].name, 'ألف');
+  assert.equal(ls.groups.solar.letters + ls.groups.lunar.letters, 28);
+  assert.equal(ls.groups.solar.count + ls.groups.lunar.count, ls.totals.Count);
+  assert.equal(ls.groups.nurani.count + ls.groups.nonNurani.count, ls.totals.Count);
+  assert.equal(core.studyLetter(swar, ayat, 'ق', lettersData).nurani, true);
+
+  // طبيعة كل حرف مطابقة لجدول طبائع 4 (1 ناري، 2 ترابي، 3 هوائي، 4 مائي)
+  const t4 = core.tablesData.find(t => t.name === 'طبائع 4').values;
+  lettersData.forEach((l, i) => assert.equal(l.chNature, core.LETTER_NATURES[t4[i] - 1], l.chChar));
+  assert.deepEqual(lettersData.filter(l => l.chNature === 'ناري').map(l => l.chChar), ['ا', 'ه', 'ط', 'م', 'ف', 'ش', 'ذ']);
+  assert.equal(ls.groups.natures.reduce((s, n) => s + n.count, 0), ls.totals.Count);
+  ls.groups.natures.forEach(n => assert.equal(n.letters, 7, n.nature));
 });
