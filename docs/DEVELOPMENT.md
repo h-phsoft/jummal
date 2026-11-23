@@ -31,8 +31,11 @@
 | لا خادم | الحساب يجري في المتصفح. لا Passenger ولا Node على cPanel. واجهة برمجية اختيارية قد تُضاف لاحقاً لمن يريد (§7) |
 | مصدر واحد لكل حساب | كل حساب في `packages/core` مرة واحدة فقط، وتستدعيه الواجهة (وأي خادم يُضاف لاحقاً). لا تكرر منطقاً في مكون أو مسار |
 | الحد الأدنى للوفق المثلث | 15 في كل مكان، ويُقرأ من `WEFEQ_MAGIC_CONSTANTS.triangle` |
+| جداول الحساب | خمسة فقط: الجمل، الأبجد، الأيقغ، طبائع 4، طبائع 7. حُذفت جداول البسط، وأكّد صاحب المشروع إبقاء الخمسة |
+| جدول الحروف | ملف بيانات `data/letters-data.js` (لا يُحسب ولا يُجلب من الإنترنت). الطبائع فيه صحيحة بتأكيد صاحب المشروع |
 | اللغة | العربية افتراضية (RTL). في الوضع العربي لا تظهر أي كلمة إنجليزية |
 | النمط | فاتح وداكن، بزر في الشريط العلوي. يُحفظ الاختيار، ويتبع النظام إن لم يُختر |
+| قياسات الشاشات | الواجهة متجاوبة من الهاتف (390px) إلى الشاشة العريضة، دون تمرير أفقي في أي صفحة |
 | تفضيلات عرض سابقة (من جمّل) | قائمة خيارات الأرقام تفتح في تبويب جديد. في الأوفاق تُلوَّن خانة جبر الكسر وحدها، وفقط عند وجود كسر |
 
 ---
@@ -56,7 +59,7 @@ frontend/             ← الواجهة: React 19 + Vite 8 + PWA
     components/         صفحات الدراسات والإحصاءات + Sidebar + stats/*
     tools/              صفحات أدوات الجمّل + tools/components/*
     services/           data.js, api.js, theme.js, offline.js
-    hooks/              useApiData, useStoredList
+    hooks/              useApiData, useStoredList, useMediaQuery
     locales/            ar.json, en.json (كل نصوص الواجهة)
     styles/tools.css    أنماط الأدوات (فوق index.css)
 desktop/              ← برنامج سطح المكتب (Electron 45 + electron-builder)
@@ -189,6 +192,24 @@ tools/                ← package-cpanel.mjs (حزمة النشر)
 - **الترجمة:** كل نص في `locales/ar.json` و`en.json`، ومفاتيح اللغتين متطابقة.
 - **الرسوم:** recharts مع `isAnimationActive={false}` في الرسوم الجديدة. الرسم الدائري (Pie) لا يُرسم في هذه النسخة، فاستُبدل بأعمدة.
 
+### 6.1.1 قياسات الشاشات
+
+- **الحد الفاصل:** `NARROW_QUERY = (max-width: 768px)` في `hooks/useMediaQuery.js`، ويُستخدم في JS وفي `@media` بالقيمة نفسها.
+- **الشريط العلوي:** الأصناف `app-nav` و`app-brand` و`app-nav-actions` في `index.css`. ارتفاعه في المتغير `--nav-h` (73px، و56px على الشاشات الضيقة)، ومنه يُحسب ارتفاع مساحة العمل. على الشاشات الضيقة يُختصر اسم البرنامج بنقاط، ويظهر زر اللغة أيقونةً فقط (`hide-narrow`).
+- **القائمة الجانبية:** الصنف `sidebar` (280px مفتوحة، و70px مطوية، و56px على الشاشات الضيقة). على الشاشات الضيقة تبدأ مطوية (أيقونات فقط)، وإن فُتحت ظهرت فوق المحتوى (`sidebar-overlay`) مع خلفية معتمة، وتُغلق عند اختيار صفحة أو الضغط على الخلفية. حالة الفتح محفوظة لكل حجم على حدة في `pages/Workspace.jsx`.
+- **المحتوى:** `workspace-main` بهامش 2rem، و1rem على الشاشات الضيقة. `tool-grid-2` يستخدم `minmax(min(340px, 100%), 1fr)` حتى لا يتجاوز عرض الهاتف.
+- **قاعدة للصفحات الجديدة:** صفوف الحقول بـ `flexWrap: wrap`، ولا عرض ثابت للحقول (استخدم `flex` و`maxWidth`)، والجداول داخل `table-wrap`.
+- **التحقق:** افتح كل الصفحات بعرض 390 و768 و1400، وتأكد أن `scrollWidth - clientWidth` يساوي 0 في الصفحة وفي `.workspace-main`.
+
+### 6.1.2 تمييز الحروف
+
+من جدول الحروف (`/api/letters` يعيد `data/letters-data.js`):
+- **الدوال:** `stats/letterClass.js` فيه `letterInfoMap(letters)` و`letterClassName(info)` و`NATURE_KEYS` (الطبيعة ← المفتاح والرمز واللون).
+- **المكونات:** `stats/LetterClass.jsx` فيه `LetterBadges` (شارات الصنف) و`LettersLegend` (مفتاح الألوان).
+- **الألوان:** الشمسي برتقالي (`letter-solar`)، والقمري أزرق (`letter-lunar`)، والنوراني بنقطة بنفسجية (`letter-nurani`)، والطبيعة بخط سفلي ملون (`letter-nature-fire|earth|air|water`): 🔥 ناري، ⛰ ترابي، 🌬 هوائي، 💧 مائي.
+- **شبكة الحروف:** `letters-grid` تعرض الحروف الـ 28 في سطرين (14 عموداً)، وفي أربعة أسطر (7 أعمدة) على الشاشات حتى 900px. تُستخدم في دراسة حرف وإحصاءات أحرف النص ودراسة السورة والآية.
+- **إحصاءات الحروف:** `letterStats` في core يضيف لكل حرف `name` و`solar` و`nurani` و`nature`، ويعيد `groups` بمجموع الشمسي والقمري والنوراني وغير النوراني وكل طبيعة. تظهر في صفحة «حساب الحروف» مع عمود الصنف وفي ملف CSV.
+
 ### 6.2 الصفحات (`#/workspace/...`)
 
 | المسار | المكون | المجموعة |
@@ -218,6 +239,7 @@ tools/                ← package-cpanel.mjs (حزمة النشر)
 - `AyatPicker`: اختيار آية بالضغط على F9.
 - `WefqView` و`WordSearchTable`.
 - `stats/StudyDetails` و`stats/LineByChapter`.
+- `stats/LetterClass` و`stats/letterClass.js`: تمييز الحروف (§6.1.2).
 
 **السجل:** يُحفظ في `localStorage` بالمفتاحين `gematria_history_triple_v2` و`calculate_tables_history`.
 
@@ -232,7 +254,7 @@ tools/                ← package-cpanel.mjs (حزمة النشر)
 - **المسارات:** يكرر مسارات `frontend/src/services/api.js` نفسها، فتطابق نتائجه المتصفح.
 - **نقطة بداية:** `git show 141efdb:backend/index.js` (Express 5، المنفذ 3000). كانت مساراته تحت `/api`:
 
-`/ping`, `/swar`, `/swar/:id`, `/swar/:id/ayat`, `/ayat?surah=`, `/ayat/search?q=`, `/ayat/:id`, `/qwords`, `/qwords/:id`, `/analysis/characters/surah/:id`, `/analysis/characters/ayah/:id`, `/analysis/symmetric-chapters/:id`, `/analysis/symmetric-words?word1&word2&tashkil`, `/analysis/symmetric-verses/:surah/:start`, `/analysis/letter?char=`, `/stats/chapters`, `/stats/letters`, `/jummal?text=`, `/tables`, `/tables/calculate?text&tables=0,1,2`, `/wefq/:shape/:number`, `/number/:number`, `/words/search?value&types=jummal,abjad`
+`/ping`, `/swar`, `/swar/:id`, `/swar/:id/ayat`, `/ayat?surah=`, `/ayat/search?q=`, `/ayat/:id`, `/qwords`, `/qwords/:id`, `/analysis/characters/surah/:id`, `/analysis/characters/ayah/:id`, `/analysis/symmetric-chapters/:id`, `/analysis/symmetric-words?word1&word2&tashkil`, `/analysis/symmetric-verses/:surah/:start`, `/analysis/letter?char=`, `/letters`, `/stats/chapters`, `/stats/letters`, `/jummal?text=`, `/tables`, `/tables/calculate?text&tables=0,1,2`, `/wefq/:shape/:number`, `/number/:number`, `/words/search?value&types=jummal,abjad`
 
 **ملاحظة:** هذه المسارات موجودة الآن داخل المتصفح في `services/api.js`، والخادم المستقبلي يعرضها بالشكل نفسه.
 
@@ -320,7 +342,7 @@ npm run package:cpanel
 
 ## 12. ملاحظات وأمور معروفة
 
-- **تحذيرات lint قديمة في كود PhsQuran:** مثل `set-state-in-effect`، و`t` غير مستخدم في `Workspace`، و`Date` في التذييل. ليست أخطاء.
+- **تحذيرات lint قديمة في كود PhsQuran:** مثل `set-state-in-effect`، و`jsx-key` في `NumberStudy`، و`Date` في التذييل. ليست أخطاء.
 - **لوحة المتصفح المدمجة في بيئة التطوير:** لا تدعم Service Worker، ولا تُشغّل حركة الرسوم وهي مخفية. اختبر العمل دون إنترنت والرسوم في Chromium حقيقي، مثل Electron من `node_modules/electron/dist/electron.exe`.
 - **npm 11 يحظر سكربتات التثبيت افتراضياً:** Electron 45 لا يحتاجها، فينزل ملفه عند أول استخدام أو عبر `node node_modules/electron/install.js`. السكربت المحظور الوحيد `electron-winstaller`، وهو غير مطلوب للنسخة المحمولة.
 - **الآية 40:13:** صُححت. كانت الآية الوحيدة المختلفة بين الصيغ.
@@ -345,5 +367,5 @@ npm run package:cpanel
 3. **الصفحة:** مكون React في `components/` أو `tools/`، ومسار في `pages/Workspace.jsx`، وعنصر في `components/Sidebar.jsx`.
 4. **النصوص:** في `locales/ar.json` و`en.json`. لا تكتب نصاً ظاهراً مباشرة في الكود.
 5. **التنسيق:** مسافتان للإزاحة دون tabs، وأقواس `{}` دائماً حول `if/else/for/while`.
-6. **التحقق:** `npm run build`، ثم تأكد في المتصفح بالنمطين واللغتين.
+6. **التحقق:** `npm run build`، ثم تأكد في المتصفح بالنمطين واللغتين، وبعرض الهاتف (390px) دون تمرير أفقي.
 7. **الحفظ:** commit على فرع، ثم دمج مع `main` حين تكون جاهزاً للنشر.
