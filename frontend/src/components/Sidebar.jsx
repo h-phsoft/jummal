@@ -1,30 +1,73 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { 
-  ChevronLeft, ChevronRight, LayoutDashboard, Search, 
-  BarChart2, Type, Hash, GitCommit,
-  Calculator, Table2, Grid3x3, Sigma, Layers
+import {
+  ChevronLeft, ChevronRight, ChevronDown, LayoutDashboard, Search,
+  BarChart2, Type, Hash, GitCommit, BookOpen, Wrench, PieChart,
+  Calculator, Table2, Grid3x3, Sigma, Layers, TextSelect, Scale, FlaskConical
 } from 'lucide-react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
+
+// حالة فتح المجموعات محفوظة في المتصفح (قد لا يتوفر التخزين، فنتجاهل الخطأ)
+const GROUPS_STORAGE_KEY = 'jummal.sidebar.groups';
+
+function loadOpenGroups() {
+  try {
+    const raw = window.localStorage.getItem(GROUPS_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') {
+        return parsed;
+      }
+    }
+  } catch (e) {
+    // التخزين غير متاح
+  }
+  return {};
+}
+
+function saveOpenGroups(value) {
+  try {
+    window.localStorage.setItem(GROUPS_STORAGE_KEY, JSON.stringify(value));
+  } catch (e) {
+    // التخزين غير متاح
+  }
+}
+
+// هل المسار الحالي يخص هذا العنصر؟ (لوحة البداية تطابق المسار تماماً)
+function matchesPath(itemPath, pathname) {
+  const current = pathname.replace(/\/+$/, '') || '/';
+  if (itemPath === '/workspace') {
+    return current === '/workspace';
+  }
+  return current === itemPath || current.startsWith(itemPath + '/');
+}
 
 export default function Sidebar({ isOpen, setIsOpen, overlay, onNavigate }) {
   const { t } = useTranslation();
+  const { pathname } = useLocation();
 
   // ترتيب المجموعات: الدراسات، ثم أدوات الجمّل، ثم الإحصائيات
   const menuItems = [
     {
+      key: 'studies',
       title: t('studies'),
+      icon: <BookOpen size={18} />,
       items: [
         { name: t('menu_study_chapter'), icon: <Search size={18} />, path: '/workspace/study-chapter' },
         { name: t('menu_study_verse'), icon: <Search size={18} />, path: '/workspace/study-verse' },
         { name: t('menu_study_char'), icon: <Type size={18} />, path: '/workspace/study-char' },
+        { name: t('menu_study_range'), icon: <TextSelect size={18} />, path: '/workspace/study-range' },
+        { name: t('menu_compare_ranges'), icon: <Scale size={18} />, path: '/workspace/compare-ranges' },
+        { name: t('menu_math_lab'), icon: <FlaskConical size={18} />, path: '/workspace/math-lab' },
         { name: t('menu_symmetric_chapters'), icon: <GitCommit size={18} />, path: '/workspace/symmetric-chapters' },
         { name: t('menu_symmetric_verses'), icon: <GitCommit size={18} />, path: '/workspace/symmetric-verses' },
         { name: t('menu_symmetric_words'), icon: <GitCommit size={18} />, path: '/workspace/symmetric-words' },
       ]
     },
     {
+      key: 'tools_jummal',
       title: t('tools_jummal'),
+      icon: <Wrench size={18} />,
       items: [
         { name: t('tool_unified'), icon: <Layers size={18} />, path: '/workspace/unified' },
         { name: t('tool_jummal'), icon: <Calculator size={18} />, path: '/workspace/jummal' },
@@ -35,7 +78,9 @@ export default function Sidebar({ isOpen, setIsOpen, overlay, onNavigate }) {
       ]
     },
     {
+      key: 'statistics',
       title: t('statistics'),
+      icon: <PieChart size={18} />,
       items: [
         { name: t('menu_stats_chapters'), icon: <Hash size={18} />, path: '/workspace' },
         { name: t('menu_stats_chars_per_chapter'), icon: <BarChart2 size={18} />, path: '/workspace/chars-per-chapter' },
@@ -47,69 +92,94 @@ export default function Sidebar({ isOpen, setIsOpen, overlay, onNavigate }) {
     }
   ];
 
+  const activeGroup = menuItems.find(group => group.items.some(item => matchesPath(item.path, pathname)));
+  const activeKey = activeGroup ? activeGroup.key : null;
+
+  // المجموعات مفتوحة افتراضياً، وما يغلقه المستخدم يبقى مغلقاً
+  const [openGroups, setOpenGroups] = useState(loadOpenGroups);
+  const isGroupOpen = (key) => openGroups[key] !== false;
+
+  const updateOpenGroups = (updater) => {
+    setOpenGroups(prev => {
+      const next = updater(prev);
+      saveOpenGroups(next);
+      return next;
+    });
+  };
+
+  // المجموعة التي فيها الصفحة الحالية تُفتح تلقائياً
+  useEffect(() => {
+    if (activeKey && openGroups[activeKey] === false) {
+      updateOpenGroups(prev => ({ ...prev, [activeKey]: true }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeKey]);
+
+  const toggleGroup = (key) => {
+    updateOpenGroups(prev => ({ ...prev, [key]: !(prev[key] !== false) }));
+  };
+
   return (
     <aside className={`sidebar ${isOpen ? 'sidebar-open' : 'sidebar-closed'} ${overlay ? 'sidebar-overlay' : ''}`}>
-      <div style={{ padding: '1rem', display: 'flex', justifyContent: isOpen ? 'flex-end' : 'center', borderBottom: '1px solid var(--border-light)' }}>
-        <button 
+      <div className="sidebar-head" style={{ justifyContent: isOpen ? 'flex-end' : 'center' }}>
+        <button
+          type="button"
+          className="sidebar-toggle"
           onClick={() => setIsOpen(!isOpen)}
           aria-label={t('toggle_menu')}
           title={t('toggle_menu')}
-          style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}
         >
           {isOpen ? <ChevronLeft /> : <ChevronRight />}
         </button>
       </div>
 
-      <div style={{ padding: isOpen ? '1rem' : '1rem 0' }}>
-        {menuItems.map((group, idx) => (
-          <div key={idx} style={{ marginBottom: '1.5rem' }}>
-            {isOpen && (
-              <div style={{ 
-                fontSize: '0.75rem', 
-                textTransform: 'uppercase', 
-                letterSpacing: '0.05em',
-                color: 'var(--text-tertiary)',
-                fontWeight: 600,
-                marginBottom: '0.75rem',
-                paddingInlineStart: '1rem'
-              }}>
-                {group.title}
-              </div>
-            )}
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-              {group.items.map((item, itemIdx) => (
-                <li key={itemIdx} style={{ marginBottom: '0.25rem' }}>
-                  <NavLink
-                    to={item.path}
-                    end={item.path === '/workspace'}
-                    title={isOpen ? undefined : item.name}
-                    onClick={onNavigate}
-                    style={({ isActive }) => ({
-                      width: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '1rem',
-                      padding: isOpen ? '0.75rem 1rem' : '0.75rem',
-                      justifyContent: isOpen ? 'flex-start' : 'center',
-                      background: isActive ? 'var(--bg-secondary)' : 'transparent',
-                      border: 'none',
-                      borderRadius: '8px',
-                      color: isActive ? 'var(--accent-primary)' : 'var(--text-secondary)',
-                      textDecoration: 'none',
-                      fontWeight: isActive ? 600 : 400,
-                      transition: 'background 0.2s, color 0.2s',
-                    })}
-                    className={({ isActive }) => isActive ? 'active-nav-link' : 'nav-link'}
-                  >
-                    <span style={{ color: 'inherit' }}>{item.icon}</span>
-                    {isOpen && <span style={{ fontSize: '0.9rem', textAlign: 'start', whiteSpace: 'nowrap' }}>{item.name}</span>}
-                  </NavLink>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
+      <nav className="sidebar-nav" aria-label={t('sidebar_nav')}>
+        {menuItems.map(group => {
+          const open = isGroupOpen(group.key);
+          const listId = `sidebar-group-${group.key}`;
+          const groupLabel = open ? t('sidebar_group_collapse', { name: group.title }) : t('sidebar_group_expand', { name: group.title });
+          return (
+            <div key={group.key} className={`sidebar-group ${group.key === activeKey ? 'sidebar-group-active' : ''}`}>
+              <button
+                type="button"
+                className="sidebar-group-header"
+                onClick={() => toggleGroup(group.key)}
+                aria-expanded={open}
+                aria-controls={listId}
+                aria-label={isOpen ? undefined : groupLabel}
+                title={isOpen ? groupLabel : group.title}
+              >
+                <span className="sidebar-group-icon">{group.icon}</span>
+                {isOpen && <span className="sidebar-group-title">{group.title}</span>}
+                <ChevronDown
+                  size={isOpen ? 16 : 12}
+                  className={`sidebar-group-chevron ${open ? 'is-open' : ''}`}
+                  aria-hidden="true"
+                />
+              </button>
+              {open && (
+                <ul id={listId} className="sidebar-group-items">
+                  {group.items.map(item => (
+                    <li key={item.path}>
+                      <NavLink
+                        to={item.path}
+                        end={item.path === '/workspace'}
+                        title={isOpen ? undefined : item.name}
+                        aria-label={isOpen ? undefined : item.name}
+                        onClick={onNavigate}
+                        className={({ isActive }) => `sidebar-link ${isActive ? 'active-nav-link' : 'nav-link'}`}
+                      >
+                        <span className="sidebar-link-icon">{item.icon}</span>
+                        {isOpen && <span className="sidebar-link-text">{item.name}</span>}
+                      </NavLink>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          );
+        })}
+      </nav>
     </aside>
   );
 }

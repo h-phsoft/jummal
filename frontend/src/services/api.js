@@ -7,6 +7,12 @@ import {loadSwar, loadAyat, loadWords, loadLetters} from './data.js';
 
 const toInt = (value) => parseInt(value, 10);
 
+// «2:255:3:0» ← {surah: 2, ayah: 255, word: 3, char: 0}
+function parsePoint(value) {
+  const [surah, ayah, word, char] = String(value || '').split(':').map(toInt);
+  return {surah: surah, ayah: ayah, word: word, char: char};
+}
+
 // إحصاءات السور والحروف تُحسب مرة واحدة لكل جلسة
 const memo = new Map();
 function once(key, compute) {
@@ -41,6 +47,11 @@ const routes = [
   [/^\/api\/stats\/letters$/, async () => loadLetterStats()],
   [/^\/api\/analysis\/letter$/, async (m, q) => core.studyLetter(await loadSwar(), await loadAyat(), q.get('char') || '', await loadLetters())],
   [/^\/api\/analysis\/symmetric-verses\/(\d+)\/(\d+)$/, async (m) => core.symmetricVerses(await loadAyat(), toInt(m[1]), toInt(m[2]))],
+  // مقطع: start و end بالشكل سورة:آية:كلمة:حرف (الكلمة والحرف اختياريان)
+  [/^\/api\/analysis\/range$/, async (m, q) => {
+    const range = core.quranRange(await loadAyat(), parsePoint(q.get('start')), parsePoint(q.get('end')));
+    return range.error ? {error: range.error} : core.rangeStats(range);
+  }],
   [/^\/api\/words\/search$/, async (m, q) => {
     const types = (q.get('types') || 'jummal').split(',');
     return core.findWordsByValue(await loadWords(), toInt(q.get('value')), {

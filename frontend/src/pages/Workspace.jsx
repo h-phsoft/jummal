@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { lazy, Suspense, useState } from 'react';
 import { useApiData } from '../hooks/useApiData.js';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -17,11 +17,17 @@ import NumberStudy from '../tools/NumberStudy';
 import UnifiedPlatform from '../tools/UnifiedPlatform';
 import SymmetricVerses from '../components/SymmetricVerses';
 import StudyCharacter from '../components/StudyCharacter';
+import StudyRange from '../components/StudyRange';
+import CompareRanges from '../components/CompareRanges';
 import CharsPerChapter from '../components/CharsPerChapter';
 import LetterStats from '../components/LetterStats';
 import SymmetryCircle from '../components/SymmetryCircle';
 import QuranCharsChart from '../components/QuranCharsChart';
 import ChapterVersesChart from '../components/ChapterVersesChart';
+import LoadingState from '../components/stats/LoadingState.jsx';
+
+// المختبر الرياضي يُحمَّل عند فتحه فقط (فيه مكتبة mathjs)
+const MathLab = lazy(() => import('../components/MathLab'));
 
 // لوحة البداية: أرقام حقيقية محسوبة من ملفات البيانات
 function DashboardStats() {
@@ -87,6 +93,9 @@ export default function Workspace() {
           <Route path="/unified" element={<UnifiedPlatform />} />
           <Route path="/symmetric-verses" element={<SymmetricVerses />} />
           <Route path="/study-char" element={<StudyCharacter />} />
+          <Route path="/study-range" element={<StudyRange />} />
+          <Route path="/compare-ranges" element={<CompareRanges />} />
+          <Route path="/math-lab" element={<Suspense fallback={<LoadingState />}><MathLab /></Suspense>} />
           <Route path="/chars-per-chapter" element={<CharsPerChapter />} />
           <Route path="/stats-chars" element={<LetterStats />} />
           <Route path="/charts" element={<SymmetryCircle />} />

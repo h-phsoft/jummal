@@ -6,9 +6,13 @@
   "type": "module",
   "main": "src/index.js",
   "exports": {
-    ".": "./src/index.js"
+    ".": "./src/index.js",
+    "./math-lab": "./src/math-lab.js"
   },
   "scripts": {
     "test": "node --test \"test/*.test.js\""
+  },
+  "dependencies": {
+    "mathjs": "15.2.0"
   }
 }

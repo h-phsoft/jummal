@@ -146,7 +146,9 @@ tools/                ← package-cpanel.mjs (حزمة النشر)
 | `number-study.js` | `studyNumber` (الجوهر، القواسم، الأولية، فيبوناتشي...)، `decompositionCounts` |
 | `quran-analysis.js` | `analyzeSurahCharacters`, `analyzeAyahCharacters` (دراسة سورة/آية)، `symmetricChapters`, `symmetricWords`, `searchAyat` |
 | `quran-stats.js` | `letterProfile`, `chapterStats`, `letterStats` (مع مجموعات الشمسي/القمري والنوراني والطبائع), `letterClassMap`, `LETTER_NATURES`, `studyLetter`, `mirrorIndex`, `symmetricVerses` |
+| `quran-range.js` | `quranRange` (مقطع من سورة:آية:كلمة:حرف إلى مثلها)، `rangeStats` (الإحصاءات وقيم الجداول الخمسة وتكرار الكلمات والتفصيل بالسور)، `countWordInRange`، `rangeVariables`، `evaluateExpression` (محلل معادلات آمن دون eval) |
 | `data-file.js` | `parseDataFile`, `DATA_FILES` |
+| `math-lab.js` | **مدخل مستقل** `@jummal/core/math-lab` (فيه mathjs 15.2.0، لا يُصدَّر من `index.js` حتى لا يدخل حزمة الصفحات الأخرى): `createMathLab(data)` و`quranMathData(ayat, swar)`. يضيف إلى mathjs: `integrate` (سمبسون التكيفية)، `nderivative`، `trapz`، `findRoot`، `sigma`، `piprod`، `linreg`، `digitsum`، `digitalroot`، `reversenum`، `divisors`، `fib`، ودوال القرآن `letter`، `word`، `wordlike`، `value`، `bysurah`، `verse`، `segment`، `letters`، `words`، ومتغيرات `total*` و`surah*` (114 قيمة) و`verse*` (6,236 قيمة) و`letterCounts`. الدقة: أعداد عادية، و`bignumber` حتى 500 رقم |
 
 ### 5.1 الأوفاق
 
@@ -227,6 +229,9 @@ tools/                ← package-cpanel.mjs (حزمة النشر)
 | `study-chapter` | StudyChapter | الدراسات |
 | `study-verse` | StudyVerse | الدراسات |
 | `study-char` | StudyCharacter | الدراسات |
+| `study-range` | StudyRange (دراسة مقطع: إحصاءات ورسوم واختيار الجداول) | الدراسات |
+| `compare-ranges` | CompareRanges (مقطعان A وB: مقارنة، عدّ كلمات، معادلات، رسوم) | الدراسات |
+| `math-lab` | MathLab (دفتر معادلات: سطر لكل معادلة، رسم لكل متتالية، أمثلة ومرجع). يُحمَّل بـ `lazy` في `Workspace.jsx`، والدفتر محفوظ في `localStorage` بالمفتاح `math_lab_notebook_v1` | الدراسات |
 | `chars-per-chapter` | CharsPerChapter | الإحصائيات |
 | `stats-chars` | LetterStats | الإحصائيات |
 | `charts` | SymmetryCircle (دائرة تناظر السور) | الإحصائيات |
@@ -240,6 +245,7 @@ tools/                ← package-cpanel.mjs (حزمة النشر)
 - `WefqView` و`WordSearchTable`.
 - `stats/StudyDetails` و`stats/LineByChapter`.
 - `stats/LetterClass` و`stats/letterClass.js`: تمييز الحروف (§6.1.2).
+- `range/*`: `RangeSelector` (نقطتا البداية والنهاية)، `RangeStatsView` (إحصاءات المقطع وجدول الكلمات وCSV)، `RangeChart` (رسم أعمدة لسلسلة أو سلسلتين)، `rangePoints.js`. المسار `/api/analysis/range?start=س:آ:ك:ح&end=...` (الكلمة 0 = أول كلمة في البداية وآخر كلمة في النهاية، والحرف 0 = الكلمة كاملة). المعادلات محفوظة في `localStorage` بالمفتاح `range_equations_v1`.
 
 **السجل:** يُحفظ في `localStorage` بالمفتاحين `gematria_history_triple_v2` و`calculate_tables_history`.
 

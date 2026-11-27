@@ -329,13 +329,38 @@ h1, h2, h3, h4, h5, h6 {
   flex-shrink: 0;
 }
 
+/* لا تكبر مساحة العمل بطول محتواها: القائمة والمحتوى يتمرر كل منهما وحده */
 .workspace {
   display: flex;
-  flex: 1;
+  flex: none;
+  min-height: 0;
   height: calc(100vh - var(--nav-h));
   height: calc(100dvh - var(--nav-h));
   overflow: hidden;
   position: relative;
+}
+
+/* صفحة مساحة العمل بارتفاع الشاشة تماماً، فلا تتمرر الصفحة نفسها ولا تتحرك القائمة */
+.app-container:has(.workspace) {
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.app-container:has(.workspace) > div:has(> .workspace) {
+  min-height: 0;
+}
+
+.app-container:has(.workspace) .workspace {
+  flex: 1 1 auto;
+  height: auto;
+}
+
+.app-container:has(.workspace) > .app-footer {
+  flex-shrink: 0;
+  padding: 0.4rem 1rem !important;
+  font-size: 0.8rem;
 }
 
 .workspace-main {
@@ -343,8 +368,10 @@ h1, h2, h3, h4, h5, h6 {
   min-width: 0;
   padding: 2rem;
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
+/* القائمة الجانبية بارتفاع مساحة العمل، ويتمرر محتواها وحده (زر الطي ثابت أعلاها) */
 .sidebar {
   width: 280px;
   flex-shrink: 0;
@@ -355,11 +382,166 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow-y: auto;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .sidebar-closed {
   width: 70px;
+}
+
+.sidebar-head {
+  display: flex;
+  flex-shrink: 0;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.sidebar-toggle {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  display: flex;
+}
+
+.sidebar-nav {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  padding: 0.75rem;
+}
+
+.sidebar-closed .sidebar-nav {
+  padding: 0.75rem 0.4rem;
+}
+
+.sidebar-group + .sidebar-group {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.sidebar-group-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--text-primary);
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-align: start;
+  transition: background 0.2s, color 0.2s;
+}
+
+.sidebar-group-header:hover {
+  background: var(--bg-secondary);
+}
+
+.sidebar-group-header:focus-visible,
+.sidebar-link:focus-visible,
+.sidebar-toggle:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: -2px;
+}
+
+.sidebar-group-active .sidebar-group-header {
+  color: var(--accent-primary);
+}
+
+.sidebar-group-icon {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.sidebar-group-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebar-group-chevron {
+  flex-shrink: 0;
+  color: var(--text-tertiary);
+  transition: transform 0.2s ease;
+  transform: rotate(-90deg);
+}
+
+[dir="rtl"] .sidebar-group-chevron {
+  transform: rotate(90deg);
+}
+
+.sidebar-group-chevron.is-open,
+[dir="rtl"] .sidebar-group-chevron.is-open {
+  transform: none;
+}
+
+.sidebar-group-items {
+  list-style: none;
+  margin: 0.25rem 0 0;
+  padding: 0;
+  padding-inline-start: 0.75rem;
+}
+
+.sidebar-link {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.6rem 0.75rem;
+  margin-bottom: 0.15rem;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: background 0.2s, color 0.2s;
+}
+
+.sidebar-link:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.sidebar-link.active-nav-link {
+  background: var(--bg-secondary);
+  color: var(--accent-primary);
+  font-weight: 600;
+}
+
+.sidebar-link-icon {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.sidebar-link-text {
+  min-width: 0;
+  text-align: start;
+  line-height: 1.35;
+}
+
+/* القائمة المطوية: أيقونات فقط في الوسط، ورأس المجموعة أيقونة وتحتها سهم صغير */
+.sidebar-closed .sidebar-group-header {
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.5rem 0;
+  justify-content: center;
+}
+
+.sidebar-closed .sidebar-group-items {
+  padding-inline-start: 0;
+}
+
+.sidebar-closed .sidebar-link {
+  justify-content: center;
+  padding: 0.6rem 0;
 }
 
 /* القائمة المفتوحة على الشاشات الضيقة تظهر فوق المحتوى */

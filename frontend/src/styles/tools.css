@@ -688,3 +688,137 @@
     font-size: 1.05rem;
   }
 }
+
+/* دراسة مقطع ومقارنة مقطعين */
+.range-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.range-point {
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 0.5rem 0.75rem 0.75rem;
+  min-width: 0;
+}
+
+.range-point legend {
+  padding: 0 0.4rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.range-point .tool-select {
+  min-width: 0;
+}
+
+.range-tables {
+  gap: 0.5rem 1.25rem;
+}
+
+.range-tables label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+}
+
+.range-text {
+  font-size: 1.25rem;
+  line-height: 2.2;
+  max-height: 320px;
+  overflow: auto;
+  overflow-wrap: anywhere;
+}
+
+.range-ayah-num {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+}
+
+.eq-vars {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+.eq-error {
+  color: #dc2626;
+  font-size: 0.9rem;
+}
+
+/* المختبر الرياضي */
+.ml-editor {
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  text-align: left;
+}
+
+.data-table td.ml-expr {
+  font-family: Consolas, 'Courier New', monospace;
+  text-align: left;
+  overflow-wrap: anywhere;
+  min-width: 140px;
+}
+
+.ml-value {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--accent-primary);
+  overflow-wrap: anywhere;
+}
+
+.ml-text {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 0.9rem;
+}
+
+.ml-results {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.ml-row {
+  padding: 0.6rem 0.9rem;
+  border-bottom: 1px solid var(--border-light);
+  min-width: 0;
+}
+
+.ml-row:last-child {
+  border-bottom: none;
+}
+
+.ml-row-head {
+  display: flex;
+  gap: 0.6rem;
+  align-items: baseline;
+  text-align: left;
+}
+
+.ml-line-no {
+  color: var(--text-tertiary);
+  font-size: 0.8rem;
+  min-width: 1.5rem;
+}
+
+.ml-row .ml-expr {
+  font-family: Consolas, 'Courier New', monospace;
+  overflow-wrap: anywhere;
+  color: var(--text-secondary);
+}
+
+.ml-row-result {
+  margin-top: 0.3rem;
+  padding-inline-start: 2.1rem;
+  text-align: start;
+  min-width: 0;
+}

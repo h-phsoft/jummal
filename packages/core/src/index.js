@@ -11,3 +11,4 @@ export * from './number-study.js';
 export * from './quran-analysis.js';
 export * from './quran-stats.js';
 export * from './data-file.js';
+export * from './quran-range.js';

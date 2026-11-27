@@ -271,3 +271,128 @@ test('letters data file: 28 letters, solar/lunar and nurani match the Quran data
   assert.equal(ls.groups.natures.reduce((s, n) => s + n.count, 0), ls.totals.Count);
   ls.groups.natures.forEach(n => assert.equal(n.letters, 7, n.nature));
 });
+
+test('quran range: extraction, stats, word counts and equations', () => {
+  // الفاتحة كاملة = دراسة سورة الفاتحة
+  const fatiha = core.rangeStats(core.quranRange(ayat, {surah: 1, ayah: 1}, {surah: 1, ayah: 7}));
+  const surah1 = core.analyzeSurahCharacters(ayat, 1, swar);
+  assert.equal(fatiha.verses, 7);
+  assert.equal(fatiha.fullVerses, 7);
+  assert.equal(fatiha.words, surah1.words);
+  assert.equal(fatiha.letters, surah1.letters);
+  assert.deepEqual(fatiha.usedLetters, surah1.usedLetters);
+
+  // البسملة = 786 بالجمل
+  const basmala = core.rangeStats(core.quranRange(ayat, {surah: 1, ayah: 1, word: 1}, {surah: 1, ayah: 1, word: 4}));
+  assert.equal(basmala.tables.find(t => t.key === 'jummal').total, 786);
+  assert.equal(basmala.words, 4);
+  assert.equal(basmala.letters, 19);
+
+  // جزء من كلمة: «الله» من الحرف 2 إلى 3 = «لل»
+  const part = core.quranRange(ayat, {surah: 1, ayah: 1, word: 2, char: 2}, {surah: 1, ayah: 1, word: 2, char: 3});
+  assert.equal(part.segments[0].text, 'لل');
+  assert.equal(part.segments[0].partial, true);
+
+  // من وسط آية إلى وسط آية أخرى
+  const mid = core.quranRange(ayat, {surah: 1, ayah: 6, word: 2}, {surah: 1, ayah: 7, word: 2});
+  assert.deepEqual(mid.segments.map(s => s.text), ['الصرط المستقيم', 'صرط الذين']);
+
+  // الكلمة 0 في النهاية = آخر كلمة في الآية
+  const lastWord = core.quranRange(ayat, {surah: 1, ayah: 7, word: 0}, {surah: 1, ayah: 7, word: 0});
+  assert.equal(lastWord.end.word, 10);
+  assert.equal(lastWord.segments[0].partial, false);
+
+  // البداية بعد النهاية خطأ، والآية غير الموجودة خطأ
+  assert.equal(core.quranRange(ayat, {surah: 2, ayah: 1}, {surah: 1, ayah: 7}).error, 'reversed');
+  assert.equal(core.quranRange(ayat, {surah: 1, ayah: 1, word: 3}, {surah: 1, ayah: 1, word: 2}).error, 'reversed');
+  assert.equal(core.quranRange(ayat, {surah: 1, ayah: 99}, {surah: 2, ayah: 1}).error, 'invalid_point');
+
+  // القرآن كاملاً = مجاميع إحصاءات السور
+  const all = core.rangeStats(core.quranRange(ayat, {surah: 1, ayah: 1}, {surah: 114, ayah: 6}));
+  const totals = core.chapterStats(swar, ayat).totals;
+  assert.equal(all.surahs, 114);
+  assert.equal(all.verses, totals.Vs);
+  assert.equal(all.words, totals.Ws);
+  assert.equal(all.letters, totals.Cs);
+  assert.equal(all.bySurah.reduce((s, r) => s + r.letters, 0), totals.Cs);
+
+  // عدّ كلمة: المطابقة التامة جزء من الاحتواء
+  const exact = core.countWordInRange(all, 'الأرض', 'exact');
+  const contains = core.countWordInRange(all, 'الأرض', 'contains');
+  assert.ok(exact > 0 && contains >= exact);
+  assert.equal(core.countWordInRange(fatiha, 'الله'), 1);
+
+  // المعادلات
+  const vars = {...core.rangeVariables('A', fatiha, [2]), ...core.rangeVariables('B', basmala, [1])};
+  assert.equal(core.evaluateExpression('A.letters / B.letters', vars).value, fatiha.letters / 19);
+  assert.equal(core.evaluateExpression('(A.letters + A.words) / (B.letters + B.words)', vars).value, (fatiha.letters + fatiha.words) / 23);
+  assert.equal(core.evaluateExpression('A.w1 / B.w1 + 2 ^ 3 - -1', vars).value, 11);
+  assert.equal(core.evaluateExpression('B.jummal % 7', vars).value, 786 % 7);
+  assert.equal(core.evaluateExpression('max(B.ل, 1) * sqrt(16)', vars).value, basmala.letterCounts['ل'] * 4);
+  assert.ok(core.evaluateExpression('A.nothing', vars).error);
+  assert.ok(core.evaluateExpression('1 / 0', vars).error);
+  assert.ok(core.evaluateExpression('2 +', vars).error);
+  assert.ok(core.evaluateExpression('alert(1)', vars).error);
+});
+
+test('math lab: algebra, powers, calculus, statistics and Quran data', async () => {
+  const {createMathLab, quranMathData} = await import('../src/math-lab.js');
+  const lab = createMathLab(quranMathData(ayat, swar));
+  const r = lab.evaluate([
+    '# تعليق',
+    '2^10 + 3 * 4',
+    'nthRoot(27, 3) + sqrt(16) + 5 mod 3',
+    'bignumber(7)^30',
+    'derivative("x^3 + 2x", "x")',
+    'integrate("x^2", 0, 3)',
+    'f(x) = sin(x)',
+    'integrate(f, 0, pi)',
+    'nderivative("x^3", 2)',
+    'findRoot("x^2 - 2", 0, 2)',
+    'sigma("k^2", "k", 1, 10)',
+    'mean([1, 2, 3, 4])',
+    'std([2, 4, 4, 4, 5, 5, 7, 9], "uncorrected")',
+    'totalVerses',
+    'sum(surahVerses)',
+    'sum(verseLetters) == totalLetters',
+    'sum(letterCounts) == totalLetters',
+    'surahVerses[2]',
+    'value("بسم الله الرحمن الرحيم")',
+    'segment("1:1", "1:1").jummal',
+    'sum(bysurah(1, "jummal")) == surahJummal[1]',
+    'letter("ق", 50) > 0',
+    'word("الله") > 2000',
+    'linreg(surahVerses, surahLetters).r > 0.8',
+    'digitsum(786) + digitalroot(786) + reversenum(786)',
+    'det([1, 2; 3, 4])',
+    '1 +'
+  ]);
+  const v = (i) => r[i] && (r[i].value !== undefined ? r[i].value : r[i].text);
+  assert.equal(r[0], null);
+  assert.equal(v(1), 1036);
+  assert.equal(v(2), 9);
+  assert.equal(v(3), '22539340290692258087863249');
+  assert.equal(v(4), '3 * x ^ 2 + 2');
+  assert.ok(Math.abs(v(5) - 9) < 1e-9);
+  assert.equal(r[6].type, 'function');
+  assert.ok(Math.abs(v(7) - 2) < 1e-9);
+  assert.ok(Math.abs(v(8) - 12) < 1e-6);
+  assert.ok(Math.abs(v(9) - Math.SQRT2) < 1e-12);
+  assert.equal(v(10), 385);
+  assert.equal(v(11), 2.5);
+  assert.equal(v(12), 2);
+  assert.equal(v(13), 6236);
+  assert.equal(v(14), 6236);
+  assert.equal(v(15), 'true');
+  assert.equal(v(16), 'true');
+  assert.equal(v(17), 286);
+  assert.equal(v(18), 786);
+  assert.equal(v(19), 786);
+  assert.equal(v(20), 'true');
+  assert.equal(v(21), 'true');
+  assert.equal(v(22), 'true');
+  assert.equal(v(23), 'true');
+  assert.equal(v(24), 21 + 3 + 687);
+  assert.equal(v(25), -2);
+  assert.equal(r[26].type, 'error');
+});
